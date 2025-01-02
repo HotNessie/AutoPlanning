@@ -1,15 +1,13 @@
 package com.preplan.autoplan.dto.member;
 
+import com.preplan.autoplan.domain.member.Member;
 import com.preplan.autoplan.domain.member.Sex;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberCreateDto {
-
     @NotBlank(message = "이름은 필수입니다.")
     private String name;
 
@@ -18,13 +16,32 @@ public class MemberCreateDto {
     private String email;
 
     @NotBlank(message = "비밀번호는 필수입니다.")
+    @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
     private String password;
 
     @NotNull(message = "출생년도는 필수입니다.")
+    @Min(value = 1940, message = "유효한 출생년도를 입력해주세요.")
     private Integer birthYear;
 
     @NotNull(message = "성별은 필수입니다.")
     private Sex sex;
 
+    @Builder
+    public MemberCreateDto(String name, String email, String password, Integer birthYear, Sex sex) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.birthYear = birthYear;
+        this.sex = sex;
+    }
 
+    public Member toEntity() {
+        return Member.builder()
+                .name(name)
+                .email(email)
+                .password(password)
+                .birthYear(birthYear)
+                .sex(sex)
+                .build();
+    }
 }
