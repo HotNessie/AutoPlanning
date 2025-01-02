@@ -15,6 +15,7 @@ public abstract class KeywordCounter implements MyMath {
     @Column(name = "keyword_counter_id")
     private Long id;
 
+    //양방향
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "area_id")
     private Area area;
@@ -25,6 +26,27 @@ public abstract class KeywordCounter implements MyMath {
         this.count++;
     }
 
+    public final void decrement() {
+        if (count > 0) {
+            this.count--;
+        }
+    }
+
     public abstract boolean matchesField(Enum<?> field);
 
+    //연관관계 편의 메소드(with_Area) Many
+    public void assignArea(Area area) {
+        if (this.area != null) {
+            this.area.getKeywordCounters().remove(this);
+        }
+        this.area = area;
+        area.getKeywordCounters().add(this);
+    }
+
+    public void unassignArea() {
+        if (this.area != null) {
+            this.area.getKeywordCounters().remove(this);
+            this.area = null;
+        }
+    }
 }

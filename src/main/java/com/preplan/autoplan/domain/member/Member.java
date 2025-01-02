@@ -46,9 +46,10 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private Status status;
 
+    //양방향
     @Column(nullable = false)
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Plan> plans = new ArrayList<>();
+    private List<Plan> plan = new ArrayList<>();
 
     @Builder
     public Member(String password, String name, String email, int birthYear, Sex sex) {
@@ -60,21 +61,19 @@ public class Member extends BaseTimeEntity {
         this.status = Status.ACTIVE;
     }
 
-    // 연관관계 편의 메소드
-    public void addPlan(Plan plan) {
-        this.plans.add(plan);
-        plan.assignMember(this);
-    }
-
-    public void removePlan(Plan plan) {
-        this.plans.remove(plan);
-        plan.unassignMember();
-    }
-
     //나이를 10년 단위로 종합하기 위한 메소드
     public int getBirthYear(int birthYear) {
         return (birthYear / 10) * 10;
     }
 
+    // 연관관계 편의 메소드 (With_Plan One)
+    public void addPlan(Plan plan) {
+        this.plan.add(plan);
+        plan.assignMember(this);
+    }
 
+    public void removePlan(Plan plan) {
+        this.plan.remove(plan);
+        plan.unassignMember();
+    }
 }

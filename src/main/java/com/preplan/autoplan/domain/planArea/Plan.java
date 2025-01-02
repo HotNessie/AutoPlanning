@@ -25,12 +25,16 @@ public class Plan extends BaseTimeEntity {
     @Column(name = "plan_id")
     private Long id;
 
-    //    @Column(nullable = false)
+    //양방향
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    //    @Column(nullable = false)
+    //양방향
+    @Column(nullable = false)
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
+    private List<PlanArea> planArea = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "precondition_keyword_id")
     private PreconditionKeyword preconditionKeyword;
@@ -42,10 +46,6 @@ public class Plan extends BaseTimeEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "mood_id")
     private Mood mood;
-
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
-    private List<PlanArea> planArea = new ArrayList<>();
 
     @Column(nullable = false)
     @CreatedDate
@@ -60,20 +60,31 @@ public class Plan extends BaseTimeEntity {
         this.createdDate = LocalDateTime.now();
     }
 
-    //연관관계 편의 메소드
+    //연관관계 편의 메소드 (with_Member Many)
     public void assignMember(Member member) {
         if (this.member != null) {
-            this.member.getPlans().remove(this);
+            this.member.getPlan().remove(this);
         }
         this.member = member;
-        member.getPlans().add(this);
+        member.getPlan().add(this);
     }
 
     public void unassignMember() {
         if (this.member != null) {
-            this.member.getPlans().remove(this);
+            this.member.getPlan().remove(this);
             this.member = null;
         }
+    }
+
+    //연관관계 편의 메소드 (with_PlanArea One)
+    public void addPlanArea(PlanArea area) {
+        this.planArea.add(area);
+        area.assignPlan(this);
+    }
+
+    public void removePlanArea(PlanArea area) {
+        this.planArea.remove(area);
+        area.unassignPlan();
     }
     //TODO: 따봉 어케하냐
 }

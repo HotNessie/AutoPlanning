@@ -1,7 +1,6 @@
 package com.preplan.autoplan.domain.planArea;
 
 import com.preplan.autoplan.domain.planArea.KeywordCounter.KeywordCounter;
-import com.preplan.autoplan.domain.planArea.dayoff.DayOff;
 import com.preplan.autoplan.exception.InvalidValueException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -27,11 +26,13 @@ public class Area {
 
     private int estimatedTimeRequired; //예상 소요 시간
 
-    @OneToMany(mappedBy = "area", cascade = CascadeType.ALL)
-    private List<DayOff> dayOff = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "day_off_id")
+    private DayOff dayOff;
 
     private int ddabong;
 
+    //양방향
     @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true) //고아 엔티티 삭제
     private List<KeywordCounter> keywordCounters = new ArrayList<>();
 
@@ -50,8 +51,6 @@ public class Area {
         this.name = name;
         this.estimatedTimeRequired = estimatedTimeRequired;
     }
-    //연관관계
-//    public void
 
     //    //=====목적 키워드 카운트 증가 메서드=====//
 //    public void incrementPurposeCount(PurposeField field) throws InvalidValueException {
@@ -70,7 +69,8 @@ public class Area {
 //                .orElseThrow(() -> new InvalidValueException("왜 맘대로 값 넣음?"));
 //        counter.increment();
 //    }
-//===== 키워드 카운트 증가 메서드 (통합) =====//
+
+    //===== 키워드 카운트 증가 메서드 (통합) =====//
     public void incrementKeywordCount(Enum<?> field) throws InvalidValueException {
         KeywordCounter counter = keywordCounters.stream()
                 .filter(kc -> kc.matchesField(field))
@@ -78,6 +78,19 @@ public class Area {
                 .orElseThrow(() -> new InvalidValueException("적절한 계수기 없음"));
         counter.increment();
     }
+
+    //연관관계 편의 메소드(with_keywordCounter) One
+    public void addKeywordCounter(KeywordCounter kc) {
+        this.keywordCounters.add(kc);
+        kc.assignArea(this);
+    }
+
+    public void removeKeywordCounter(KeywordCounter kc) {
+        this.keywordCounters.remove(kc);
+        kc.unassignArea();
+    }
+
+
     //TODO: 식당인지, 식당이라면 한식,일식,중식,양식 등 구분
     //계획 시간에 11~14, 17~21가 존재하면 식당을 하나 넣어줌
     //ageCounter 카운트 메소드 없음

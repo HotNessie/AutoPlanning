@@ -14,14 +14,28 @@ public class PlanArea {
     @Column(name = "plan_area_id")
     private Long id;
 
-    //    @Column(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "area_id")
     private Area area;
 
-    //    @Column(nullable = false)
+    //양방향
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
     private Plan plan;
 
+    //연관관계 편의 메소드 (with_Plan) Many
+    public void assignPlan(Plan plan) {
+        if (this.plan != null) {
+            this.plan.getPlanArea().remove(this);
+        }
+        this.plan = plan;
+        plan.getPlanArea().add(this);
+    }
+
+    public void unassignPlan() {
+        if (this.plan != null) {
+            this.plan.getPlanArea().remove(this);
+            this.plan = null;
+        }
+    }
 }
