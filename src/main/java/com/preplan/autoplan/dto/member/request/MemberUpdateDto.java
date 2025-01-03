@@ -2,6 +2,7 @@ package com.preplan.autoplan.dto.member.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.Email;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberUpdateDto {
     @NotBlank(message = "이름은 필수입니다.")
     private String name;
