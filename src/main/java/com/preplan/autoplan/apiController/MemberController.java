@@ -1,8 +1,8 @@
 package com.preplan.autoplan.apiController;
 
 import com.preplan.autoplan.domain.member.Member;
-import com.preplan.autoplan.dto.member.MemberCreateDto;
-import com.preplan.autoplan.dto.member.MemberSimpleDto;
+import com.preplan.autoplan.dto.member.request.MemberCreateDto;
+import com.preplan.autoplan.dto.member.response.MemberSimpleDto;
 import com.preplan.autoplan.repository.MemberRepository;
 import com.preplan.autoplan.service.MemberService;
 import jakarta.validation.Valid;
@@ -33,7 +33,7 @@ public class MemberController {
                 .sex(memberCreateDto.getSex())
                 .build();
         Long memberId = memberService.createMember(member);
-        MemberSimpleDto memberSimpleDto = new MemberSimpleDto(memberId);
+        MemberSimpleDto memberSimpleDto = new MemberSimpleDto(memberId, member.getName());
         return ResponseEntity.ok(memberSimpleDto.getId());
     }
 
@@ -44,7 +44,7 @@ public class MemberController {
         if (member.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        MemberSimpleDto memberSimpleDto = new MemberSimpleDto(member.get().getId());
+        MemberSimpleDto memberSimpleDto = new MemberSimpleDto(member.get().getId(), member.get().getName());
         return ResponseEntity.ok(memberSimpleDto);
     }
 

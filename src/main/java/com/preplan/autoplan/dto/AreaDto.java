@@ -1,5 +1,8 @@
 package com.preplan.autoplan.dto;
 
+import com.preplan.autoplan.dto.counter.AgeCounterDto;
+import com.preplan.autoplan.dto.counter.MoodCounterDto;
+import com.preplan.autoplan.dto.counter.PurposeCounterDto;
 import lombok.Getter;
 import lombok.Setter;
 

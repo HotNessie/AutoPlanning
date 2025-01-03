@@ -1,4 +1,4 @@
-package com.preplan.autoplan.dto.member;
+package com.preplan.autoplan.dto.member.request;
 
 import com.preplan.autoplan.domain.member.Member;
 import com.preplan.autoplan.domain.member.Sex;

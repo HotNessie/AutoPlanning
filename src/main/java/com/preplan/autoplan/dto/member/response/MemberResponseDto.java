@@ -1,14 +1,10 @@
-package com.preplan.autoplan.dto.member;
+package com.preplan.autoplan.dto.member.response;
 
 import com.preplan.autoplan.domain.member.Member;
 import com.preplan.autoplan.domain.member.Sex;
-import com.preplan.autoplan.domain.member.Status;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

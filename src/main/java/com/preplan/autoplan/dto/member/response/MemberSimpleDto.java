@@ -1,13 +1,9 @@
-package com.preplan.autoplan.dto.member;
+package com.preplan.autoplan.dto.member.response;
 
 import com.preplan.autoplan.domain.member.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.http.ResponseEntity;
-
-import java.util.Optional;
 
 @Getter
 @NoArgsConstructor
