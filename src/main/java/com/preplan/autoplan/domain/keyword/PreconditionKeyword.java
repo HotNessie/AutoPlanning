@@ -22,8 +22,8 @@ public class PreconditionKeyword {
     private Long id;
 
     //TODO: location 어떻게 할건지 생각해봐야됨.
-    @Column(nullable = false)
-    private LocalDateTime departureDate;
+//    @Column(nullable = false)
+//    private LocalDateTime departureDate;
 
     //이거 시발 int로 받는게 맞냐????
     @Column(nullable = false)
@@ -36,8 +36,7 @@ public class PreconditionKeyword {
     private Transport transport;
 
     @Builder
-    public PreconditionKeyword(LocalDateTime departureDate, int arriveTime, int departureTime, Transport transport) {
-        this.departureDate = departureDate;
+    public PreconditionKeyword(int arriveTime, int departureTime, Transport transport) {
         this.arriveTime = arriveTime;
         this.departureTime = departureTime;
         this.transport = transport;

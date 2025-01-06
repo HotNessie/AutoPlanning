@@ -27,7 +27,6 @@ public class AreaResponseDto {
     }
 
     public static AreaResponseDto from(Area area) {
-        KeywordCounter counters = (KeywordCounter) area.getKeywordCounters();
 
         return AreaResponseDto.builder()
                 .id(area.getId())
