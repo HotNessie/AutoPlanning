@@ -29,11 +29,5 @@ public class MemberUpdateDto {
         this.password = password;
     }
 
-//    public void updateMember(Member member) {
-//        member.updateName(this.name);
-//        member.updateEmail(this.email);
-//        if (this.password != null && !this.password.isEmpty()) {
-//            member.updatePassword(this.password);
-//        }
-//}
+//이거 데이터를 여기서 넘길지 서비스나 엔티티에서 받아서 변환, 저장 동시에 할지 생각해보셈
 }

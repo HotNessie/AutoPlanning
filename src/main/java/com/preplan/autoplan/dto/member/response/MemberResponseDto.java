@@ -2,12 +2,13 @@ package com.preplan.autoplan.dto.member.response;
 
 import com.preplan.autoplan.domain.member.Member;
 import com.preplan.autoplan.domain.member.Sex;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberResponseDto {
     private Long id;
     private String name;

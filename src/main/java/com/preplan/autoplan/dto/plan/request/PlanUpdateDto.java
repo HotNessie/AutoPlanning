@@ -1,11 +1,9 @@
-package com.preplan.autoplan.dto.plan;
+package com.preplan.autoplan.dto.plan.request;
 
 import com.preplan.autoplan.domain.keyword.PreconditionKeyword;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.Mood;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.Purpose;
 import com.preplan.autoplan.domain.planArea.PlanArea;
-import com.preplan.autoplan.dto.PreconditionKeywordDto;
-import com.preplan.autoplan.dto.PlanAreaDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;

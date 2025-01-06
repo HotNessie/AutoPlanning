@@ -26,9 +26,10 @@ public class Area {
 
     private int estimatedTimeRequired; //예상 소요 시간
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "day_off_id")
-    private DayOff dayOff;
+    //이건 나중에 확장
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "day_off_id")
+//    private DayOff dayOff;
 
     private int ddabong;
 
@@ -52,24 +53,8 @@ public class Area {
         this.estimatedTimeRequired = estimatedTimeRequired;
     }
 
-    //    //=====목적 키워드 카운트 증가 메서드=====//
-//    public void incrementPurposeCount(PurposeField field) throws InvalidValueException {
-//        PurposeCounter counter = purposeCounter.stream()
-//                .filter(pc -> pc.getPurposeField() == field)
-//                .findFirst()
-//                .orElseThrow(() -> new InvalidValueException("왜 맘대로 값 넣음?"));
-//        counter.increment();
-//    }
-//
-//    //===== 분위기 키워드 카운트 증가 메서드=====//
-//    public void incrementMoodCount(MoodField field) throws InvalidValueException {
-//        MoodCounter counter = moodCounter.stream()
-//                .filter(pc -> pc.getMoodField() == field)
-//                .findFirst()
-//                .orElseThrow(() -> new InvalidValueException("왜 맘대로 값 넣음?"));
-//        counter.increment();
-//    }
 
+    //구현 할 이유가 없는듯. 일단 대기
     //===== 키워드 카운트 증가 메서드 (통합) =====//
     public void incrementKeywordCount(Enum<?> field) throws InvalidValueException {
         KeywordCounter counter = keywordCounters.stream()

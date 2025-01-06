@@ -27,10 +27,10 @@ public class PlanResponseDto {
     private Mood mood;
 
     private LocalDateTime createdDate;
-    //    private List<PlanAreaDto> planAreas;
+    //    private List<PlanAreaResponseDto> planAreas;
 
     //페이지네이션
-    //private PagedResponse<PlanAreaDto> planAreas;
+    //private PagedResponse<PlanAreaResponseDto> planAreas;
     @Builder
     public PlanResponseDto(Long planId, Member member, PreconditionKeyword preconditionKeyword, Purpose purpose, Mood mood, LocalDateTime createdDate) {
         this.planId = planId;

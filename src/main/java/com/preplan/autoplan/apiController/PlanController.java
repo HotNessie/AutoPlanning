@@ -1,10 +1,6 @@
 package com.preplan.autoplan.apiController;
 
-import com.preplan.autoplan.dto.PlanDto;
-import com.preplan.autoplan.dto.plan.PlanCreateDto;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -27,5 +27,4 @@ public class Mood {
         this.moodField = moodField;
     }
 
-//    private List<MoodField> moodFields = new ArrayList<>();
 }

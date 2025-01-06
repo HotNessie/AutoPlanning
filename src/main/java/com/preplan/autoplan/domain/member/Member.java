@@ -2,6 +2,7 @@ package com.preplan.autoplan.domain.member;
 
 import com.preplan.autoplan.domain.BaseTimeEntity;
 import com.preplan.autoplan.domain.planArea.Plan;
+import com.preplan.autoplan.dto.member.request.MemberUpdateDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -76,4 +77,13 @@ public class Member extends BaseTimeEntity {
         this.plan.remove(plan);
         plan.unassignMember();
     }
+
+    //==업데이트 비지니스 로직==//이게 비지니스 로직은 아니지...?
+//    public void updateMember(MemberUpdateDto memberDto) {
+//        this.name = memberDto.getName();
+//        this.email = memberDto.getEmail();
+//        if (memberDto.getPassword() != null && memberDto.getPassword().isEmpty()) {
+//            this.password = memberDto.getPassword();
+//        }
+//    }
 }

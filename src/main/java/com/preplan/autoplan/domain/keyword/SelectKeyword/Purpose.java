@@ -21,7 +21,6 @@ public class Purpose {
     @Column(name = "field")
     @Enumerated(EnumType.STRING)
     private PurposeField purposeField;
-//    private List<PurposeField> purposeFields = new ArrayList<>();
 
     @Builder
     public Purpose(PurposeField purposeField) {

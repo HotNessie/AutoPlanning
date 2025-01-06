@@ -27,21 +27,23 @@ public class MemberCreateDto {
     private Sex sex;
 
     @Builder
-    public MemberCreateDto(String name, String email, String password, Integer birthYear, Sex sex) {
+    public MemberCreateDto(String name, String email, String password,
+                           Integer birthYear, Sex sex) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.birthYear = birthYear;
         this.sex = sex;
     }
+    
 
     public Member toEntity() {
         return Member.builder()
-                .name(name)
-                .email(email)
-                .password(password)
-                .birthYear(birthYear)
-                .sex(sex)
+                .name(this.name)
+                .email(this.email)
+                .password(this.password)
+                .birthYear(this.birthYear)
+                .sex(this.sex)
                 .build();
     }
 }
