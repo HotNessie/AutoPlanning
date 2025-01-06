@@ -2,6 +2,7 @@ package com.preplan.autoplan.domain.planArea.Area;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
