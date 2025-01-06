@@ -11,12 +11,12 @@ public class AreaController {
 //    private final AreaService areaService;
 
 //    @GetMapping
-//    public ResponseEntity<List<AreaResponseDto>> getAllAreas() {
+//    public ResponseEntity<List<AreaDto>> getAllAreas() {
     // 모든 지역 조회 로직
 //    }
 
 //    @GetMapping("/{id}")
-//    public ResponseEntity<AreaResponseDto> getArea(@PathVariable Long id) {
+//    public ResponseEntity<AreaDto> getArea(@PathVariable Long id) {
     // 특정 지역 조회 로직
 //    }
 

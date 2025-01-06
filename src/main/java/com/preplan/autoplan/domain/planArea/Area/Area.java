@@ -1,6 +1,7 @@
 package com.preplan.autoplan.domain.planArea.Area;
 
 import com.preplan.autoplan.domain.disable.KeywordCounter.KeywordCounter;
+import com.preplan.autoplan.domain.member.Status;
 import com.preplan.autoplan.exception.InvalidValueException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -24,6 +25,8 @@ public class Area {
     @Column(nullable = false)
     private String name; //이거 상수처리 해야되는거 아닌가
 
+    private String location;
+
     private int estimatedTimeRequired; //예상 소요 시간
 
     private int opening;
@@ -32,12 +35,16 @@ public class Area {
 
     private int ddabong;
 
+    private Status status;
+
     @Builder
-    public Area(String name, int estimatedTimeRequired, int opening, int closing) {
+    public Area(String name, String location, int estimatedTimeRequired, int opening, int closing, Status status) {
         this.name = name;
+        this.location = location;
         this.estimatedTimeRequired = estimatedTimeRequired;
         this.opening = opening;
         this.closing = closing;
+        this.status = Status.ACTIVE;
     }
     //이건 나중에 확장
 //    @ManyToOne(fetch = FetchType.LAZY)
