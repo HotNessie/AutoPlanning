@@ -1,6 +1,7 @@
 package com.preplan.autoplan.domain.planArea;
 
 import com.preplan.autoplan.domain.BaseTimeEntity;
+import com.preplan.autoplan.domain.global.Location;
 import com.preplan.autoplan.domain.keyword.PreconditionKeyword;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.Mood;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.Purpose;
@@ -34,6 +35,9 @@ public class Plan extends BaseTimeEntity {
     @Column(nullable = false)
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
     private List<PlanArea> planArea = new ArrayList<>();
+
+    @Embedded
+    private Location location;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "precondition_keyword_id")

@@ -1,6 +1,7 @@
 package com.preplan.autoplan.domain.planArea.Area;
 
 import com.preplan.autoplan.domain.disable.KeywordCounter.KeywordCounter;
+import com.preplan.autoplan.domain.global.Location;
 import com.preplan.autoplan.domain.member.Status;
 import com.preplan.autoplan.exception.InvalidValueException;
 import jakarta.persistence.*;
@@ -8,9 +9,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -25,7 +23,8 @@ public class Area {
     @Column(nullable = false)
     private String name; //이거 상수처리 해야되는거 아닌가
 
-    private String location;
+    @Embedded
+    private Location location;
 
     private int estimatedTimeRequired; //예상 소요 시간
 
@@ -38,7 +37,7 @@ public class Area {
     private Status status;
 
     @Builder
-    public Area(String name, String location, int estimatedTimeRequired, int opening, int closing, Status status) {
+    public Area(String name, Location location, int estimatedTimeRequired, int opening, int closing, Status status) {
         this.name = name;
         this.location = location;
         this.estimatedTimeRequired = estimatedTimeRequired;

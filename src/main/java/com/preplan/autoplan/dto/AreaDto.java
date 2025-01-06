@@ -1,5 +1,6 @@
 package com.preplan.autoplan.dto;
 
+import com.preplan.autoplan.domain.global.Location;
 import com.preplan.autoplan.domain.planArea.Area.Area;
 import lombok.*;
 
@@ -9,7 +10,7 @@ public class AreaDto {
 
     private String name;
 
-    private String location;
+    private Location location;
 
     private Integer estimatedTimeRequired;
 
@@ -23,7 +24,7 @@ public class AreaDto {
     //update AreaDto가 필요하겠네요?
     @Builder
     public AreaDto(String name,
-                   String location,
+                   Location location,
                    int estimatedTimeRequired,
                    int opening,
                    int closing,
