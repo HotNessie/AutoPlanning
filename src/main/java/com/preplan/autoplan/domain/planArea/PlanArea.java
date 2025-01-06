@@ -1,5 +1,6 @@
 package com.preplan.autoplan.domain.planArea;
 
+import com.preplan.autoplan.domain.planArea.Area.Area;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,6 +23,8 @@ public class PlanArea {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
     private Plan plan;
+
+    private int order;
 
     //연관관계 편의 메소드 (with_Plan) Many
     public void assignPlan(Plan plan) {

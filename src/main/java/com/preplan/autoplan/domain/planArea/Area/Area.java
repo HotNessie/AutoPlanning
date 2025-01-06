@@ -1,6 +1,6 @@
-package com.preplan.autoplan.domain.planArea;
+package com.preplan.autoplan.domain.planArea.Area;
 
-import com.preplan.autoplan.domain.planArea.KeywordCounter.KeywordCounter;
+import com.preplan.autoplan.domain.disable.KeywordCounter.KeywordCounter;
 import com.preplan.autoplan.exception.InvalidValueException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -37,15 +37,6 @@ public class Area {
     @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true) //고아 엔티티 삭제
     private List<KeywordCounter> keywordCounters = new ArrayList<>();
 
-//    @Column(nullable = false)
-//    @OneToMany(mappedBy = "area", cascade = CascadeType.ALL)
-//    private List<MoodCounter> moodCounter = new ArrayList<>();
-//    @Column(nullable = false)
-//    @OneToMany(mappedBy = "area", cascade = CascadeType.ALL)
-//    private List<PurposeCounter> purposeCounter = new ArrayList<>();
-//    @Column(nullable = false)
-//    @OneToMany(mappedBy = "area", cascade = CascadeType.ALL)
-//    private List<AgeCounter> ageCounter = new ArrayList<>();
 
     @Builder
     public Area(String name, int estimatedTimeRequired) {

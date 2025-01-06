@@ -1,6 +1,5 @@
-package com.preplan.autoplan.domain.planArea.KeywordCounter;
+package com.preplan.autoplan.domain.disable.KeywordCounter;
 
-import com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

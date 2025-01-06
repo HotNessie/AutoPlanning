@@ -1,7 +1,7 @@
-package com.preplan.autoplan.domain.planArea.KeywordCounter;
+package com.preplan.autoplan.domain.disable.KeywordCounter;
 
 import com.preplan.autoplan.domain.global.MyMath;
-import com.preplan.autoplan.domain.planArea.Area;
+import com.preplan.autoplan.domain.planArea.Area.Area;
 import jakarta.persistence.*;
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.preplan.autoplan.domain.planArea.KeywordCounter;
+package com.preplan.autoplan.domain.disable.KeywordCounter;
 
 
 //TODO: 이거 다시

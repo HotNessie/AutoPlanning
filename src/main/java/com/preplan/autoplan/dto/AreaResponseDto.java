@@ -1,10 +1,7 @@
 package com.preplan.autoplan.dto;
 
-import com.preplan.autoplan.domain.planArea.Area;
-import com.preplan.autoplan.domain.planArea.KeywordCounter.AgeCounter;
-import com.preplan.autoplan.domain.planArea.KeywordCounter.KeywordCounter;
-import com.preplan.autoplan.domain.planArea.KeywordCounter.MoodCounter;
-import com.preplan.autoplan.domain.planArea.KeywordCounter.PurposeCounter;
+import com.preplan.autoplan.domain.planArea.Area.Area;
+import com.preplan.autoplan.domain.disable.KeywordCounter.KeywordCounter;
 import lombok.*;
 
 @Getter

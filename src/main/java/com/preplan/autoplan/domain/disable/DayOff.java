@@ -1,4 +1,4 @@
-package com.preplan.autoplan.domain.planArea;
+package com.preplan.autoplan.domain.disable;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

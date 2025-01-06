@@ -1,6 +1,6 @@
 package com.preplan.autoplan.domain.planArea;
 
-import com.preplan.autoplan.domain.planArea.KeywordCounter.PurposeCounter;
+import com.preplan.autoplan.domain.disable.KeywordCounter.PurposeCounter;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import org.junit.jupiter.api.Test;
 
