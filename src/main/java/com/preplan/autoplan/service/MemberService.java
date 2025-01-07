@@ -1,7 +1,6 @@
 package com.preplan.autoplan.service;
 
 import com.preplan.autoplan.domain.member.Member;
-import com.preplan.autoplan.dto.member.request.MemberUpdateDto;
 import com.preplan.autoplan.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
