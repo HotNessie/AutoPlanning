@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class Area {
     //area긴 한데, 지역은 아니고 건물?가게 에 가까움 어디서 머물지.
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "area_id")
     private Long id;
 

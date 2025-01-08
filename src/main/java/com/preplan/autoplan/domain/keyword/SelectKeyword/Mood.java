@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Mood {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mood_id")
     private Long id;
 

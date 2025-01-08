@@ -1,12 +1,14 @@
 package com.preplan.autoplan.domain.global;
 
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 @Embeddable
 @Getter
 public class Location {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "location_id")
     private int id;
 
     private String name;
