@@ -65,30 +65,9 @@ public class Plan extends BaseTimeEntity {
     }
 
     //연관관계 편의 메소드 (with_Member Many)
-    public void assignMember(Member member) {
-        if (this.member != null) {
-            this.member.getPlan().remove(this);
-        }
+    public void addMember(Member member) {
         this.member = member;
         member.getPlan().add(this);
-    }
-
-    public void unassignMember() {
-        if (this.member != null) {
-            this.member.getPlan().remove(this);
-            this.member = null;
-        }
-    }
-
-    //연관관계 편의 메소드 (with_PlanArea One)
-    public void addPlanArea(PlanArea area) {
-        this.planArea.add(area);
-        area.assignPlan(this);
-    }
-
-    public void removePlanArea(PlanArea area) {
-        this.planArea.remove(area);
-        area.unassignPlan();
     }
     //TODO: 따봉 어케하냐
 }

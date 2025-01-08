@@ -27,18 +27,8 @@ public class PlanArea {
     private int order;
 
     //연관관계 편의 메소드 (with_Plan) Many
-    public void assignPlan(Plan plan) {
-        if (this.plan != null) {
-            this.plan.getPlanArea().remove(this);
-        }
+    public void addPlan(Plan plan) {
         this.plan = plan;
         plan.getPlanArea().add(this);
-    }
-
-    public void unassignPlan() {
-        if (this.plan != null) {
-            this.plan.getPlanArea().remove(this);
-            this.plan = null;
-        }
     }
 }

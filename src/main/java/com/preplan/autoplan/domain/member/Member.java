@@ -67,17 +67,6 @@ public class Member extends BaseTimeEntity {
         return (birthYear / 10) * 10;
     }
 
-    // 연관관계 편의 메소드 (With_Plan One)
-    public void addPlan(Plan plan) {
-        this.plan.add(plan);
-        plan.assignMember(this);
-    }
-
-    public void removePlan(Plan plan) {
-        this.plan.remove(plan);
-        plan.unassignMember();
-    }
-
     //==업데이트 비지니스 로직==//이게 비지니스 로직은 아니지...?
 //    public void updateMember(MemberUpdateDto memberDto) {
 //        this.name = memberDto.getName();
