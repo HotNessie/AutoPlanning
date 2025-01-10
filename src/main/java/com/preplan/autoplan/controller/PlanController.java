@@ -6,12 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 @RequiredArgsConstructor
-public class HomeController {
+public class PlanController {
 
-    @GetMapping("/home")
-    public String home() {
-        return "home";
+    @GetMapping("/plan")
+    public String plan() {
+        return "plan";
     }
-
-
 }

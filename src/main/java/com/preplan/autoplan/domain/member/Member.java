@@ -2,7 +2,6 @@ package com.preplan.autoplan.domain.member;
 
 import com.preplan.autoplan.domain.BaseTimeEntity;
 import com.preplan.autoplan.domain.planArea.Plan;
-import com.preplan.autoplan.dto.member.request.MemberUpdateDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

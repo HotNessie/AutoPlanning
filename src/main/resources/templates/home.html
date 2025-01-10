@@ -1,12 +1,67 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header :: header"/>
+<link rel="stylesheet" href="/css/home.css">
 <body>
-<div class="container">
-    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+<!--<div class="container">-->
+<div th:replace="fragments/bodyHeader :: bodyHeader"/>
+<h1 class="centerH1">"머찐 계획"</h1>
 
+<div class="carousel-container">
+    <!-- 첫 번째 캐러셀 -->
+    <div class="carousel-half">
+        <div id="carousel1" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active" data-bs-interval="10000">
+                    <img src="/img/서울.jpg" class="d-block w-100" alt="...">
+                    <button class="fixed-button">서울에 살으리렸다</button>
+                </div>
+                <div class="carousel-item" data-bs-interval="10000">
+                    <img src="/img/바다.jpg" class="d-block w-100" alt="...">
+                    <button class="fixed-button">바다</button>
+                </div>
+                <div class="carousel-item" data-bs-interval="10000">
+                    <img src="/img/제주도.jpg" class="d-block w-100" alt="...">
+                    <button class="fixed-button">제주도에 이런 곳이?</button>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel1" data-bs-slide="prev">
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel1" data-bs-slide="next">
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
 
-    <div th:replace="fragments/footer :: footer"/>
-</div> <!-- /container -->
+    <!-- 두 번째 캐러셀 -->
+    <div class="carousel-half">
+        <div id="carousel2" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active" data-bs-interval="10000">
+                    <img src="/img/바다.jpg" class="d-block w-100" alt="...">
+                    <button class="fixed-button">바다</button>
+                </div>
+                <div class="carousel-item" data-bs-interval="10000">
+                    <img src="/img/제주도.jpg" class="d-block w-100" alt="...">
+                    <button class="fixed-button">제주도에 이런 곳이?</button>
+                </div>
+                <div class="carousel-item" data-bs-interval="10000">
+                    <img src="/img/서울.jpg" class="d-block w-100" alt="...">
+                    <button class="fixed-button">서울에 살으리렸다</button>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel2" data-bs-slide="prev">
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target=" ㅏ#carousel2" data-bs-slide="next">
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"/>
+<!--</div> &lt;!&ndash; /container &ndash;&gt;-->
 </body>
 </html>

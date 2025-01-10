@@ -3,7 +3,6 @@ package com.preplan.autoplan.domain.planArea.Area;
 import com.preplan.autoplan.domain.disable.KeywordCounter.KeywordCounter;
 import com.preplan.autoplan.domain.global.Location;
 import com.preplan.autoplan.domain.member.Status;
-import com.preplan.autoplan.exception.InvalidValueException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

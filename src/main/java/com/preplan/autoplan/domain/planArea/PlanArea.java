@@ -24,7 +24,7 @@ public class PlanArea {
     @JoinColumn(name = "plan_id")
     private Plan plan;
 
-    private int order;
+    private int orders;
 
     //연관관계 편의 메소드 (with_Plan) Many
     public void addPlan(Plan plan) {

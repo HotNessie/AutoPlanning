@@ -37,15 +37,15 @@ public abstract class KeywordCounter implements MyMath {
     //연관관계 편의 메소드(with_Area) Many
     public void assignArea(Area area) {
         if (this.area != null) {
-            this.area.getKeywordCounters().remove(this);
+//            this.area.getKeywordCounters().remove(this);
         }
         this.area = area;
-        area.getKeywordCounters().add(this);
+//        area.getKeywordCounters().add(this);
     }
 
     public void unassignArea() {
         if (this.area != null) {
-            this.area.getKeywordCounters().remove(this);
+//            this.area.getKeywordCounters().remove(this);
             this.area = null;
         }
     }

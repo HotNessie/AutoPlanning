@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/plans")
 @RequiredArgsConstructor
-public class PlanController {
+public class PlanApiController {
 //    private final PlanService planService;
 
 //    @PostMapping
