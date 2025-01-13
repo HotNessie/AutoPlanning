@@ -10,6 +10,6 @@ public class PlanController {
 
     @GetMapping("/plan")
     public String plan() {
-        return "plan";
+        return "createPlan";
     }
 }
