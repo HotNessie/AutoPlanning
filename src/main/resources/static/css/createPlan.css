@@ -1,0 +1,92 @@
+    .container, h1, ul, li{
+       margin: 0;
+       padding: 0;
+    }
+
+    .container{
+        min-width: 100vw;
+        background-color: #000;
+    }
+
+    header{
+        display: flex;
+        position: absolute;
+        height: 100%;
+        flex-direction: column;
+        z-index: 10;
+
+    background-color: #0ff;
+    }
+
+    .blind{
+        display: none !important;
+    }
+
+    .logo{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+        height: 76px;
+        border-bottom: 1px solid rgba(0,0,0, 0.15);
+        box-sizing: border-box;
+    }
+
+    .logo .link_logo{
+        display: inline-block;
+        vertical-align: top;
+        padding: 10px;
+        font-size: 1px;
+        line-height: 1px;
+    }
+
+    nav{
+        display: block;
+        width: 63px;
+        min-height: 1px;
+        flex: 1 1 0%;
+    }
+    nav ul{
+        overflow: hidden;
+        max-width: 390px;
+        height: 100%;
+        list-style: none;
+        display: block;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+        padding-inline-start: 40px;
+        padding: 0;
+    }
+    nav ul li{
+        list-style: none;
+        display: list-item;
+        text-align: -webkit-match-parent;
+    }
+
+    li button{
+        display: block;
+        position: relative;
+        z-index: 10;
+        padding: 13px 1px 11px 0px;
+        text-align: center;
+        width: 62px;
+        font-size: inherit;
+        line-height: inherit;
+        appearance: none;
+        background-color: transparent;
+        border: none;
+    }
+    .icon{
+        width: 62px;
+        height: 24px;
+        display: inline-block;
+        vertical-align: top;
+        width: 10px;
+        height: 10px;
+        font-size: 1px;
+        line-height: 1px;
+    }
+
