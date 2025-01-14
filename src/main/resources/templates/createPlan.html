@@ -4,7 +4,6 @@
 <link rel="stylesheet" href="/css/createPlan.css">
 
 <body>
-<body>
 
 <!--<div class="container">-->
 <header>
@@ -29,7 +28,8 @@
                 </button>
             </li>
             <li>
-                <button type="button" class="btn_navbar">
+                <button type="button" class="btn_navbar" data-bs-toggle="collapse" data-bs-target="#collapseAuto"
+                        aria-expanded="false" aria-controls="collapseAuto">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -41,7 +41,8 @@
                 </button>
             </li>
             <li>
-                <button type="button" class="btn_navbar">
+                <button type="button" class="btn_navbar" data-bs-toggle="collapse" data-bs-target="#collapseSelf"
+                        aria-expanded="false" aria-controls="collapseSelf">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -53,7 +54,8 @@
                 </button>
             </li>
             <li>
-                <button type="button" class="btn_navbar">
+                <button type="button" class="btn_navbar" data-bs-toggle="collapse" data-bs-target="#collapseBookMark"
+                        aria-expanded="false" aria-controls="collapseBookMark">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -67,37 +69,32 @@
         </ul>
     </nav>
 </header>
+<!--메뉴바는 Fragment로 따로 모아서 해야 할 듯?  -->
 <div class="collapse" id="collapseHot">
     <div id="collapseHotBody" class="card card-body">
-        Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user
-        activates the relevant trigger.
-    </div>
-    <div class="handle" id="h">
-        svg
+        추천 게시물 띄워주기
     </div>
 </div>
-<!--<div class="a">-->
-<!--    <div class="b">-->
-<!--        <div class="c">-->
-<!--        </div>-->
-<!--        <div id="e" class="e close">-->
-<!--            <div class="f">-->
-<!--                <div class="g">-->
-<!--                    <div class="h" id="h">-->
-<!--                        svg-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+<div class="collapse" id="collapseAuto">
+    <div id="collapseAutoBody" class="card card-body">
+        자동 생성에 필요한 프롬프트
+    </div>
+</div>
+<div class="collapse" id="collapseSelf">
+    <div id="collapseSelfBody" class="card card-body">
+        수동으로 계획 생성 프롬프트
+    </div>
+</div>
+<div class="collapse" id="collapseBookMark">
+    <div id="collapseBookMarkBody" class="card card-body">
+        찜한 계획 리스트
+    </div>
+</div>
 
 <section class="row">
     <!--    <div id="prompt" class="col-3">프롬프트</div>-->
     <!--    <div id="mapmap" class="col">지도 들어가야 됨</div>-->
-
 </section>
-
 
 <div th:replace="fragments/footer :: footer"/>
 <!--</div> &lt;!&ndash; /container &ndash;&gt;-->
