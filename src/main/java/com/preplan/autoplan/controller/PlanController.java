@@ -12,4 +12,24 @@ public class PlanController {
     public String plan() {
         return "createPlan";
     }
+
+    @GetMapping("/hotContent")
+    public String getHotContent() {
+        return "fragments/planContent :: hotContent";
+    }
+
+    @GetMapping("/autoContent")
+    public String getAutoContent() {
+        return "fragments/planContent :: autoContent";
+    }
+
+    @GetMapping("/selfContent")
+    public String getSelfContent() {
+        return "fragments/planContent :: selfContent";
+    }
+
+    @GetMapping("/bookmarkContent")
+    public String getBookmarkContent() {
+        return "fragments/planContent :: bookmarkContent";
+    }
 }

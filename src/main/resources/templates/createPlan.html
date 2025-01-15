@@ -12,11 +12,11 @@
             <span class="blind">이성수</span>
         </a>
     </h1>
+    <!--네비게이션-->
     <nav>
         <ul>
             <li>
-                <button type="button" class="btn_navbar" data-bs-toggle="collapse" data-bs-target="#collapseHot"
-                        aria-expanded="false" aria-controls="collapseHot">
+                <button onclick="loadContent('/hotContent')" class="contentButton">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -28,8 +28,7 @@
                 </button>
             </li>
             <li>
-                <button type="button" class="btn_navbar" data-bs-toggle="collapse" data-bs-target="#collapseAuto"
-                        aria-expanded="false" aria-controls="collapseAuto">
+                <button onclick="loadContent('/autoContent')" class="contentButton">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -41,8 +40,7 @@
                 </button>
             </li>
             <li>
-                <button type="button" class="btn_navbar" data-bs-toggle="collapse" data-bs-target="#collapseSelf"
-                        aria-expanded="false" aria-controls="collapseSelf">
+                <button onclick="loadContent('/selfContent')" class="contentButton">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -54,8 +52,7 @@
                 </button>
             </li>
             <li>
-                <button type="button" class="btn_navbar" data-bs-toggle="collapse" data-bs-target="#collapseBookMark"
-                        aria-expanded="false" aria-controls="collapseBookMark">
+                <button onclick="loadContent('/bookmarkContent')" class="contentButton">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -68,36 +65,45 @@
             </li>
         </ul>
     </nav>
+
 </header>
-<!--메뉴바는 Fragment로 따로 모아서 해야 할 듯?  -->
-<div class="collapse" id="collapseHot">
-    <div id="collapseHotBody" class="card card-body">
+<!--메뉴바-->
+<div id="content">
+    <div id="collapseBody" class="card card-body">
         추천 게시물 띄워주기
     </div>
+    <button id="collapseButton" onclick="toggleContent()">
+        버튼
+    </button>
 </div>
-<div class="collapse" id="collapseAuto">
-    <div id="collapseAutoBody" class="card card-body">
-        자동 생성에 필요한 프롬프트
-    </div>
-</div>
-<div class="collapse" id="collapseSelf">
-    <div id="collapseSelfBody" class="card card-body">
-        수동으로 계획 생성 프롬프트
-    </div>
-</div>
-<div class="collapse" id="collapseBookMark">
-    <div id="collapseBookMarkBody" class="card card-body">
-        찜한 계획 리스트
-    </div>
-</div>
-
-<section class="row">
-    <!--    <div id="prompt" class="col-3">프롬프트</div>-->
-    <!--    <div id="mapmap" class="col">지도 들어가야 됨</div>-->
-</section>
 
 <div th:replace="fragments/footer :: footer"/>
 <!--</div> &lt;!&ndash; /container &ndash;&gt;-->
 
+<!--스크립트-->
+<!--스크립트-->
+<!--스크립트-->
+<!--스크립트-->
+<script>
+    function loadContent(url) {
+        const contentDiv = document.getElementById('collapseBody');
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.text();
+            })
+            .then(data => {
+                contentDiv.innerHTML = data;
+                const newCollapseHotBody = document.querySelector("#collapseHotBody");
+            })
+            .catch(error =>
+            console.error('Error fetching content:', error));
+    }
+
+    function toggleContent() {
+        const content = document.getElementById("content");
+        content.classList.toggle("show");
+    }
+</script>
 </body>
 </html>

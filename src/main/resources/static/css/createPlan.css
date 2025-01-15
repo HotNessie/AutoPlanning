@@ -64,7 +64,7 @@
         text-align: -webkit-match-parent;
     }
 
-    .btn_navbar{
+    .contentButton{
         display: block;
         position: relative;
         z-index: 10;
@@ -106,7 +106,8 @@
         line-height: 15px;
         letter-spacing: -0.44;
     }
-    #collapseHot{
+    /*content*/
+    #content{
         z-index: 8;
         position: absolute;
         left: 63px;
@@ -116,24 +117,31 @@
         background-color: #fff;
         border-left: 1px solid rgba(0,0,0, 0.15);
         border-right: 1px solid rgba(0,0,0, 0.15);
-        transform-origin: left;
-        transform: scaleX(0);
-        transition: transform 0.3s ease-in-out;
+        /*overflow: hidden;*/
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
     }
-    #collapseHot.show{
+    #content.show{
         transform: scaleX(1);
     }
 
-    #collapseHotBody{
+    #collapseBody, #collapseHotBody, #collapseAutoBody, #collapseSelfBody, #collapseBookmarkBody{
         border: none;
-        opacity: 0;
-        transform: translateX(-100%);
-        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     }
-     #collapseHot.show #collapseHotBody{
-            opacity: 1;
-            transform: translateX(0);
-     }
+    #collapseButton{
+        z-index: 8;
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        transform: translateY(-50%);
+        background-color: #fff;
+        width: 23px;
+        height: 46px;
+        border-radius: 0px 9px 9px 0px;
+        text-align: center;
+        appearance: none;
+        border: none;
+    }
     body{
         background-color: #000;
     }
