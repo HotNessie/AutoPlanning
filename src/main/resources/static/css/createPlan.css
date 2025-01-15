@@ -13,7 +13,8 @@
         height: 100%;
         flex-direction: column;
         z-index: 10;
-        background-color: #fff
+        background-color: #fff;
+        border-right: 1px solid rgba(0,0,0,0.15);
     }
 
     .blind{
@@ -140,8 +141,8 @@
         border-radius: 0px 9px 9px 0px;
         text-align: center;
         appearance: none;
-        border: none;
+        border: 1px solid rgba(0,0,0, 0.15);;
     }
     body{
-        background-color: #000;
+        background-color: #fff;
     }
