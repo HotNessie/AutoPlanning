@@ -73,7 +73,12 @@
         추천 게시물 띄워주기
     </div>
     <button id="collapseButton" onclick="toggleContent()">
-        버튼
+        <svg id="rightArrow" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <path d="M7.412,24,6,22.588l9.881-9.881a1,1,0,0,0,0-1.414L6.017,1.431,7.431.017l9.862,9.862a3,3,0,0,1,0,4.242Z"/>
+        </svg>
+        <svg id="leftArrow" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1" display="none">
+            <path d="M16.752,23.994,6.879,14.121a3,3,0,0,1,0-4.242L16.746.012,18.16,1.426,8.293,11.293a1,1,0,0,0,0,1.414l9.873,9.873Z"/>
+        </svg>
     </button>
 </div>
 
@@ -103,6 +108,20 @@
     function toggleContent() {
         const content = document.getElementById("content");
         content.classList.toggle("show");
+
+        const rightArrow = document.getElementById("rightArrow");
+        const leftArrow = document.getElementById("leftArrow");
+
+        content.addEventListener("transitionend", function onTransitionEnd() {
+            if (!content.classList.contains("show")) {
+                rightArrow.style.display = "inline";
+                leftArrow.style.display = "none";
+            }else{
+                rightArrow.style.display = "none";
+                leftArrow.style.display = "inline";
+            }
+            content.removeEventListener("transitionend", onTransitionEnd);
+        });
     }
 </script>
 </body>
