@@ -30,6 +30,7 @@
         height: 76px;
         border-bottom: 1px solid rgba(0,0,0, 0.15);
         box-sizing: border-box;
+        overflow: hidden;
     }
 
     .logo .link_logo{
@@ -89,14 +90,35 @@
         font-size: 1px;
         line-height: 1px;
     }
+    .icon_home{
+        width: 41px;
+        height: 41px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        vertical-align: top;
+        font-size: 1px;
+        line-height: 1px;
+    }
     .icon_inner{
         display: inline-block;
         width: 100%;
         height: 100%;
         vertical-align: top;
     }
+    .icon_inner_home{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
     svg{
         width: 16px;
+        height: 21px;
+    }
+    .svg_home{
+        width: 21px;
         height: 21px;
     }
     .navbar_text{
@@ -119,11 +141,11 @@
         border-left: 1px solid rgba(0,0,0, 0.15);
         border-right: 1px solid rgba(0,0,0, 0.15);
         /*overflow: hidden;*/
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    }
-    #content.show{
         transform: scaleX(1);
+        transition: transform 0.3s ease-in-out
+    }
+    #content.hide{
+        transform: translateX(-100%);
     }
 
     #collapseBody, #collapseHotBody, #collapseAutoBody, #collapseSelfBody, #collapseBookmarkBody{
@@ -143,6 +165,11 @@
         appearance: none;
         border: 1px solid rgba(0,0,0, 0.15);;
     }
+    #rightArrow, #leftArrow{
+        height: 42px;
+        width: 11px;
+        color: rgb(51, 51, 51);
+    }
     body{
-        background-color: #fff;
+        background-color: #000;
     }
