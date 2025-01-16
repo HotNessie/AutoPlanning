@@ -53,24 +53,30 @@
         height: 100%;
         list-style: none;
         display: block;
-        margin-block-start: 1em;
+        /*margin-block-start: 1em;*/
         margin-block-end: 1em;
         margin-inline-start: 0px;
         margin-inline-end: 0px;
         padding-inline-start: 40px;
         padding: 0;
     }
-    nav ul li{
+    /*메뉴 리스트*/
+    .content_list{
         list-style: none;
-        display: list-item;
+        /*display: list-item;*/
+        display: flex;
         text-align: -webkit-match-parent;
+        align-items: center;
     }
-
+    .content_list:hover{
+        background-color: #f5f5f5;
+    }
+    /*메뉴 버튼*/
     .contentButton{
         display: block;
         position: relative;
         z-index: 10;
-        padding: 13px 1px 11px 0px;
+        padding: 13px 0px 11px 0px;
         text-align: center;
         width: 62px;
         font-size: inherit;
@@ -129,7 +135,7 @@
         line-height: 15px;
         letter-spacing: -0.44;
     }
-    /*content*/
+    /*메뉴바*/
     #content{
         z-index: 8;
         position: absolute;
@@ -144,6 +150,7 @@
         transform: scaleX(1);
         transition: transform 0.3s ease-in-out
     }
+    /*메뉴바 숨기기*/
     #content.hide{
         transform: translateX(-100%);
     }
@@ -151,6 +158,7 @@
     #collapseBody, #collapseHotBody, #collapseAutoBody, #collapseSelfBody, #collapseBookmarkBody{
         border: none;
     }
+    /*메뉴바 접고 펼치기 버튼*/
     #collapseButton{
         z-index: 8;
         position: absolute;
@@ -170,9 +178,70 @@
         width: 11px;
         color: rgb(51, 51, 51);
     }
+
+    }
+
+    /*메뉴 선택했을 때*/
+    .menu_color{
+        fill: #fff;
+        color: #fff;
+    }
+    .selected {
+        position: relative;
+        width: 100%;
+        height: 300px; /* 원하는 높이 설정 */
+        background-image: linear-gradient(
+        135deg,
+        #eb54a2 0%,
+        #c154ec 50%,
+        #eb54a2 100%
+      );
+      background-size: 200% 200%; /* 배경 크기를 키워 애니메이션 효과 부여 */
+      animation: shine 2s infinite alternate linear; /* 애니메이션 적용 */
+      overflow: hidden;
+    }
+
+    /* 애니메이션 정의 */
+    @keyframes shine {
+      0% {
+        background-position: 0% 0%; /* 좌상단에서 시작 */
+      }
+      100% {
+        background-position: 100% 100%; /* 우하단으로 이동 */
+      }
+    }
+    .selected::hover{
+        content: '';
+        position: absolute;
+        top: -50%; /* 중심 위치 */
+        left: -50%;
+        width: 130%; /* 광원의 크기 */
+        height: 200%;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.8) 50%,
+            rgba(255, 255, 255, 0) 100%
+          );
+        transform: rotate(45deg); /* 대각선 방향 */
+        animation: beam 2.5s infinite linear; /* 빛 이동 애니메이션 */
+        opacity: 0.8; /* 빛의 기본 강도 */
+        filter: blur(6px); /* 부드러운 효과 */
+    }
+    /* 광원 이동 애니메이션 */
+    @keyframes beam {
+        0% {
+          transform: translate(50%, 50%) rotate(45deg); /* 대각선 시작 */
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(45deg); /* 대각선 끝 */
+        }
+    }
+
+
+
+
+
     body{
         background-color: #000;
-    }
-    .selected{
-        background-color: #ff0;
     }
