@@ -98,6 +98,10 @@
 <script>
     function loadContent(url) {
         const contentDiv = document.getElementById('collapseBody');
+        const content = document.getElementById("content");
+        const rightArrow = document.getElementById("rightArrow");
+        const leftArrow = document.getElementById("leftArrow");
+
         fetch(url)
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -106,11 +110,16 @@
             .then(data => {
                 contentDiv.innerHTML = data;
                 const newCollapseHotBody = document.querySelector("#collapseHotBody");
+                if(content.classList.contains("hide")){
+                    content.classList.remove("hide");
+                    rightArrow.style.display = "none";
+                    leftArrow.style.display = "inline";
+                }
             })
             .catch(error =>
             console.error('Error fetching content:', error));
     }
-
+//화살표 방향 바꾸기
     function toggleContent() {
         const content = document.getElementById("content");
         content.classList.toggle("hide");
