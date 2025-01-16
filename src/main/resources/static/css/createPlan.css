@@ -173,3 +173,6 @@
     body{
         background-color: #000;
     }
+    .selected{
+        background-color: #ff0;
+    }
