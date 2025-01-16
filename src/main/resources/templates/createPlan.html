@@ -19,11 +19,12 @@
             <span class="blind">이성수</span>
         </a>
     </h1>
-    <!--네비게이션-->
+    <!--메뉴 목록 선택 버튼-->
     <nav>
         <ul>
             <li>
-                <button onclick="loadContent('/hotContent')" class="contentButton">
+                <button id="hotButton" onclick="loadContent('/hotContent'); selectMenu('hotButton');"
+                        class="contentButton selected">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +37,8 @@
                 </button>
             </li>
             <li>
-                <button onclick="loadContent('/autoContent')" class="contentButton">
+                <button id="autoButton" onclick="loadContent('/autoContent'); selectMenu('autoButton');"
+                        class="contentButton">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -48,7 +50,8 @@
                 </button>
             </li>
             <li>
-                <button onclick="loadContent('/selfContent')" class="contentButton">
+                <button id="selfButton" onclick="loadContent('/selfContent'); selectMenu('selfButton');"
+                        class="contentButton">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -60,7 +63,8 @@
                 </button>
             </li>
             <li>
-                <button onclick="loadContent('/bookmarkContent')" class="contentButton">
+                <button id="bookmarkButton" onclick="loadContent('/bookmarkContent'); selectMenu('bookmarkButton');"
+                        class="contentButton">
                     <div class="icon">
                             <span class="icon_inner" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -75,7 +79,7 @@
     </nav>
 
 </header>
-<!--메뉴바-->
+<!--메뉴 상세-->
 <div id="content">
     <div id="collapseBody">
         <div th:replace="fragments/planContent::hotContent">default message</div>
@@ -96,48 +100,60 @@
 <!--스크립트-->
 <!--스크립트-->
 <script>
-    function loadContent(url) {
-        const contentDiv = document.getElementById('collapseBody');
-        const content = document.getElementById("content");
-        const rightArrow = document.getElementById("rightArrow");
-        const leftArrow = document.getElementById("leftArrow");
 
-        fetch(url)
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.text();
-            })
-            .then(data => {
-                contentDiv.innerHTML = data;
-                const newCollapseHotBody = document.querySelector("#collapseHotBody");
-                if(content.classList.contains("hide")){
-                    content.classList.remove("hide");
-                    rightArrow.style.display = "none";
-                    leftArrow.style.display = "inline";
-                }
-            })
-            .catch(error =>
-            console.error('Error fetching content:', error));
-    }
-//화살표 방향 바꾸기
-    function toggleContent() {
-        const content = document.getElementById("content");
-        content.classList.toggle("hide");
+    //메뉴바 내용 교체 및 닫혀있을 때 열기
+function loadContent(url) {
+    const contentDiv = document.getElementById('collapseBody');
+    const content = document.getElementById("content");
+    const rightArrow = document.getElementById("rightArrow");
+    const leftArrow = document.getElementById("leftArrow");
 
-        const rightArrow = document.getElementById("rightArrow");
-        const leftArrow = document.getElementById("leftArrow");
-
-        content.addEventListener("transitionend", function onTransitionEnd() {
-            if (content.classList.contains("hide")) {
-                rightArrow.style.display = "inline";
-                leftArrow.style.display = "none";
-            }else{
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text();
+        })
+        .then(data => {
+            contentDiv.innerHTML = data;
+            const newCollapseHotBody = document.querySelector("#collapseHotBody");
+            if(content.classList.contains("hide")){
+                content.classList.remove("hide");
                 rightArrow.style.display = "none";
                 leftArrow.style.display = "inline";
             }
-            content.removeEventListener("transitionend", onTransitionEnd);
-        });
-    }
+        })
+        .catch(error =>
+        console.error('Error fetching content:', error));
+}
+
+
+//화살표 방향 바꾸기
+function toggleContent() {
+    const content = document.getElementById("content");
+    content.classList.toggle("hide");
+
+    const rightArrow = document.getElementById("rightArrow");
+    const leftArrow = document.getElementById("leftArrow");
+
+    content.addEventListener("transitionend", function onTransitionEnd() {
+        if (content.classList.contains("hide")) {
+            rightArrow.style.display = "inline";
+            leftArrow.style.display = "none";
+        }else{
+            rightArrow.style.display = "none";
+            leftArrow.style.display = "inline";
+        }
+        content.removeEventListener("transitionend", onTransitionEnd);
+    });
+}
+
+function selectMenu(selectButton){
+    const buttons = document.querySelectorAll(".contentButton");
+    buttons.forEach(button => button.classList.remove("selected"));
+
+    const selectedButton = document.querySelector(`#${selectButton}`);
+    selectedButton.classList.add("selected");
+}
 </script>
 <!--스크립트-->
 <!--스크립트-->
