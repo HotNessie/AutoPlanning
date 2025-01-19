@@ -14,6 +14,7 @@
         flex-direction: column;
         z-index: 10;
         background-color: #fff;
+        box-shadow: 2px 0 2px 0 rgba(193, 84, 236, 0.2);
         /*border-right: 1px solid rgba(193, 84, 236, 0.7);*/
     }
 
@@ -153,8 +154,8 @@
         min-height: 100vh;
         padding: 24px 0 0 0;
         background-color: #fff;
-        border-left: 1px solid rgba(193, 84, 236, 0.7);
-        border-right: 1px solid rgba(193, 84, 236, 0.7);
+        /*border-left: 1px solid rgba(193, 84, 236, 0.7);*/
+        border-right: 1px solid rgba(193, 84, 236, 0.2);
         /*overflow: hidden;*/
         transform: scaleX(1);
         transition: transform 0.3s ease-in-out
@@ -180,7 +181,8 @@
         border-radius: 0px 9px 9px 0px;
         text-align: center;
         appearance: none;
-        border: 1px solid rgba(193, 84, 236, 0.2);;
+        border: 1px solid rgba(193, 84, 236, 0.2);
+        fill: rgba(193, 84, 236, 1);
     }
     #rightArrow, #leftArrow{
         height: 42px;
@@ -256,9 +258,5 @@
             );/* 정지된 광원 상태 */
         }
       }
-
-    body{
-        background-color: #000;
-    }
 
 
