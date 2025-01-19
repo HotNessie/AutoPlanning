@@ -33,7 +33,9 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
-
+ncp:
+  client:
+    id: w3fnnxxys3
 
 
 
