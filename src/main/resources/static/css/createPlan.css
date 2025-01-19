@@ -14,7 +14,7 @@
         flex-direction: column;
         z-index: 10;
         background-color: #fff;
-        border-right: 1px solid rgba(0,0,0,0.15);
+        border-right: 1px solid rgba(193, 84, 236, 0.5);
     }
 
     .blind{
@@ -28,7 +28,7 @@
         -webkit-box-pack: center;
         -webkit-box-align: center;
         height: 76px;
-        border-bottom: 1px solid rgba(0,0,0, 0.15);
+        border-bottom: 1px solid rgba(193, 84, 236, 0.5);
         box-sizing: border-box;
         overflow: hidden;
     }
@@ -67,10 +67,17 @@
         display: flex;
         text-align: -webkit-match-parent;
         align-items: center;
+        justify-content: center;
+        height: auto;
     }
-    /*.content_list:hover{
+    .content_list:not(.selected):hover{
         background-color: #f5f5f5;
-    }*/
+    }
+    .content_list:not(.selected):hover .hover_li{
+        color: #c154ec;
+        fill: #c154ec;
+    }
+
     /*메뉴 버튼*/
     .contentButton{
         display: block;
@@ -79,6 +86,7 @@
         padding: 13px 0px 11px 0px;
         text-align: center;
         width: 62px;
+        height: 100%;
         font-size: inherit;
         line-height: inherit;
         appearance: none;
@@ -105,6 +113,7 @@
         vertical-align: top;
         font-size: 1px;
         line-height: 1px;
+        fill: #c154ec;
     }
     .icon_inner{
         display: inline-block;
@@ -144,8 +153,8 @@
         min-height: 100vh;
         padding: 24px 0 0 0;
         background-color: #fff;
-        border-left: 1px solid rgba(0,0,0, 0.15);
-        border-right: 1px solid rgba(0,0,0, 0.15);
+        border-left: 1px solid rgba(193, 84, 236, 0.5);
+        border-right: 1px solid rgba(193, 84, 236, 0.5);
         /*overflow: hidden;*/
         transform: scaleX(1);
         transition: transform 0.3s ease-in-out
@@ -171,7 +180,7 @@
         border-radius: 0px 9px 9px 0px;
         text-align: center;
         appearance: none;
-        border: 1px solid rgba(0,0,0, 0.15);;
+        border: 1px solid rgba(193, 84, 236, 0.5);;
     }
     #rightArrow, #leftArrow{
         height: 42px;
@@ -179,29 +188,26 @@
         color: rgb(51, 51, 51);
     }
 
-
-
     /*메뉴 선택했을 때*/
     .menu_color{
         fill: #fff;
         color: #fff;
     }
-    .selected {
+    .content_list.selected {
         position: relative;
         width: 100%;
         height: 300px; /* 원하는 높이 설정 */
         background-image: linear-gradient(
             135deg,
-            #eb54a2 0%,
+            #f0659b 0%,
             #c154ec 50%,
-            #eb54a2 100%
+            #f0659b 100%
         );
         background-size: 200% 200%; /* 배경 크기를 키워 애니메이션 효과 부여 */
         animation: shine 2s infinite alternate linear; /* 애니메이션 적용 */
         overflow: hidden;
     }
 
-    /* 애니메이션 정의 */
     @keyframes shine {
         0% {
             background-position: 0% 0%; /* 좌상단에서 시작 */
@@ -213,35 +219,31 @@
     .selected::before {
         content: '';
         position: absolute;
-        /*top: 50%; /* 중심 위치 */
-        /*left: -25%;*/
-        width: 120%; /* 광원의 크기 */
+        width: 120%;
         height: 130%;
         background: linear-gradient(
             115deg,
-            /*rgba(255, 255, 255, 0) 0%,*/
-            #eb54a2 0%,
-            /*rgba(255, 255, 255, 0.8) 50%,*/
+            #f0659b 0%,
             #c154ec 50%,
-            /*rgba(255, 255, 255, 0) 100%*/
-            #eb54a2 100%
+            #f0659b 100%
         );
-        opacity: 0; /* 빛의 기본 강도 */
-        filter: blur(6px) brightness(1.9); /* 부드러운 효과 */
+        opacity: 0;
+        filter: blur(9px) brightness(1.9);
         animation: stopGradient 0s forwards; /* 마우스를 얹었을 때 애니메이션 정지 */
     }
     /*마우스 얹었을 때, 활성화*/
     .selected:hover::before {
-        opacity:0.7;
-        animation: beam 1s infinite linear;
+        animation: beam 0.4s linear;
     }
     /* 광원 이동 애니메이션 */
     @keyframes beam {
         0% {
           transform: translate(45%, 70%) rotate(25deg); /* 대각선 시작 */
+          opacity: 0.7;
         }
         100% {
-          transform: translate(-90%, -70%) rotate(25deg); /* 대각선 끝 */
+          transform: translate(-90%, -80%) rotate(25deg); /* 대각선 끝 */
+          opacity: 0.7;
         }
     }
     @keyframes stopGradient {
