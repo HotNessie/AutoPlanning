@@ -16,11 +16,15 @@ public class PlanApiController {
     //    private final NaverSearchService naverSearchService;
     private final NaverSearchClient naverSearchClient;
 
-    @GetMapping("/search/blog")
+    @GetMapping("/search/local")
     public ResponseEntity<Map> search(
-            @RequestParam("query") String query) {
+            @RequestParam("query") String query,
+            @RequestParam(value = "display", defaultValue = "10") Integer display,
+            @RequestParam(value = "start", defaultValue = "1") Integer start,
+            @RequestParam(value = "sort", defaultValue = "random") String sort
+    ) {
         try {
-            Map result = naverSearchClient.getBlogList(query);
+            Map result = naverSearchClient.getBlogList(query, display, start, sort);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             System.out.println(e);

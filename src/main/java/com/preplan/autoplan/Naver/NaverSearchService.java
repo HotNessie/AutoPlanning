@@ -12,7 +12,7 @@ public class NaverSearchService {
     private final NaverSearchClient naverSearchClient;
 //    private final NaverApiConfig naverApiConfig;
 
-    public Map searchBlog(String query) {
-        return naverSearchClient.getBlogList(query);
-    }
+//    public Map searchBlog(String query) {
+//        return naverSearchClient.getBlogList(query);
+//    }
 }
