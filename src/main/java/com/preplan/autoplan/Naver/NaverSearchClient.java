@@ -12,13 +12,12 @@ import java.util.Map;
 //@HttpExchange(url = "https://openapi.naver.com/v1/search")
 public interface NaverSearchClient {
 
-    @GetExchange("/blog")
+    @GetExchange("/local")
     Map getBlogList(
-            @RequestParam("query") String query);
 //    get요청임
-//    @RequestParam("query") String query,
-//    @RequestParam(value = "display", defaultValue = "10") Integer display,
-//    @RequestParam(value = "start", defaultValue = "1") Integer start,
-//    @RequestParam(value = "sort", defaultValue = "random") String sort
-//    );
+            @RequestParam("query") String query,
+            @RequestParam(value = "display", defaultValue = "10") Integer display,
+            @RequestParam(value = "start", defaultValue = "1") Integer start,
+            @RequestParam(value = "sort", defaultValue = "random") String sort
+    );
 }
