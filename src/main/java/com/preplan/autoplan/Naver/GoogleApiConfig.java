@@ -8,24 +8,24 @@ import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
-public class NaverApiConfig {
+public class GoogleApiConfig {
 
-    @Value("${naver.api.client-id}")
+    @Value("${google.api.client-id}")
     private String clientId;
-    @Value("${naver.api.client-secret}")
+    @Value("${google.api.client-secret}")
     private String clientSecret;
 
     @Bean
-    public NaverSearchClient naverSearchClient() {
+    public GoogleSearchClient googleSearchClient() {
         RestClient restClient = RestClient.builder()
-                .baseUrl("https://openapi.naver.com/v1/search")
-                .defaultHeader("X-Naver-Client-Id", clientId)
-                .defaultHeader("X-Naver-Client-Secret", clientSecret)
-                .build();
+//            .baseUrl("https://openapi.google.com/v1/search")
+//            .defaultHeader("X-Google-Client-Id", clientId)
+//            .defaultHeader("X-Google-Client-Secret", clientSecret)
+            .build();
         RestClientAdapter adapter = RestClientAdapter.create(restClient);
 
         HttpServiceProxyFactory factory =
-                HttpServiceProxyFactory.builderFor(adapter).build();
-        return factory.createClient(NaverSearchClient.class);
+            HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(GoogleSearchClient.class);
     }
 }

@@ -10,14 +10,13 @@ import java.util.Map;
 @Component
 @HttpExchange
 //@HttpExchange(url = "https://openapi.naver.com/v1/search")
-public interface NaverSearchClient {
+public interface GoogleSearchClient {
 
     @GetExchange("/local")
-    Map getBlogList(
-//    get요청임
-            @RequestParam("query") String query,
-            @RequestParam(value = "display", defaultValue = "10") Integer display,
-            @RequestParam(value = "start", defaultValue = "1") Integer start,
-            @RequestParam(value = "sort", defaultValue = "random") String sort
+    Map getLocalList(
+        @RequestParam("query") String query,
+        @RequestParam(value = "display", defaultValue = "10") Integer display,
+        @RequestParam(value = "start", defaultValue = "1") Integer start,
+        @RequestParam(value = "sort", defaultValue = "random") String sort
     );
 }
