@@ -5,7 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NaverSearchItem {
+public class GoogleSearchItem {
+
     private String title;
     private String link;
     private String category;
