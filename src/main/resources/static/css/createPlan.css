@@ -263,7 +263,26 @@
         position: absolute;
         z-index: 10;
         left: 472px;
-        top: 20px;
+        top: 30px;
      }
-
+     .custom-map-control-button{
+        right: 10px !important;
+        bottom: 190px !important;
+        width: 40px;
+        height: 40px;
+        border: none;
+        box-shadow: 1px 1px 1px 1px rgba(193, 84, 236, 0.3);
+        border-radius: 7px;
+            background-image: linear-gradient(
+                135deg,
+                #f0659b 0%,
+                #c154ec 50%,
+                #f0659b 100%
+            );
+        fill: white;
+     }
+    .custom-map-control-button:hover{
+        background-color: #0052cc;
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.2)
+    }
 
