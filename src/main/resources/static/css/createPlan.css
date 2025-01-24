@@ -266,8 +266,9 @@
         top: 30px;
      }
      .custom-map-control-button{
-        right: 10px !important;
-        bottom: 190px !important;
+        position: fixed !important;
+        right: 1vw !important;
+        bottom: 110px !important;
         width: 40px;
         height: 40px;
         border: none;
@@ -283,6 +284,29 @@
      }
     .custom-map-control-button:hover{
         background-color: #0052cc;
-        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.2)
+        box-shadow: 0 4px 4px 0 rgba(0,0,0,0.2)
+    }
+    .gm-control-active{
+        box-shadow: 1px 1px 1px 1px rgba(193, 84, 236, 0.3);
+        border-radius: 7px;
+            background-image: linear-gradient(
+                135deg,
+                #f0659b 0%,
+                #c154ec 50%,
+                #f0659b 100%
+            );
+    }
+    .gmnoprint{
+     display: none;
+    }
+    .customZoomIn{
+        bottom: 65px !important;
+        border-radius: 7px 7px 0px 0px !important;
+        background-image: linear-gradient(145deg, #f0659b 0%, #c154ec 70%);
+    }
+    .customZoomOut{
+        bottom: 23px !important;
+        border-radius: 0px 0px 7px 7px !important;
+        background-image: linear-gradient(155deg, #c154ec 20%, #f0659b 100%);
     }
 
