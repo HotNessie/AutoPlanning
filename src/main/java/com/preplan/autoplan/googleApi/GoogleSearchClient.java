@@ -1,4 +1,4 @@
-package com.preplan.autoplan.Naver;
+package com.preplan.autoplan.googleApi;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
