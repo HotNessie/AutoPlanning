@@ -1,4 +1,4 @@
-package com.preplan.autoplan.Naver;
+package com.preplan.autoplan.googleApi;
 
 import lombok.Getter;
 import lombok.Setter;

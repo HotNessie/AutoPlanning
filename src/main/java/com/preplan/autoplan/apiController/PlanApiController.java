@@ -1,6 +1,6 @@
 package com.preplan.autoplan.apiController;
 
-import com.preplan.autoplan.Naver.GoogleSearchClient;
+import com.preplan.autoplan.googleApi.GoogleSearchClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
