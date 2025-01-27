@@ -9,7 +9,8 @@ async function initMap(){
         const position = {lat: 37.65564466099954, lng:127.06206796919646};
 
         const {Map} = await google.maps.importLibrary("maps");
-        const {AdvancedMarkerElement} = await google.maps.importLibrary("marker");
+        const {AdvancedMarkerElement, PinElement} = await google.maps.importLibrary("marker");
+        const {ColorScheme} = await google.maps.importLibrary("core");
 
         map = new Map(document.getElementById("map"),
           {
@@ -19,10 +20,8 @@ async function initMap(){
             language: 'ko',
             region: 'kr',
 //            mapTypeId: google.maps.MapTypeId.TERRAIN,
-            mapTypeControl: false,
-            fullscreenControl: false,
-            streetViewControl: false,
-//            zoomControl: false
+            disableDefaultUI: true,
+            colorScheme: ColorScheme.DARK
           }
         );
 
@@ -47,7 +46,8 @@ async function initMap(){
                       infoWindow.setPosition(pos);
                       infoWindow.setContent("Location found.");
                       infoWindow.open(map);
-                      map.setCenter(pos);
+//                      map.setCenter(pos);
+                      map.panTo(pos);
                 },
               () => {
                 handleLocationError(true, infoWindow, map.getCenter());
@@ -65,34 +65,46 @@ async function initMap(){
         });
 //marker
 //marker       개선해야 됨
+//        const scaleElement = new PinElement({
+//          scale: 2,
+//        });
+
         const marker = new AdvancedMarkerElement({
             position: position,
             map: map,
-            title: 'ezen'
+            title: 'ezen',
+//            content: scaleElement.element
+            gmpClickable: true,
+            gmpDraggable: true,
         });
 
-//nearBy
-//nearBy
-//    const service = new google.maps.places.PlacesService(map);
-//    async function nearRestaurant(){
-//        service.nearbySearch({
-//            location: position,
-//            radius: 500,
-//            type: ['restaurant']
-//        }, (results, status) => {
-//            if (status === google.maps.places.PlacesServiceStatus.OK) {
-////                for (let i = 0; i < results.length; i++) {
-//                for (let i = 0; i < 10; i++) {
-//                const marker = new AdvancedMarkerElement({
-//                    position: results[i].geometry.location,
-//                    map: map
-//                });
-//                }
-//            }
-//        });
-//
-//    }
+        marker.addListener('click', ({domEvent, latLng}) => {
+//          const { target } = domEvent;
+          const position = marker.position;
+            const content = `
+              <div style="font-size:14px; line-height:1.5;">
+                <strong style="color:blue;">${marker.title}</strong><br>
+                <span>Pin: ${position.lat}, ${position.lng}</span>
+              </div>
+            `;
+          infoWindow.close();
+          infoWindow.setContent(content)
+          infoWindow.open(marker.map, marker);
+        });
 
+        map.addListener('dragend',(event) => {
+          const position = marker.position;
+            const content = `
+              <div style="font-size:14px; line-height:1.5;">
+                <strong style="color:blue;">${marker.title}</strong><br>
+                <span>Pin: ${position.lat}, ${position.lng}</span>
+              </div>
+            `;
+          infoWindow.close();
+          infoWindow.setContent(content);
+          infoWindow.open(marker.map, marker);
+
+        })
 
 }
 
