@@ -196,7 +196,7 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 
 initMap()
   .then(() => marker())
-// .then(() => findPlaces())
+ .then(() => findPlaces())
 
 
 
