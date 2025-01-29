@@ -3,11 +3,14 @@
 
 <head th:replace="fragments/header :: header"/>
 <link rel="stylesheet" href="/css/createPlan.css">
-
+<!--autocomplete-->
 <body>
-<input id="autocomplete" placeholder="Enter a place" type="text" style="width: 500px">
+<div id="autocomplete" style="width: 500px">
+  <span>search:</span>
+</div>
+<!--autocomplete-->
 
-<!--<div class="container">-->
+
 <header>
   <h1 class="logo">
     <a link_logo href="/home">
@@ -114,22 +117,6 @@
 </div>
 
 <div id="map" style="width:125vw; height: 100vh;"></div>
-
-<!--<gmp-map id="map"-->
-<!--         center="37.65564466099954, 127.06206796919646"-->
-<!--         zoom= "17"-->
-<!--         map-id="DEMO_MAP_ID"-->
-<!--         style="width:100vw; height: 100vh;">-->
-<!--    <gmp-advanced-marker-->
-<!--      position="37.65564466099954, 127.06206796919646"-->
-<!--      title="이젠, KOR"-->
-<!--      ></gmp-advanced-marker>-->
-<!--  <gmp-advanced-marker-->
-<!--      position="37.663166, 127.054484"-->
-<!--      title="22, KOR"-->
-<!--      ></gmp-advanced-marker>-->
-<!--</gmp-map>-->
-<!--<div class="customBottomRight"></div>-->
 <button class="customCurrentPosition custom-map-control-button">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
     <path
@@ -149,24 +136,17 @@
 </button>
 
 <div th:replace="fragments/footer :: footer"/>
-<!--</div> &lt;!&ndash; /container &ndash;&gt;-->
-
-<!--<script-->
-<!--    src="https://maps.googleapis.com/maps/api/js?key=&libraries=maps,marker&v=beta"-->
-<!--    defer-->
-<!--&gt;</script>-->
-
 
 <!--구글 지도 라이브러리-->
 <script>
   (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
     key: "",
-    v: "weekly"
+    v: "beta"
     // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
     // Add other bootstrap parameters as needed, using camel case.
   });
 </script>
-<script type="module" src="js/map/mapLoad.js"></script>
+<script type="module" src="js/map/initMap.js"></script>
 <!--html css요소 script-->
 <script>
   //메뉴바 내용 교체 및 닫혀있을 때 열기
