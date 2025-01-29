@@ -5,8 +5,9 @@
 export async function nearbySearch(map,) {
     //@ts-ignore
     const { Place, SearchNearbyRankPreference } = await google.maps.importLibrary("places",);
-
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+
     // Restrict within the map viewport.
     let center = new google.maps.LatLng(52.369358, 4.889258);
     const request = {
