@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 public class GoogleSearchService {
 
     private final GoogleSearchClient googleSearchClient;
-//    private final GoogleApiConfig naverApiConfig;
 
-//    public Map searchBlog(String query) {
-//        return naverSearchClient.getBlogList(query);
-//    }
+    public PlaceDetails getPlaceDetails(String placeId) {
+        return googleSearchClient.getPlaceDetails(placeId."key");
+    }
+
 }
