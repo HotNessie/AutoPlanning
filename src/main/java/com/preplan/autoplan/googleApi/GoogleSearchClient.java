@@ -12,11 +12,17 @@ import java.util.Map;
 //@HttpExchange(url = "https://openapi.naver.com/v1/search")
 public interface GoogleSearchClient {
 
-    @GetExchange("/local")
-    Map getLocalList(
-        @RequestParam("query") String query,
-        @RequestParam(value = "display", defaultValue = "10") Integer display,
-        @RequestParam(value = "start", defaultValue = "1") Integer start,
-        @RequestParam(value = "sort", defaultValue = "random") String sort
+    @GetExchange("place/details/json")
+    PlaceDetails getPlaceDetails(
+        @RequestParam("placeId") String placeId,
+        @RequestParam("key") String key
+    );
+
+    @GetExchange("/place/nearbysearch/json")
+    NearbySearchResponse getNearbyPlaces(
+        @RequestParam("location") String location,
+        @RequestParam("radius") int radius,
+        @RequestParam("type") String type,
+        @RequestParam("key") String key
     );
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 public class PlanApiController {
 
     //    private final GoogleSearchService naverSearchService;
-    private final GoogleSearchClient naverSearchClient;
+    private final GoogleSearchClient googleSearchClient;
 
     @GetMapping("/search/local")
     public ResponseEntity<Map> search(
@@ -23,13 +23,16 @@ public class PlanApiController {
         @RequestParam(value = "start", defaultValue = "1") Integer start,
         @RequestParam(value = "sort", defaultValue = "random") String sort
     ) {
-        try {
-            Map result = naverSearchClient.getLocalList(query, display, start, sort);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            System.out.println(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "검색 중 오류가 발생했습니다."));
-        }
+        return "";
     }
+//    {
+//        try {
+//            Map result = naverSearchClient.getLocalList(query, display, start, sort);
+//            return ResponseEntity.ok(result);
+//        } catch (Exception e) {
+//            System.out.println(e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(Map.of("error", "검색 중 오류가 발생했습니다."));
+//        }
+//    }
 }
