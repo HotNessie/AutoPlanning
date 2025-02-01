@@ -1,7 +1,4 @@
 //marker
-//marker
-//marker
-//marker
 export async function marker(map, position, infoWindow) {
   const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 

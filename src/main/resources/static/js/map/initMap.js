@@ -1,7 +1,6 @@
 //지도 기본 위치
 //지도 기본 위치
 let map, infoWindow;
-let markers = [];
 let currentMarker = null;
 
 import { marker } from './marker.js';
@@ -14,7 +13,7 @@ async function initMap() {
 
   const { Map } = await google.maps.importLibrary("maps");
   const { ColorScheme } = await google.maps.importLibrary("core");
-  const { PlaceAutocompleteElement, PlacesService, Autocomplete } = await google.maps.importLibrary("places");
+  const { PlaceAutocompleteElement, Place, SearchNearbyRankPreference } = await google.maps.importLibrary("places");
 
   infoWindow = new google.maps.InfoWindow();
 
@@ -49,20 +48,14 @@ async function initMap() {
     marker(map, map.getCenter(), infoWindow);
     return map;
   }
-  //-----------------------------------------
-  //-----------------------------------------
-  //-----------AutoCompleteElement-----------
+  //---------------------AutoCompleteElement---------------------
+  //---------------------AutoCompleteElement---------------------
+  //---------------------AutoCompleteElement---------------------
   const placeAutocomplete = new PlaceAutocompleteElement();
   placeAutocomplete.id = "place-autocomplete-input";
 
-  const placesService = new PlacesService(map);
-
   const card = document.getElementById("autocomplete");
   card.appendChild(placeAutocomplete);
-
-  const searchButton = document.createElement("button");
-  searchButton.textContent = "검색";
-  card.appendChild(searchButton);
 
   placeAutocomplete.addEventListener("gmp-placeselect", async ({ place }) => {
     await place.fetchFields({
@@ -94,15 +87,15 @@ async function initMap() {
     if (newMarker) {
       currentMarker = newMarker; // 현재 마커 업데이트
     }
+  });
 
-    searchButton.addEventListener("click", () => {
-      const keyword = card.value.trim();
-      if (keyword) {
-        searchNearbyPlaces(placesService, place.location, keyword);
-      }
-    });
 
-  })
+  const searchButton = document.getElementById("searchFood");
+
+  // 검색 버튼 클릭 이벤트
+  searchButton.addEventListener("click", () => {
+    nearbySearch(map, infoWindow);
+  });
 
   //---------------------------------------------------
   //---------------------------------------------------
@@ -135,48 +128,4 @@ function updateInfoWindow(content, center) {
   });
 }
 
-function searchNearbyPlaces(placesService, location, keyword) {
-  // 기존 마커 제거
-  markers.forEach(marker => marker.setMap(null));
-  markers = [];
-
-  // 장소 검색 요청
-  const request = {
-    location: location,
-    radius: 1000, // 1km 반경
-    query: keyword, // 검색 키워드 (예: 맛집)
-  };
-
-  placesService.textSearch(request, (results, status) => {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      results.forEach(place => {
-        const marker = new google.maps.Marker({ //내 마커로 변경
-          position: place.geometry.location,
-          map: map,
-          title: place.name,
-        });
-
-        // 마커 클릭 시 정보창 표시
-        marker.addListener("click", () => {
-          infoWindow.setContent(`
-                      <div>
-                          <strong>${place.name}</strong><br>
-                          ${place.formatted_address}
-                      </div>
-                  `);
-          infoWindow.open(map, marker);
-        });
-
-        markers.push(marker);
-      });
-
-      // 검색 결과가 있다면 지도를 첫 번째 결과 위치로 이동
-      if (results.length > 0) {
-        map.setCenter(results[0].geometry.location);
-      }
-    } else {
-      console.error("검색 실패:", status);
-    }
-  });
-}
 initMap();
