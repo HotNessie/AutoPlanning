@@ -9,8 +9,8 @@ public class GoogleSearchService {
 
     private final GoogleSearchClient googleSearchClient;
 
-    public PlaceDetails getPlaceDetails(String placeId) {
-        return googleSearchClient.getPlaceDetails(placeId."key");
-    }
+//    public PlaceDetails getPlaceDetails(String placeId) {
+//        return googleSearchClient.getPlaceDetails(placeId."key");
+//    }
 
 }

@@ -4,10 +4,10 @@
 <head th:replace="fragments/header :: header"/>
 <link rel="stylesheet" href="/css/createPlan.css">
 <!--autocomplete-->
+
 <body>
-<div id="autocomplete" style="width: 500px">
-  <span>search:</span>
-</div>
+
+
 <!--autocomplete-->
 
 
@@ -100,6 +100,14 @@
 </header>
 <!--메뉴 상세-->
 <div id="content">
+  <div id="autocomplete">
+    <input id="searchInput" type="text" style="color:rgba(255,255,255,0.8)">
+    <button id="searchButton" style="color:rgba(255,255,255,0.8)">검색</button>
+    <div id="title" style="color:rgba(255,255,255,0.8)"></div>
+    <ul id="results" style="color:rgba(255,255,255,0.8)"></ul>
+    <p><span id="prediction" style="color:rgba(255,255,255,0.8)"></span></p>
+    <!-- <button id="searchFood">음식점</button> -->
+  </div>
   <div id="collapseBody">
     <div th:replace="fragments/planContent::hotContent">default message</div>
   </div>
@@ -115,6 +123,7 @@
     </svg>
   </button>
 </div>
+
 
 <div id="map" style="width:125vw; height: 100vh;"></div>
 <button class="customCurrentPosition custom-map-control-button">
@@ -141,7 +150,7 @@
 <script>
   (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
     key: "",
-    v: "beta"
+    v: "weekly"
     // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
     // Add other bootstrap parameters as needed, using camel case.
   });

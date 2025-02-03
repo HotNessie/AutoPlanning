@@ -13,7 +13,9 @@ async function initMap() {
 
   const { Map } = await google.maps.importLibrary("maps");
   const { ColorScheme } = await google.maps.importLibrary("core");
-  const { PlaceAutocompleteElement, Place, SearchNearbyRankPreference } = await google.maps.importLibrary("places");
+  const { PlaceAutocompleteElement } = await google.maps.importLibrary("places");
+  const { Place, AutocompleteSessionToken, AutocompleteSuggestion } =
+    await google.maps.importLibrary("places");
 
   infoWindow = new google.maps.InfoWindow();
 
@@ -48,54 +50,109 @@ async function initMap() {
     marker(map, map.getCenter(), infoWindow);
     return map;
   }
+
+
   //---------------------AutoCompleteElement---------------------
   //---------------------AutoCompleteElement---------------------
   //---------------------AutoCompleteElement---------------------
-  const placeAutocomplete = new PlaceAutocompleteElement();
-  placeAutocomplete.id = "place-autocomplete-input";
+  const token = new google.maps.places.AutocompleteSessionToken();
+  const searchInput = document.getElementById("searchInput");
+  const resultsElement = document.getElementById("results");
 
-  const card = document.getElementById("autocomplete");
-  card.appendChild(placeAutocomplete);
+  let suggestions = [];
+  let selectedIndex = -1;
 
-  placeAutocomplete.addEventListener("gmp-placeselect", async ({ place }) => {
-    await place.fetchFields({
-      fields: ["displayName", "formattedAddress", "location"],
-    });
-    if (place.viewport) {
-      map.fitBounds(place.viewport);
-    } else {
-      map.setCenter(place.location);
-      map.setZoom(17);
+  searchInput.addEventListener("input", async () => {
+    const inputText = searchInput.value.trim();
+    if (!inputText) return;
+
+    let request = {
+      input: inputText,  // 사용자 입력 값
+      language: 'ko',
+      region: 'kr',
+      origin: map.getCenter(),
+      sessionToken: token
+    };
+
+    const { suggestions } = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+
+    // 결과 제목 추가
+    const title = document.getElementById("title");
+    title.textContent = `Query predictions for "${request.input}":`;
+
+    // 기존 리스트 초기화
+    const resultsElement = document.getElementById("results");
+    resultsElement.innerHTML = "";
+
+    for (let suggestion of suggestions) {
+      const placePrediction = suggestion.placePrediction;
+
+      // 리스트 요소 생성 및 추가
+      const listItem = document.createElement("li");
+      listItem.textContent = placePrediction.text.toString();
+      resultsElement.appendChild(listItem);
     }
-    let content =
-      `
-      <div id="infowindow-content">
-        <span id="place-displayname" class="title">${place.displayName}</span><br />
-        <span id="place-address">${place.formattedAddress}</span>
-      </div>
-    `;
 
-    updateInfoWindow(content, place.location);
+    if (suggestions.length > 0) {
+      let place = suggestions[0].placePrediction.toPlace(); // 첫 번째 추천 장소 가져오기
 
-    // 기존 마커 제거
-    if (currentMarker) {
-      currentMarker.setMap(null);
+      await place.fetchFields({
+        fields: ["displayName", "formattedAddress"],
+      });
+
+      const placeInfo = document.getElementById("prediction");
+      placeInfo.textContent = `First predicted place: ${place.displayName}: ${place.formattedAddress}`;
     }
-
-    // 새로운 마커 추가
-    const newMarker = await marker(map, place.location, infoWindow);
-    if (newMarker) {
-      currentMarker = newMarker; // 현재 마커 업데이트
-    }
-  });
+  }
+  );
 
 
-  const searchButton = document.getElementById("searchFood");
 
-  // 검색 버튼 클릭 이벤트
-  searchButton.addEventListener("click", () => {
-    nearbySearch(map, infoWindow);
-  });
+  // const placeAutocomplete = new PlaceAutocompleteElement();
+  // placeAutocomplete.id = "place-autocomplete-input";
+
+  // const card = document.getElementById("autocomplete");
+  // card.appendChild(placeAutocomplete);
+
+  // placeAutocomplete.addEventListener("gmp-placeselect", async ({ place }) => {
+  //   await place.fetchFields({
+  //     fields: ["displayName", "formattedAddress", "location"],
+  //   });
+  //   if (place.viewport) {
+  //     map.fitBounds(place.viewport);
+  //   } else {
+  //     map.setCenter(place.location);
+  //     map.setZoom(17);
+  //   }
+  //   let content =
+  //     `
+  //     <div id="infowindow-content">
+  //       <span id="place-displayname" class="title">${place.displayName}</span><br />
+  //       <span id="place-address">${place.formattedAddress}</span>
+  //     </div>
+  //   `;
+
+  //   updateInfoWindow(content, place.location);
+
+  //   // 기존 마커 제거
+  //   if (currentMarker) {
+  //     currentMarker.setMap(null);
+  //   }
+
+  //   // 새로운 마커 추가
+  //   const newMarker = await marker(map, place.location, infoWindow);
+  //   if (newMarker) {
+  //     currentMarker = newMarker; // 현재 마커 업데이트
+  //   }
+  // });
+
+
+  // const searchButton = document.getElementById("searchFood");
+
+  // // 검색 버튼 클릭 이벤트
+  // searchButton.addEventListener("click", () => {
+  //   nearbySearch(map, infoWindow);
+  // });
 
   //---------------------------------------------------
   //---------------------------------------------------

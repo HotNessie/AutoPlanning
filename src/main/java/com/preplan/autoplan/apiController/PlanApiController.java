@@ -16,15 +16,16 @@ public class PlanApiController {
     //    private final GoogleSearchService naverSearchService;
     private final GoogleSearchClient googleSearchClient;
 
-    @GetMapping("/search/local")
-    public ResponseEntity<Map> search(
-        @RequestParam("query") String query,
-        @RequestParam(value = "display", defaultValue = "10") Integer display,
-        @RequestParam(value = "start", defaultValue = "1") Integer start,
-        @RequestParam(value = "sort", defaultValue = "random") String sort
-    ) {
-        return "";
-    }
+//    @GetMapping("/search/local")
+//    public ResponseEntity<Map> search(
+//        @RequestParam("query") String query,
+//        @RequestParam(value = "display", defaultValue = "10") Integer display,
+//        @RequestParam(value = "start", defaultValue = "1") Integer start,
+//        @RequestParam(value = "sort", defaultValue = "random") String sort
+//    ) {
+//        return "";
+//    }
+
 //    {
 //        try {
 //            Map result = naverSearchClient.getLocalList(query, display, start, sort);
