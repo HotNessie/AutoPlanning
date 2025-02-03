@@ -1,18 +1,12 @@
 //주변 장소 검색 with 현재위치
-//주변 장소 검색 with 현재위치
-//주변 장소 검색 with 현재위치
-//주변 장소 검색 with 현재위치
 import { marker } from './marker.js';
 
 export async function nearbySearch(map, infoWindow) {
 
     //@ts-ignore
     const { Place, SearchNearbyRankPreference } = await google.maps.importLibrary("places",);
-    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-
 
     // Restrict within the map viewport.
-    // let center = new google.maps.LatLng(52.369358, 4.889258);
     const request = {
         // required parameters
         fields: ["displayName", "location", "businessStatus"],
