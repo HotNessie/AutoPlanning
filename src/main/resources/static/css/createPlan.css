@@ -181,13 +181,9 @@
         width: 390px;
         min-height: 100vh;
         padding: 24px 0 24px 0;
-        /* background-color: rgb(18, 18, 18); */
         background-color: transparent;
-        /*border-left: 1px solid rgba(193, 84, 236, 0.7);*/
-        /* border-right: 1px solid rgba(193, 84, 236, 0.3); */
         box-shadow: 1px 2px 10px 0 rgba(193, 84, 236, 0.5);
         border-radius: 0 48px 48px 0px;
-        /*overflow: hidden;*/
         transform: scaleX(1);
         transition: transform 0.3s ease-in-out
     }
@@ -358,19 +354,26 @@
         position: absolute;
         width: 376px;
         height: auto;
-        /* top: 54px; */
         top: 30px;
         background-color: rgb(18, 18, 18);
         border-radius: 0px 0px 24px 24px;
-        /* border-radius: 24px; */
     }
 
     #results {
-        padding: 24px 10px 12px 24px;
+        padding: 24px 10px 12px 12px;
     }
 
-    #results li {
-        padding-bottom: 10px;
+    #results button li {
+        /* padding-bottom: 10px; */
+        color: rgba(255, 255, 255, 0.8);
+        text-align: left;
+        width: 312px;
+    }
+
+    #results button {
+        padding: 5px 0px 5px 24px;
+        width: 352px;
+        border-radius: 18px;
     }
 
     .custom-map-control-button {
