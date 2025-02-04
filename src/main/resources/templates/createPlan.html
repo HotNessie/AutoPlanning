@@ -3,13 +3,8 @@
 
 <head th:replace="fragments/header :: header"/>
 <link rel="stylesheet" href="/css/createPlan.css">
-<!--autocomplete-->
 
 <body>
-
-
-<!--autocomplete-->
-
 
 <header>
   <h1 class="logo">
@@ -100,14 +95,18 @@
 </header>
 <!--메뉴 상세-->
 <div id="content">
+
   <div id="autocomplete">
     <input id="searchInput" type="text" style="color:rgba(255,255,255,0.8)">
     <button id="searchButton" style="color:rgba(255,255,255,0.8)">검색</button>
+    <!-- <button id="searchFood">음식점</button> -->
+  </div>
+  <div id="suggestion">
     <div id="title" style="color:rgba(255,255,255,0.8)"></div>
     <ul id="results" style="color:rgba(255,255,255,0.8)"></ul>
     <p><span id="prediction" style="color:rgba(255,255,255,0.8)"></span></p>
-    <!-- <button id="searchFood">음식점</button> -->
   </div>
+
   <div id="collapseBody">
     <div th:replace="fragments/planContent::hotContent">default message</div>
   </div>
