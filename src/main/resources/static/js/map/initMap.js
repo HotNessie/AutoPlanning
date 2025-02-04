@@ -58,23 +58,19 @@ async function initMap() {
   const token = new google.maps.places.AutocompleteSessionToken();
   const searchInput = document.getElementById("searchInput");
 
-  // let suggestions = [];
-  // let selectedIndex = -1;
-
   searchInput.addEventListener("input", handleSearch);
-  // searchInput.addEventListener("keydown", handleSearch);
+
   async function handleSearch() {
     const inputText = searchInput.value.trim();
-    const title = document.getElementById("title");
     const resultsElement = document.getElementById("results");
-    const placeInfo = document.getElementById("prediction");
-    // if (!inputText) return;
+    const suggestion = document.getElementById("suggestion")
     if (inputText === "") {
-      title.innerHTML = "";
       resultsElement.innerHTML = "";
-      placeInfo.innerHTML = "";
+      suggestion.style.display = "none";
       return;
     }
+
+    suggestion.style.display = "inline";
 
     let request = {
       input: inputText,  // 사용자 입력 값
@@ -86,33 +82,24 @@ async function initMap() {
 
     const { suggestions } = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
 
-    // 결과 제목 추가
-    title.textContent = `Query predictions for "${request.input}":`;
-
     // 기존 리스트 초기화
     resultsElement.innerHTML = "";
 
+    if (!suggestions || suggestions.length === 0) {
+      suggestion.style.display = "none";
+      return;
+    }
     for (let suggestion of suggestions) {
       const placePrediction = suggestion.placePrediction;
-
       // 리스트 요소 생성 및 추가
       const listItem = document.createElement("li");
       listItem.textContent = placePrediction.text.toString();
       resultsElement.appendChild(listItem);
     }
 
-    if (suggestions.length > 0) {
-      let place = suggestions[0].placePrediction.toPlace(); // 첫 번째 추천 장소 가져오기
-
-      await place.fetchFields({
-        fields: ["displayName", "formattedAddress"],
-      });
-      placeInfo.textContent = `First predicted place: ${place.displayName}: ${place.formattedAddress}`;
-    }
     if (inputText === "") {
-      title.innerHTML = "";
       resultsElement.innerHTML = "";
-      placeInfo.innerHTML = "";
+      // suggestion.style.display = "none";
     };
   }
 
