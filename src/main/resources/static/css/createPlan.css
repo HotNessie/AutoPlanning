@@ -322,7 +322,6 @@
 
     #autocomplete {
         position: absolute;
-        z-index: 10;
         left: 400px;
         top: 30px;
         background-color: rgb(18, 18, 18);
@@ -332,6 +331,7 @@
         display: flex;
         align-items: center;
     }
+
 
     #searchInput {
         background-color: transparent;
@@ -346,6 +346,14 @@
         position: absolute;
         right: 24px;
         background-color: transparent;
+    }
+
+    #suggestion {
+        position: absolute;
+        left: 400px;
+        width: 376px;
+        height: 300px;
+        top: 80px;
     }
 
     .custom-map-control-button {

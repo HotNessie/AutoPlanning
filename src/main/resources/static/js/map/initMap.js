@@ -57,14 +57,24 @@ async function initMap() {
   //---------------------AutoCompleteElement---------------------
   const token = new google.maps.places.AutocompleteSessionToken();
   const searchInput = document.getElementById("searchInput");
-  const resultsElement = document.getElementById("results");
 
-  let suggestions = [];
-  let selectedIndex = -1;
+  // let suggestions = [];
+  // let selectedIndex = -1;
 
-  searchInput.addEventListener("input", async () => {
+  searchInput.addEventListener("input", handleSearch);
+  // searchInput.addEventListener("keydown", handleSearch);
+  async function handleSearch() {
     const inputText = searchInput.value.trim();
-    if (!inputText) return;
+    const title = document.getElementById("title");
+    const resultsElement = document.getElementById("results");
+    const placeInfo = document.getElementById("prediction");
+    // if (!inputText) return;
+    if (inputText === "") {
+      title.innerHTML = "";
+      resultsElement.innerHTML = "";
+      placeInfo.innerHTML = "";
+      return;
+    }
 
     let request = {
       input: inputText,  // 사용자 입력 값
@@ -77,11 +87,9 @@ async function initMap() {
     const { suggestions } = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
 
     // 결과 제목 추가
-    const title = document.getElementById("title");
     title.textContent = `Query predictions for "${request.input}":`;
 
     // 기존 리스트 초기화
-    const resultsElement = document.getElementById("results");
     resultsElement.innerHTML = "";
 
     for (let suggestion of suggestions) {
@@ -99,14 +107,14 @@ async function initMap() {
       await place.fetchFields({
         fields: ["displayName", "formattedAddress"],
       });
-
-      const placeInfo = document.getElementById("prediction");
       placeInfo.textContent = `First predicted place: ${place.displayName}: ${place.formattedAddress}`;
     }
+    if (inputText === "") {
+      title.innerHTML = "";
+      resultsElement.innerHTML = "";
+      placeInfo.innerHTML = "";
+    };
   }
-  );
-
-
 
   // const placeAutocomplete = new PlaceAutocompleteElement();
   // placeAutocomplete.id = "place-autocomplete-input";
