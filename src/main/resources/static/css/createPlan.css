@@ -2,6 +2,10 @@
         color: rgba(255, 255, 255, 0.8)
     } */
 
+    li {
+        list-style-type: none;
+    }
+
     .container,
     h1,
     ul,
@@ -181,7 +185,7 @@
         background-color: transparent;
         /*border-left: 1px solid rgba(193, 84, 236, 0.7);*/
         /* border-right: 1px solid rgba(193, 84, 236, 0.3); */
-        box-shadow: 1px 2px 10px 0 rgba(193, 84, 236, 0.8);
+        box-shadow: 1px 2px 10px 0 rgba(193, 84, 236, 0.5);
         border-radius: 0 48px 48px 0px;
         /*overflow: hidden;*/
         transform: scaleX(1);
@@ -322,7 +326,7 @@
 
     #autocomplete {
         position: absolute;
-        left: 400px;
+        left: 412px;
         top: 30px;
         background-color: rgb(18, 18, 18);
         border-radius: 24px;
@@ -338,7 +342,7 @@
         position: relative;
         border: none;
         left: 24px;
-        width: 300px;
+        width: 283px;
     }
 
     #searchButton {
@@ -349,11 +353,24 @@
     }
 
     #suggestion {
+        display: none;
+        z-index: -1;
         position: absolute;
-        left: 400px;
         width: 376px;
-        height: 300px;
-        top: 80px;
+        height: auto;
+        /* top: 54px; */
+        top: 30px;
+        background-color: rgb(18, 18, 18);
+        border-radius: 0px 0px 24px 24px;
+        /* border-radius: 24px; */
+    }
+
+    #results {
+        padding: 24px 10px 12px 24px;
+    }
+
+    #results li {
+        padding-bottom: 10px;
     }
 
     .custom-map-control-button {
@@ -401,11 +418,3 @@
         border-radius: 0px 0px 7px 7px !important;
         background-image: linear-gradient(155deg, #c154ec 20%, #f0659b 100%);
     }
-
-    /*.customZoomIn:hover{
-      box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .customZoomOut:hover{
-      box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.2);
-    }*/
