@@ -59,18 +59,16 @@ async function initMap() {
   const searchInput = document.getElementById("searchInput");
 
   searchInput.addEventListener("input", handleSearch);
+  searchInput.addEventListener("keyup", handleEmptyInput);
 
   async function handleSearch() {
     const inputText = searchInput.value.trim();
     const resultsElement = document.getElementById("results");
-    const suggestion = document.getElementById("suggestion")
+    const suggestion = document.getElementById("suggestion");
     if (inputText === "") {
-      resultsElement.innerHTML = "";
       suggestion.style.display = "none";
       return;
     }
-
-    suggestion.style.display = "inline";
 
     let request = {
       input: inputText,  // 사용자 입력 값
@@ -85,23 +83,80 @@ async function initMap() {
     // 기존 리스트 초기화
     resultsElement.innerHTML = "";
 
+    suggestion.style.display = "inline";
     if (!suggestions || suggestions.length === 0) {
       suggestion.style.display = "none";
-      return;
     }
+
     for (let suggestion of suggestions) {
       const placePrediction = suggestion.placePrediction;
       // 리스트 요소 생성 및 추가
       const listItem = document.createElement("li");
+      const listItemButton = document.createElement("button");
+      listItemButton.style.border = "none"
+      listItemButton.style.backgroundColor = "transparent"
       listItem.textContent = placePrediction.text.toString();
-      resultsElement.appendChild(listItem);
+      resultsElement.appendChild(listItemButton);
+      listItemButton.appendChild(listItem);
     }
 
-    if (inputText === "") {
-      resultsElement.innerHTML = "";
-      // suggestion.style.display = "none";
+    let selectedIndex = -1; // 현재 선택된 추천 검색어의 인덱스
+
+    searchInput.addEventListener("keydown", handleKeyDown);
+
+    function handleKeyDown(event) {
+      const items = document.querySelectorAll("#results button"); // 모든 추천 버튼 가져오기
+
+      if (items.length === 0) return;
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        selectedIndex = (selectedIndex + 1) % items.length; // 다음 항목 선택
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        selectedIndex = (selectedIndex - 1 + items.length) % items.length; // 이전 항목 선택
+      } else if (event.key === "Enter" && selectedIndex >= 0) {
+        event.preventDefault();
+        // items[selectedIndex].click(); // 선택된 항목 클릭
+        searchInput.value = items[selectedIndex].textContent; // 선택된 추천어 입력창에 반영
+        resultsElement.innerHTML = ""; // 추천 목록 제거
+        suggestion.style.display = "none";
+        selectedIndex = -1; // 선택 초기화
+      }
+
+      items.forEach((item, index) => {
+        if (index === selectedIndex) {
+          item.style.backgroundColor = "rgb(36,36,36)";
+        } else {
+          item.style.backgroundColor = "transparent";
+        }
+      });
+    }
+
+    // 클릭하면 검색창에 반영
+    resultsElement.addEventListener("click", handleSelection);
+
+    //추천 검색어 이벤트
+    function handleSelection(event) {
+      if (event.target.tagName === "LI") {
+        searchInput.value = event.target.textContent;
+        suggestion.style.display = "none";
+        selectedIndex = -1; // 선택 초기화
+      }
     };
+
+    //TODO: 리스트 혹은 검색버튼 눌렀을 때, 세션 재발급 시켜줘야 함
   }
+
+  async function handleEmptyInput() {
+    const resultsElement = document.getElementById("results");
+    const suggestion = document.getElementById("suggestion");
+    if (searchInput.value.trim() === "") {
+      suggestion.style.display = "none"; // 입력값이 비면 바로 숨김
+      resultsElement.innerHTML = "";
+    }
+  }
+
 
   // const placeAutocomplete = new PlaceAutocompleteElement();
   // placeAutocomplete.id = "place-autocomplete-input";
