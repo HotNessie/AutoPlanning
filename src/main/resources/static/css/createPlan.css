@@ -239,6 +239,7 @@
         height: 42px;
         width: 11px;
         color: rgb(51, 51, 51);
+        fill: rgb(193, 84, 236);
     }
 
     /*메뉴 선택했을 때*/
@@ -359,6 +360,10 @@
         border-radius: 0px 0px 24px 24px;
     }
 
+    #searchInput:focus-visible {
+        outline: none;
+    }
+
     #results {
         padding: 24px 10px 12px 12px;
     }
@@ -373,7 +378,7 @@
     #results button {
         padding: 5px 0px 5px 24px;
         width: 352px;
-        border-radius: 18px;
+        border-radius: 12px;
     }
 
     .custom-map-control-button {

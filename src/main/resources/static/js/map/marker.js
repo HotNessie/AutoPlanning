@@ -1,5 +1,5 @@
 //marker
-export async function marker(map, position, infoWindow) {
+export async function marker(map, position, placeTitle, infoWindow) {
   const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
   const scaleElement = new PinElement({
@@ -9,7 +9,7 @@ export async function marker(map, position, infoWindow) {
   const marker = new AdvancedMarkerElement({
     position: position,
     map: map,
-    title: 'test',
+    title: placeTitle,
     gmpClickable: true,
     // gmpDraggable: true,
     // content: scaleElement.element
@@ -28,18 +28,19 @@ export async function marker(map, position, infoWindow) {
     infoWindow.setContent(content)
     infoWindow.open(marker.map, marker);
   });
-
-  // marker.addListener('dragend', (event) => {
-  //   const position = marker.position;
-  //   const content = `
-  //               <div style="font-size:14px; line-height:1.5;">
-  //                 <strong style="color:blue;">${marker.title}</strong><br>
-  //                 <span>Pin: ${position.lat}, ${position.lng}</span>
-  //               </div>
-  //             `;
-  //   infoWindow.close();
-  //   infoWindow.setContent(content);
-  //   infoWindow.open(marker.map, marker);
-  // })
   return marker;
 }
+
+
+// marker.addListener('dragend', (event) => {
+//   const position = marker.position;
+//   const content = `
+//               <div style="font-size:14px; line-height:1.5;">
+//                 <strong style="color:blue;">${marker.title}</strong><br>
+//                 <span>Pin: ${position.lat}, ${position.lng}</span>
+//               </div>
+//             `;
+//   infoWindow.close();
+//   infoWindow.setContent(content);
+//   infoWindow.open(marker.map, marker);
+// })
