@@ -10,13 +10,13 @@ export function currentPosition(map, infoWindow) {
                 map.setZoom(18);
                 map.setCenter(pos);
 
-                let content =
-                    '<div id="infowindow-content">' +
-                    '<span id="place-displayname" class="title">' +
-                    "currentPosition" +
-                    "</span>" +
-                    "</div>";
-
+                const content =
+                    `
+                <div style="font-size:14px; line-height:1.5;">
+                  <strong style="color:blue;">${place.title}</strong><br>
+                  <span>Pin: ${position.lat}, ${position.lng}</span>
+                </div>
+              `;
                 updateInfoWindow(content, pos);
             },
         );
