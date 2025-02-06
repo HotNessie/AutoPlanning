@@ -381,6 +381,10 @@
         border-radius: 12px;
     }
 
+    #results button:hover {
+        background-color: rgb(36, 36, 36) !important;
+    }
+
     .custom-map-control-button {
         position: fixed !important;
         right: 1vw !important;
