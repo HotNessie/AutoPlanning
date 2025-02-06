@@ -19,7 +19,7 @@ export function selectSuggestion(event) {
         } else if (selectedIndex === items.length - 1) {
             selectedIndex = -1;
         }
-        console.log(selectedIndex);
+        // console.log(selectedIndex);
 
     } else if (event.key === "ArrowUp") {
         event.preventDefault();
@@ -28,7 +28,7 @@ export function selectSuggestion(event) {
         } else if (selectedIndex > -2 || selectedIndex < items.length) {
             selectedIndex = (selectedIndex - 1); // 이전 항목 선택
         }
-        console.log(selectedIndex);
+        // console.log(selectedIndex);
 
     } else if (event.key === "Enter" && selectedIndex >= 0) {
         event.preventDefault();
@@ -38,7 +38,7 @@ export function selectSuggestion(event) {
         suggestion.style.display = "none";
         selectedIndex = -1; // 선택 초기화
     }
-    //focuse 효과
+    //focus 효과
     items.forEach((item, index) => {
         if (index === selectedIndex) {
             item.style.backgroundColor = "rgb(36,36,36)";

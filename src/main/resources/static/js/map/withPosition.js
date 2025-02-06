@@ -13,8 +13,8 @@ export function currentPosition(map, infoWindow) {
                 const content =
                     `
                 <div style="font-size:14px; line-height:1.5;">
-                  <strong style="color:blue;">${place.title}</strong><br>
-                  <span>Pin: ${position.lat}, ${position.lng}</span>
+                  <strong style="color:blue;">NOW</strong><br>
+                  <span>Pin: ${pos.lat}, ${pos.lng}</span>
                 </div>
               `;
                 updateInfoWindow(content, pos);
@@ -32,6 +32,3 @@ export function currentPosition(map, infoWindow) {
         });
     }
 }
-// export default {
-//     currentPosition
-// }

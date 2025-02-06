@@ -1,7 +1,5 @@
 //지도 기본 위치
 //지도 기본 위치
-
-import { searchInput, searchButton, suggestion } from './dom-elements.js';
 import { handleSearch } from './handlingSearch/handleSearch.js';
 import { findBySearch } from './handlingSearch/findBySearch.js';
 import { selectSuggestion, handleEmptyInput, handleSelection } from './handlingSearch/selectSuggestionEvent.js';
