@@ -58,6 +58,7 @@ export async function findBySearch(Place, map, infoWindow) {
                 bottom: 100,
                 left: 100
             });
+            //
         }
     } else {
         alert("검색 결과가 없습니다.");
