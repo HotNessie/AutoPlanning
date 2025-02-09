@@ -6,12 +6,15 @@ let searchInputPast;
 export function selectSuggestion(event) {
     const items = document.querySelectorAll("#results button"); // 모든 추천 버튼 가져오기
     if (items.length === 0) return;
+
     let searchInputCurrent = searchInput.value.trim();
     if (searchInputPast !== searchInputCurrent) {
         selectedIndex = -1; //입력값 변동 감지시 리셋
     }
+
     if (event.isComposing) return;
 
+    //아래 방향키
     if (event.key === "ArrowDown") {
         event.preventDefault();
         if (selectedIndex < items.length - 1) {
@@ -21,6 +24,7 @@ export function selectSuggestion(event) {
         }
         // console.log(selectedIndex);
 
+        //위 방향키
     } else if (event.key === "ArrowUp") {
         event.preventDefault();
         if (selectedIndex === -1) {
@@ -30,6 +34,7 @@ export function selectSuggestion(event) {
         }
         // console.log(selectedIndex);
 
+        //엔터 입력시
     } else if (event.key === "Enter" && selectedIndex >= 0) {
         event.preventDefault();
         // items[selectedIndex].click(); // 선택된 항목 클릭
@@ -38,6 +43,7 @@ export function selectSuggestion(event) {
         suggestion.style.display = "none";
         selectedIndex = -1; // 선택 초기화
     }
+
     //focus 효과
     items.forEach((item, index) => {
         if (index === selectedIndex) {
