@@ -1,3 +1,5 @@
+//추천 검색어 선택
+
 import { searchInput, resultsElement, suggestion } from '../dom-elements.js';
 
 let selectedIndex = -1; // 현재 선택된 추천 검색어의 인덱스
@@ -22,7 +24,6 @@ export function selectSuggestion(event) {
         } else if (selectedIndex === items.length - 1) {
             selectedIndex = -1;
         }
-        // console.log(selectedIndex);
 
         //위 방향키
     } else if (event.key === "ArrowUp") {
@@ -32,7 +33,6 @@ export function selectSuggestion(event) {
         } else if (selectedIndex > -2 || selectedIndex < items.length) {
             selectedIndex = (selectedIndex - 1); // 이전 항목 선택
         }
-        // console.log(selectedIndex);
 
         //엔터 입력시
     } else if (event.key === "Enter" && selectedIndex >= 0) {
@@ -42,6 +42,9 @@ export function selectSuggestion(event) {
         resultsElement.innerHTML = ""; // 추천 목록 제거
         suggestion.style.display = "none";
         selectedIndex = -1; // 선택 초기화
+    } else if (event.key == "Enter" && selectedIndex < 0) {
+        event.preventDefault();
+        searchButton.click();
     }
 
     //focus 효과
@@ -74,3 +77,10 @@ export function handleSelection(event) {
         selectedIndex = -1; // 선택 초기화
     }
 };
+
+// 추천 검색어 닫기
+document.addEventListener("click", (event) => {
+    if (event.target !== searchInput && !resultsElement.contains(event.target)) {
+        suggestion.style.display = "none";
+    }
+});

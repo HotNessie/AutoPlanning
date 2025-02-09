@@ -1,3 +1,5 @@
+//검색, marker, bound지정
+
 import { searchInput, suggestion } from '../dom-elements.js';
 import { marker } from '../marker.js';
 
@@ -58,7 +60,11 @@ export async function findBySearch(Place, map, infoWindow) {
                 bottom: 100,
                 left: 100
             });
-            //
+            google.maps.event.addListenerOnce(map, "bounds_changed", () => {
+                if (map.getZoom() > 17) {
+                    map.setZoom(17);
+                }
+            });
         }
     } else {
         alert("검색 결과가 없습니다.");

@@ -61,15 +61,14 @@ async function initMap() {
   const searchInput = document.getElementById("searchInput");
 
   searchInput.addEventListener("input", () => handleSearch(AutocompleteSuggestion, token, map));
+
+  const searchButton = document.getElementById('searchButton');
+
   searchInput.addEventListener("keydown", selectSuggestion);
   searchInput.addEventListener("keyup", handleEmptyInput);
   // const suggestion = document.getElementById("suggestion");
 
-  //모듈화 진행중....
-
-
   //searchButton을 통해 searchInput의 텍스트를 검색
-  const searchButton = document.getElementById('searchButton');
   searchButton.addEventListener("click", () => findBySearch(Place, map, infoWindow));
   // resultsElement.addEventListener("click", handleSelection);
 

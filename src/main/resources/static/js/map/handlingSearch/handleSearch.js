@@ -1,3 +1,5 @@
+//검색어 추천
+
 import { searchInput, resultsElement, suggestion } from '../dom-elements.js';
 import { selectSuggestion, handleEmptyInput, handleSelection } from './selectSuggestionEvent.js';
 
