@@ -149,7 +149,10 @@
         height: 100%;
     }
 
-    svg {
+    #hot_menuSvg,
+    #auto_menuSvg,
+    #self_menuSvg,
+    #bookmark_menuSvg {
         width: 16px;
         height: 21px;
         fill: rgba(255, 255, 255, 0.8);
@@ -387,6 +390,9 @@
     }
 
     .custom-map-control-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         position: fixed !important;
         right: 1vw !important;
         bottom: 110px !important;
@@ -400,6 +406,14 @@
                 #c154ec 50%,
                 #f0659b 100%);
         fill: white;
+    }
+
+    .custom-map-control-button svg {
+        width: 20px;
+    }
+
+    .customCurrentPosition svg {
+        width: 16px;
     }
 
     .custom-map-control-button:hover {

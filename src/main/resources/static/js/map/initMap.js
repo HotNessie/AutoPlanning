@@ -17,6 +17,8 @@ async function initMap() {
   const { ColorScheme } = await google.maps.importLibrary("core");
   const { Place, SearchNearbyRankPreference, AutocompleteSessionToken, AutocompleteSuggestion } =
     await google.maps.importLibrary("places");
+  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
 
   infoWindow = new google.maps.InfoWindow();
 
@@ -45,17 +47,38 @@ async function initMap() {
         // mapId: 'CURRENT_POS',
         language: 'ko',
         region: 'kr',
-        //mapTypeId: google.maps.MapTypeId.TERRAIN,
         disableDefaultUI: true,
         colorScheme: ColorScheme.DARK,
       }
     );
-    const content = `
-                <div style="font-size:14px; line-height:1.5;">
-                  <strong style="color:blue;">NOW</strong><br>
-                </div>
-              `;
-    marker(map, map.getCenter(), "NOW", infoWindow, content);
+    // marker(map, map.getCenter(), "NOW", infoWindow, content);
+
+    const parser = new DOMParser();
+    // A marker with a custom inline SVG.
+    const pinSvgString =
+      `
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+        <g fill="#c7d5ef">
+          <circle cx="24" cy="24" r="12" fill-opacity="0.5"/>
+        </g>
+        <g fill="#fff">
+          <circle cx="24" cy="24" r="6.5"/>
+        </g>
+        <g fill="#4284f4">
+          <circle cx="24" cy="24" r="6"/>
+        </g>
+      </svg>
+      `;
+    const currentSvg = parser.parseFromString(
+      pinSvgString,
+      "image/svg+xml",
+    ).documentElement;
+
+    const currentPosMarker = new AdvancedMarkerElement({
+      position: map.getCenter(),
+      map: map,
+      content: currentSvg,
+    })
     return map;
   }
 

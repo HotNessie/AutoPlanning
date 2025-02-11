@@ -7,12 +7,13 @@ let markers = [];
 //기존 마커 삭제
 function clearMarkers() {
     if (markers.length > 0) {
-        markers.forEach((marker) => { marker.setMap(null); })
+        markers.forEach((marker) => { marker.map = null; })
+        // markers.forEach((marker) => { marker.setMap(null); })
     }
     markers = [];
 }
 
-export async function findBySearch(Place, map, infoWindow) {
+export async function findBySearch(Place, map) {
     const inputText = searchInput.value.trim(); // 검색어 가져오기
     suggestion.style.display = "none";
 
@@ -36,7 +37,6 @@ export async function findBySearch(Place, map, infoWindow) {
             center: map.getCenter(),
             radius: 500,
         }
-        // useStrictTypeFiltering: true, //빡씬 제한 (includedType를 기준으로 제한하는거임)
     };
 
     const { places } = await Place.searchByText(request);
@@ -49,21 +49,7 @@ export async function findBySearch(Place, map, infoWindow) {
 
         const markerPromises = places.map(async (place) => {
             //marker
-            let photoUri = "";
-
-            if (place.photos && place.photos.length > 0) {
-                photoUri = await place.photos[0].getURI();
-            }
-            const content = `
-            <div>
-                ${photoUri ? `<img src="${photoUri}" alt="Photo" style="width: 100px; height: 100px;">` : ""}
-            </div>
-            <div style="font-size:14px; line-height:1.5;">
-                <strong style="color:blue;">${place.displayName}</strong><br>
-                <span>Rating: ${place.rating} (${place.userRatingCount} reviews)</span>
-            </div>
-            `;
-            const newMarker = await marker(map, place.location, place.displayName, infoWindow, content);
+            const newMarker = await marker(map, place);
             markers.push(newMarker);
 
             //zoom레벨 설정을 위한
