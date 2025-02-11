@@ -1,5 +1,5 @@
 //marker
-export async function marker(map, position, placeTitle, infoWindow) {
+export async function marker(map, position, placeTitle, infoWindow, content) {
   const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
   const scaleElement = new PinElement({
@@ -16,14 +16,13 @@ export async function marker(map, position, placeTitle, infoWindow) {
   });
 
   marker.addListener('click', ({ domEvent, latLng }) => {
-    //          const { target } = domEvent;
-    const position = marker.position;
-    const content = `
-                <div style="font-size:14px; line-height:1.5;">
-                  <strong style="color:blue;">${marker.title}</strong><br>
-                  <span>Pin: ${position.lat}, ${position.lng}</span>
-                </div>
-              `;
+    // const position = marker.position;
+    // const content = `
+    //             <div style="font-size:14px; line-height:1.5;">
+    //               <strong style="color:blue;">${marker.title}</strong><br>
+    //               <span>Pin: ${position.lat}, ${position.lng}</span>
+    //             </div>
+    //           `;
     infoWindow.close();
     infoWindow.setContent(content)
     infoWindow.open(marker.map, marker);

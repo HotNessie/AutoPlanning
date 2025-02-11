@@ -1,5 +1,4 @@
 //검색, marker, bound지정
-
 import { searchInput, suggestion } from '../dom-elements.js';
 import { marker } from '../marker.js';
 
@@ -24,7 +23,14 @@ export async function findBySearch(Place, map, infoWindow) {
     //요청 정보
     const request = {
         textQuery: inputText, // 검색어
-        fields: ["displayName", "location", "businessStatus"], // 가져올 필드
+        fields: [
+            "displayName",
+            "location",
+            "rating",
+            "userRatingCount",
+            // "currentOpeningHours.weekdayDescriptions",
+            "photos"
+        ], // 가져올 필드
         maxResultCount: 20,
         locationBias: {
             center: map.getCenter(),
@@ -43,7 +49,21 @@ export async function findBySearch(Place, map, infoWindow) {
 
         const markerPromises = places.map(async (place) => {
             //marker
-            const newMarker = await marker(map, place.location, place.displayName, infoWindow);
+            let photoUri = "";
+
+            if (place.photos && place.photos.length > 0) {
+                photoUri = await place.photos[0].getURI();
+            }
+            const content = `
+            <div>
+                ${photoUri ? `<img src="${photoUri}" alt="Photo" style="width: 100px; height: 100px;">` : ""}
+            </div>
+            <div style="font-size:14px; line-height:1.5;">
+                <strong style="color:blue;">${place.displayName}</strong><br>
+                <span>Rating: ${place.rating} (${place.userRatingCount} reviews)</span>
+            </div>
+            `;
+            const newMarker = await marker(map, place.location, place.displayName, infoWindow, content);
             markers.push(newMarker);
 
             //zoom레벨 설정을 위한

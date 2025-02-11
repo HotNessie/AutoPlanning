@@ -41,15 +41,21 @@ async function initMap() {
       {
         center: position,
         zoom: 17,
-        mapId: 'CURRENT_POS',
+        mapId: '281ecb2de2a0840c',
+        // mapId: 'CURRENT_POS',
         language: 'ko',
         region: 'kr',
         //mapTypeId: google.maps.MapTypeId.TERRAIN,
         disableDefaultUI: true,
-        colorScheme: ColorScheme.DARK
+        colorScheme: ColorScheme.DARK,
       }
     );
-    marker(map, map.getCenter(), "NOW", infoWindow);
+    const content = `
+                <div style="font-size:14px; line-height:1.5;">
+                  <strong style="color:blue;">NOW</strong><br>
+                </div>
+              `;
+    marker(map, map.getCenter(), "NOW", infoWindow, content);
     return map;
   }
 
