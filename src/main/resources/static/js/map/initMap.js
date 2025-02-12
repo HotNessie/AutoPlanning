@@ -89,7 +89,9 @@ async function initMap() {
   const token = new AutocompleteSessionToken();
   const searchInput = document.getElementById("searchInput");
 
-  searchInput.addEventListener("input", () => handleSearch(AutocompleteSuggestion, token, map));
+  //개발단계에서 너무 많은 api요청으로 임시 주석
+  //개발단계에서 너무 많은 api요청으로 임시 주석
+  // searchInput.addEventListener("input", () => handleSearch(AutocompleteSuggestion, token, map));
 
   const searchButton = document.getElementById('searchButton');
 

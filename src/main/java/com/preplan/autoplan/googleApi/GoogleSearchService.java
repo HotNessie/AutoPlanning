@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GoogleSearchService {
 
-    private final GoogleSearchClient googleSearchClient;
+    private final GoogleRouteClient googleRouteClient;
 
 //    public PlaceDetails getPlaceDetails(String placeId) {
-//        return googleSearchClient.getPlaceDetails(placeId."key");
+//        return googleRouteClient.getPlaceDetails(placeId."key");
 //    }
 
 }
