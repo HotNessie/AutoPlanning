@@ -11,21 +11,17 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 public class GoogleApiConfig {
 
     @Value("${google.api.client-key}")
-    private String clientKey;
-//    @Value("${google.api.client-secret}")
-//    private String clientSecret;
+    private String apiKey;
 
     @Bean
     public GoogleRouteClient googleRouteClient() {
         RestClient restClient = RestClient.builder()
             .baseUrl("https://routes.googleapis.com/")
-            .defaultHeader("X-Goog-Api-Key", clientKey)
-            .defaultHeader("X-Goog-Api-FieldMask", "routes.duration", "routes.distanceMeters",
-                "routes.polyline.encodedPolyline")
+            .defaultHeader("X-Goog-Api-Key", apiKey)
 //            .defaultHeader("X-Google-Client-Secret", clientSecret)
             .build();
-        RestClientAdapter adapter = RestClientAdapter.create(restClient);
 
+        RestClientAdapter adapter = RestClientAdapter.create(restClient);
         HttpServiceProxyFactory factory =
             HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(GoogleRouteClient.class);

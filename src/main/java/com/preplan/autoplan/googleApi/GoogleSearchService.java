@@ -9,7 +9,7 @@ public class GoogleSearchService {
 
     private final GoogleRouteClient googleRouteClient;
 
-//    public PlaceDetails getPlaceDetails(String placeId) {
+//    public ComputeRoutesResponse getPlaceDetails(String placeId) {
 //        return googleRouteClient.getPlaceDetails(placeId."key");
 //    }
 
