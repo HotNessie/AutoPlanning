@@ -8,7 +8,7 @@ import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 
 @Component
-@HttpExchange
+@HttpExchange(contentType = "application/json")
 public interface GoogleRouteClient {
 
     @PostExchange("directions/v2:computeRoutes")

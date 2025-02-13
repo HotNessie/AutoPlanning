@@ -1,25 +1,29 @@
 package com.preplan.autoplan.googleApi;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
+
 public record ComputeRoutesRequest(
-    Location origin,
-    Location destination,
+    @Valid Location origin,
+    @Valid Location destination,
+    //리스트 이래도 됨?
+    @Valid Location[] intermediates, // 리스트 10개 이하로 제한해야 됨. 11개부터 돈 더나감
     String travelMode,
     String languageCode
 ) {
 
     public record Location(
-        String address,
-        LatLng location
+        @JsonProperty("latitude") Latlng latlng
     ) {
 
     }
 
-    //검색하고 latlng받아서 넘겨야 됨
-    public record LatLng(
-        double latitude,
-        double longitude
+    public record Latlng(
+        @JsonProperty("lat") double lat,
+        @JsonProperty("lng") double lng
     ) {
 
     }
+
 }
