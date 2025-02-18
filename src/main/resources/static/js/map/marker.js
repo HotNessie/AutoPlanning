@@ -20,6 +20,7 @@ export async function marker(map, place) {
             <div style="font-size:14px; line-height:1.5;">
                 <strong style="color:blue;">${place.displayName}</strong><br>
                 <span>Rating: ${place.rating} (${place.userRatingCount} reviews)</span>
+//                <span>lat: ${place.location.lat()}, lng: ${place.location.lng()}</span>
             </div>
             `;
 

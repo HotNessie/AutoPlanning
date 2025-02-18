@@ -33,6 +33,7 @@ async function initMap() {
         lng: position.coords.longitude
       };
       createMap(pos);
+      console.log(pos)
     }, () => {
       console.log("cannot get location");
       createMap(defaultPos);

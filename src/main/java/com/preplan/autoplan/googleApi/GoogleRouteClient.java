@@ -18,11 +18,3 @@ public interface GoogleRouteClient {
         @RequestBody ComputeRoutesRequest request
     );
 }
-
-//    @GetExchange("/place/nearbysearch/json")
-//    ComputeRoutesRequest getNearbyPlaces(
-//        @RequestParam("location") String location,
-//        @RequestParam("radius") int radius,
-//        @RequestParam("type") String type,
-//        @RequestParam("key") String key
-//    );
