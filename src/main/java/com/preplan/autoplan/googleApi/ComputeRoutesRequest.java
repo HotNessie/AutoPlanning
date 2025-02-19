@@ -1,16 +1,14 @@
 package com.preplan.autoplan.googleApi;
 
 
+import com.preplan.autoplan.domain.keyword.Transport;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.List;
-import org.springframework.format.annotation.DateTimeFormat;
+import java.time.ZonedDateTime;
 
 public record ComputeRoutesRequest(
     @Valid @NotNull(message = "출발지 정보는 필수입니다")
@@ -19,18 +17,18 @@ public record ComputeRoutesRequest(
     @Valid @NotNull(message = "도착지 정보는 필수입니다")
     WrappedLocation destination,
 
-    @Valid @Size(max = 10, message = "경유지는 최대 10개까지 입력 가능합니다")
-    List<WrappedLocation> intermediates,
+//    @Valid @Size(max = 10, message = "경유지는 최대 10개까지 입력 가능합니다")
+//    List<WrappedLocation> intermediates,
+//    구글 routes travelMode:DRIVE를 한국에서 사용하지 못하기 때문에 경유지 사용 못함...
 
-    @Pattern(regexp = "DRIVE|WALK|TRANSIT", message = "이동 수단은 DRIVE, WALK, TRANSIT 중 선택해야 합니다")
-    String travelMode,
+    @NotNull
+    Transport travelMode,
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @FutureOrPresent(message = "출발 시간은 현재 또는 미래 시간이어야 합니다")
-    LocalDateTime departureTime,
+    ZonedDateTime departureTime,
 
     String routingPreference,
-    @Pattern(regexp = "METRIC|IMPERIAL", message = "단위는 METRIC/IMPERIAL만 허용")
+    @Pattern(regexp = "METRIC|IMPERIAL")
     String units
 ) {
 

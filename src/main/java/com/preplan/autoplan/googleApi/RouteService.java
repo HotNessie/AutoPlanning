@@ -1,9 +1,12 @@
 package com.preplan.autoplan.googleApi;
 
+import com.preplan.autoplan.domain.keyword.Transport;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RouteService {
@@ -12,6 +15,9 @@ public class RouteService {
 
     @Value("${google.route.field-mask}")
     private String routeFieldMask;
+
+    @Value("${google.route.region:KR}") // 기본값 KR
+    private String region;
 
     public ComputeRoutesResponse computeRoutes(ComputeRoutesRequest request) {
         validateRoutingPreference(request);
@@ -22,26 +28,29 @@ public class RouteService {
 
     private void validateRoutingPreference(ComputeRoutesRequest request) {
         if ("TRANSIT".equals(request.travelMode()) && request.routingPreference() != null) {
-            throw new IllegalArgumentException("TRANSIT 모드에서는 라우팅 선호도 설정 불가");
+            log.warn("Invalid routing preference for TRANSIT mode: {}",
+                request.routingPreference());
+            throw new IllegalArgumentException("TRANSIT 모드에서는 경로 선호도를 설정할 수 없습니다.");
         }
-
         if ("IMPERIAL".equals(request.units()) && "TRANSIT".equals(request.travelMode())) {
-            throw new IllegalArgumentException("TRANSIT 모드에서는 METRIC 단위만 사용 가능");
+            log.warn("Invalid units for TRANSIT mode: {}", request.units());
+            throw new IllegalArgumentException("TRANSIT 모드에서는 METRIC 단위만 지원됩니다.");
         }
     }
 
 
     private ComputeRoutesRequest adaptRequest(ComputeRoutesRequest original) {
-
+        String routingPreference = original.routingPreference() != null
+            ? original.routingPreference()
+            : "TRAFFIC_AWARE"; // 기본값 설정
         return new ComputeRoutesRequest(
             original.origin(),
             original.destination(),
-            original.intermediates(),
-            original.travelMode(),
+            original.travelMode() == Transport.DRIVE && "KR".equals(region)
+                ? Transport.TRANSIT : original.travelMode(), // 한국에서 DRIVE 대신 TRANSIT
             original.departureTime(),
-            original.routingPreference(),
+            routingPreference,
             original.units()
-//            original.routingPreference() != null ? original.routingPreference() : "TRAFFIC_AWARE"
         );
     }
 }

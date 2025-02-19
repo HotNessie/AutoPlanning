@@ -22,16 +22,16 @@ public class PreconditionKeyword {
 
     //이거 시발 int로 받는게 맞냐????
     @Column(nullable = false)
-    private int arriveTime;
+    private String arriveTime;
 
     @Column(nullable = false)
-    private int departureTime;
+    private String departureTime;
 
     @Column(nullable = false)
     private Transport transport;
 
     @Builder
-    public PreconditionKeyword(int arriveTime, int departureTime, Transport transport) {
+    public PreconditionKeyword(String arriveTime, String departureTime, Transport transport) {
         this.arriveTime = arriveTime;
         this.departureTime = departureTime;
         this.transport = transport;
