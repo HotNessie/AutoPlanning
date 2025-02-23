@@ -152,7 +152,8 @@
     #hot_menuSvg,
     #auto_menuSvg,
     #self_menuSvg,
-    #bookmark_menuSvg {
+    #bookmark_menuSvg,
+    #history_menuSvg {
         width: 16px;
         height: 21px;
         fill: rgba(255, 255, 255, 0.8);
@@ -183,7 +184,7 @@
         left: 63px;
         width: 390px;
         min-height: 100vh;
-        padding: 24px 0 24px 0;
+        padding: 24px 0;
         background-color: transparent;
         box-shadow: 1px 2px 10px 0 rgba(193, 84, 236, 0.5);
         border-radius: 0 48px 48px 0px;
@@ -200,7 +201,8 @@
     #collapseHotBody,
     #collapseAutoBody,
     #collapseSelfBody,
-    #collapseBookmarkBody {
+    #collapseBookmarkBody,
+    #collapseHistoryBody {
         border: none;
         background-color: rgb(18, 18, 18);
         border-radius: 24px;
@@ -216,7 +218,8 @@
     #collapseHotBody,
     #collapseAutoBody,
     #collapseSelfBody,
-    #collapseBookmarkBody {
+    #collapseBookmarkBody,
+    #collapseHistoryBody {
         width: 330px;
     }
 

@@ -20,7 +20,6 @@ public class PreconditionKeyword {
 //    @Column(nullable = false)
 //    private LocalDateTime departureDate;
 
-    //이거 시발 int로 받는게 맞냐????
     @Column(nullable = false)
     private String arriveTime;
 
