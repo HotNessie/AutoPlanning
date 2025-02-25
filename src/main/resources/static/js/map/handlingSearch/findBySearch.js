@@ -8,7 +8,6 @@ let markers = [];
 function clearMarkers() {
     if (markers.length > 0) {
         markers.forEach((marker) => { marker.map = null; })
-        // markers.forEach((marker) => { marker.setMap(null); })
     }
     markers = [];
 }
@@ -29,7 +28,6 @@ export async function findBySearch(Place, map) {
             "location",
             "rating",
             "userRatingCount",
-            // "currentOpeningHours.weekdayDescriptions",
             "photos"
         ], // 가져올 필드
         maxResultCount: 20,
