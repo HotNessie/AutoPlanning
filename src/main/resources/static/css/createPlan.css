@@ -178,15 +178,16 @@
     /*메뉴바*/
     #content {
         display: flex;
-        justify-content: center;
+        justify-content: end;
         z-index: 8;
         position: absolute;
-        left: 63px;
+        /* left: 63px; */
+        left: 50px;
         width: 390px;
         min-height: 100vh;
         padding: 24px 0;
         background-color: transparent;
-        box-shadow: 1px 2px 10px 0 rgba(193, 84, 236, 0.5);
+        /* box-shadow: 1px 2px 10px 0 rgba(193, 84, 236, 0.5); */
         border-radius: 0 48px 48px 0px;
         transform: scaleX(1);
         transition: transform 0.3s ease-in-out
@@ -194,7 +195,7 @@
 
     /*메뉴바 숨기기*/
     #content.hide {
-        transform: translateX(-100%);
+        transform: translateX(-97%);
     }
 
     #collapseBody,
