@@ -50,10 +50,27 @@ async function searchPlaceByText(map) {
     searchResults.innerHTML = ""; // 기존 결과 초기화
 
     if (places.length) {
-        places.forEach(async place => {
+        // places.forEach(async place => {
+        //     const resultItem = document.createElement("div");
+        //     resultItem.className = "result-item";
+        //     const photoUris = place.photos ? await place.photos.slice(0, 3).map(photo => photo.getURI({ maxWidth: 100, maxHeight: 100 })) : [];
+        //     resultItem.innerHTML = `
+        //         <div class="place-name">${place.displayName}</div>
+        //         <div class="place-rating">
+        //             Rating: ${place.rating || "N/A"} 
+        //             (${place.userRatingCount || "N/A"} reviews)
+        //         </div>
+        //         <div class="place-photos">
+        //             ${photoUris.map(url => `<img src="${url}" alt="${place.displayName}">`).join('')}
+        //         </div>
+        //     `;
+        for (const place of places) {
             const resultItem = document.createElement("div");
             resultItem.className = "result-item";
-            const photoUris = place.photos ? await place.photos.slice(0, 3).map(photo => photo.getURI({ maxWidth: 100, maxHeight: 100 })) : [];
+            resultItem.dataset.placeId = place.id; // placeId 저장
+            const photoURIs = place.photos
+                ? place.photos.slice(0, 3).map(photo => photo.getURI({ maxWidth: 100, maxHeight: 100 }))
+                : [];
             resultItem.innerHTML = `
                 <div class="place-name">${place.displayName}</div>
                 <div class="place-rating">
@@ -61,11 +78,20 @@ async function searchPlaceByText(map) {
                     (${place.userRatingCount || "N/A"} reviews)
                 </div>
                 <div class="place-photos">
-                    ${photoUris.map(url => `<img src="${url}" alt="${place.displayName}">`).join('')}
+                    ${photoURIs.map(uri => `<img src="${uri}" alt="${place.displayName}">`).join('')}
                 </div>
             `;
+            // 클릭 이벤트 추가
+            resultItem.addEventListener("click", () => {
+                if (currentPlaceInput) {
+                    currentPlaceInput.value = place.displayName; // 장소명 입력
+                    currentPlaceInput.dataset.placeId = place.id; // placeId 저장
+                    // searchResultsContainer.classList.remove("visible"); // 검색 결과 숨김
+                    // isSearchVisible = false;
+                }
+            });
             searchResults.appendChild(resultItem);
-        });
+        };
         searchResultsContainer.classList.add("visible"); // 컨테이너 보이게
         isSearchVisible = true;
     } else {

@@ -229,6 +229,7 @@
 }
 
 .result-item {
+    cursor: pointer;
     height: 220px;
     padding: 20px 25px 16px 25px;
     display: flex;
