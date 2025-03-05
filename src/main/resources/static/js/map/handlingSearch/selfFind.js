@@ -45,20 +45,25 @@ async function searchPlaceByText(map) {
     console.log("검색 결과:", places); // 임시 확인용
 
     // 검색 결과 표시
-    //TODO: 이것도 observer로 옮겨야 됨 searchResults fragment로 바꿈
     const searchResults = document.getElementById("searchResults");
     const searchResultsContainer = document.getElementById("searchResultsContainer");
     searchResults.innerHTML = ""; // 기존 결과 초기화
 
     if (places.length) {
-        places.forEach(place => {
+        places.forEach(async place => {
             const resultItem = document.createElement("div");
             resultItem.className = "result-item";
+            const photoUris = place.photos ? await place.photos.slice(0, 3).map(photo => photo.getURI({ maxWidth: 100, maxHeight: 100 })) : [];
             resultItem.innerHTML = `
-            ${place.displayName}<br>
-            Rating: ${place.rating || "N/A"}<br>
-            Reviews: ${place.userRatingCount || "N/A"}
-        `;
+                <div class="place-name">${place.displayName}</div>
+                <div class="place-rating">
+                    Rating: ${place.rating || "N/A"} 
+                    (${place.userRatingCount || "N/A"} reviews)
+                </div>
+                <div class="place-photos">
+                    ${photoUris.map(url => `<img src="${url}" alt="${place.displayName}">`).join('')}
+                </div>
+            `;
             searchResults.appendChild(resultItem);
         });
         searchResultsContainer.classList.add("visible"); // 컨테이너 보이게

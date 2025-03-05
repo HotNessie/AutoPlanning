@@ -200,7 +200,6 @@
 }
 
 #searchResultsContainer {
-    overflow: hidden;
     z-index: -1;
     position: fixed;
     top: 24px;
@@ -220,13 +219,51 @@
     background-color: rgb(18, 18, 18);
     border-radius: 24px;
     color: rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+#searchResults::-webkit-scrollbar {
+    width: 1px;
+    display: none;
 }
 
 .result-item {
+    height: 220px;
+    padding: 20px 25px 16px 25px;
     display: flex;
-    align-items: center;
-    padding: 10px;
+    flex-direction: column;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.place-name {
+    font-size: 17px;
+    color: #c154ec;
+}
+
+.place-rating {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.place-photos {
+    overflow-x: auto;
+    flex-grow: 1;
+    display: flex;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.place-photos::-webkit-scrollbar {
+    height: 2px;
+    display: none;
+}
+
+.place-photos img {
+    width: 90px;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
 .result-photo {
