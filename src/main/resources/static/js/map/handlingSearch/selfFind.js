@@ -50,20 +50,6 @@ async function searchPlaceByText(map) {
     searchResults.innerHTML = ""; // 기존 결과 초기화
 
     if (places.length) {
-        // places.forEach(async place => {
-        //     const resultItem = document.createElement("div");
-        //     resultItem.className = "result-item";
-        //     const photoUris = place.photos ? await place.photos.slice(0, 3).map(photo => photo.getURI({ maxWidth: 100, maxHeight: 100 })) : [];
-        //     resultItem.innerHTML = `
-        //         <div class="place-name">${place.displayName}</div>
-        //         <div class="place-rating">
-        //             Rating: ${place.rating || "N/A"} 
-        //             (${place.userRatingCount || "N/A"} reviews)
-        //         </div>
-        //         <div class="place-photos">
-        //             ${photoUris.map(url => `<img src="${url}" alt="${place.displayName}">`).join('')}
-        //         </div>
-        //     `;
         for (const place of places) {
             const resultItem = document.createElement("div");
             resultItem.className = "result-item";
@@ -86,8 +72,14 @@ async function searchPlaceByText(map) {
                 if (currentPlaceInput) {
                     currentPlaceInput.value = place.displayName; // 장소명 입력
                     currentPlaceInput.dataset.placeId = place.id; // placeId 저장
-                    // searchResultsContainer.classList.remove("visible"); // 검색 결과 숨김
-                    // isSearchVisible = false;
+
+                    //여기가 의문이네
+                    const placeIdInput = document.getElementById(`placeId${currentPlaceInput.id.replace('placeName', '')}`);
+                    if (placeIdInput) placeIdInput.value = place.id; // hidden input에 placeId 저장
+                    const transportInput = document.getElementById(`transport${currentPlaceInput.id.replace('placeName', '')}`);
+                    if (transportInput) transportInput.value = transportSelections[currentPlaceInput.id.replace('placeName', '')] || "TRANSIT";
+                    searchResultsContainer.classList.remove("visible");
+                    isSearchVisible = false;
                 }
             });
             searchResults.appendChild(resultItem);

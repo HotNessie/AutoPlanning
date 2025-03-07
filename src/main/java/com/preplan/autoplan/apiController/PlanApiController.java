@@ -18,11 +18,10 @@ public class PlanApiController {
 
     @PostMapping("/route/compute")
     public ResponseEntity<?> computeRoute(
-        @Valid @RequestBody ComputeRoutesRequest request
-    ) {
+            @Valid @RequestBody ComputeRoutesRequest request) {
         log.info("경로 계산 요청: {} → {}",
-            request.origin().location().latLng(),
-            request.destination().location().latLng());
+                request.origin().placeId(),
+                request.destination().location().latLng());
         try {
             ComputeRoutesResponse response = routeService.computeRoutes(request);
             if (response.routes().isEmpty()) {
@@ -32,7 +31,7 @@ public class PlanApiController {
         } catch (Exception e) {
             log.error("경로 계산 실패: {}", e.getMessage());
             return ResponseEntity.internalServerError()
-                .body("서버 오류: " + e.getMessage());
+                    .body("서버 오류: " + e.getMessage());
         }
     }
 }
