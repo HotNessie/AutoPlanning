@@ -12,9 +12,7 @@ import org.springframework.web.service.annotation.PostExchange;
 public interface GoogleRouteClient {
 
     @PostExchange("directions/v2:computeRoutes")
-        //얘네는 바디값으로 받아서 아래 바꿔야댐
     ComputeRoutesResponse getRoute(
-        @RequestHeader("X-Goog-FieldMask") String fieldMask,
-        @RequestBody ComputeRoutesRequest request
-    );
+            @RequestHeader("X-Goog-FieldMask") String fieldMask,
+            @RequestBody GoogleRoutesRequest apiRequest);
 }

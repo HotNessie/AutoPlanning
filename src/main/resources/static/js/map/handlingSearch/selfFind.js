@@ -20,8 +20,6 @@ async function searchPlaceByText(map) {
     }
 
     const inputText = currentPlaceInput.value.trim(); // 검색어 가져오기
-    // console.log("입력값:", inputText); // 입력값 확인
-
     if (inputText === "") {
         alert("검색어를 입력해주세요.");
         return;
@@ -71,14 +69,14 @@ async function searchPlaceByText(map) {
             resultItem.addEventListener("click", () => {
                 if (currentPlaceInput) {
                     currentPlaceInput.value = place.displayName; // 장소명 입력
-                    currentPlaceInput.dataset.placeId = place.id; // placeId 저장
 
-                    //여기가 의문이네
                     const placeIdInput = document.getElementById(`placeId${currentPlaceInput.id.replace('placeName', '')}`);
                     if (placeIdInput) placeIdInput.value = place.id; // hidden input에 placeId 저장
                     const transportInput = document.getElementById(`transport${currentPlaceInput.id.replace('placeName', '')}`);
                     if (transportInput) transportInput.value = transportSelections[currentPlaceInput.id.replace('placeName', '')] || "TRANSIT";
                     searchResultsContainer.classList.remove("visible");
+                    const collapseButton = document.getElementById("collapseButton");
+                    collapseButton.classList.remove("expanded");
                     isSearchVisible = false;
                 }
             });
@@ -102,17 +100,18 @@ function attachEventsToSingleInput(input, map) {
     });
     input.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
-            event.preventDefault();
-            // console.log("Enter 누름, 선택된 필드:", currentPlaceInput?.id);
-            searchPlaceByText(map);
-            const collapseButton = document.getElementById("collapseButton");
-            collapseButton.style.left = "189%";
+            if (input.name.startsWith("placeNames")) {
+                event.preventDefault();
+                searchPlaceByText(map);
+                const collapseButton = document.getElementById("collapseButton");
+                collapseButton.classList.add("expanded");
+            }
         }
     });
 }
 
 function initializePlaceEvents(map) {
-    const placeInputs = document.getElementsByName("placeNames");
+    const placeInputs = document.querySelectorAll(".placeInput input[type='text']");
     // console.log("초기 placeInputs 개수:", placeInputs.length);
     placeInputs.forEach(input => {
         if (!input.dataset.eventAttached) {
@@ -126,7 +125,7 @@ function initializePlaceEvents(map) {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach(mutation => {
                 if (mutation.addedNodes.length) {
-                    const newPlaceInputs = document.getElementsByName("placeNames");
+                    const newPlaceInputs = document.querySelectorAll(".placeInput input[type='text']");
                     // console.log("동적 추가 후 placeInputs 개수:", newPlaceInputs.length);
                     newPlaceInputs.forEach(input => {
                         if (!input.dataset.eventAttached) {
@@ -139,8 +138,6 @@ function initializePlaceEvents(map) {
         });
         observer.observe(placeContainer, { childList: true, subtree: true });
         // console.log("placeContainer 관찰 시작");
-    } else {
-        console.log("placeContainer 없음");
     }
 }
 

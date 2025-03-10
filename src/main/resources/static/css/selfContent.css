@@ -203,14 +203,15 @@
     z-index: -1;
     position: fixed;
     top: 24px;
+    left: 66px;
     width: 328px;
     background-color: transparent;
-    transform: translate(0);
+    transform: translate(-4px);
     transition: transform 0.3s ease-in-out;
 }
 
 #searchResultsContainer.visible {
-    transform: translateX(360px);
+    transform: translateX(364px);
 }
 
 #searchResults {
