@@ -1,8 +1,6 @@
 package com.preplan.autoplan.googleApi;
 
 import com.preplan.autoplan.domain.keyword.Transport;
-import com.preplan.autoplan.googleApi.ComputeRoutesResponse.Route.Polyline;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -114,23 +112,27 @@ public class RouteService {
     }
 
     private ComputeRoutesResponse combineResponses(List<ComputeRoutesResponse> responses) {
-        int totalDistance = 0;
-        long totalDuration = 0;
-        StringBuilder polyline = new StringBuilder();
+        int totalDistance = responses.stream()
+                .mapToInt(response -> response.routes().get(0).distanceMeters())
+                .sum();
+        long totalDuration = responses.stream()
+                .mapToLong(response -> Long.parseLong(response.routes().get(0).duration().replace("s", "")))
+                .sum();
+
         List<ComputeRoutesResponse.Route.Leg> combinedLegs = new ArrayList<>();
-
         for (ComputeRoutesResponse response : responses) {
-            ComputeRoutesResponse.Route route = response.routes().get(0);
-            totalDistance += route.distanceMeters();
-            totalDuration += Long.parseLong(route.duration().replace("s", ""));
-            polyline.append(route.polyline().encodedPolyline());
-            combinedLegs.addAll(route.legs() != null ? route.legs() : List.of());
+            combinedLegs.addAll(response.routes().get(0).legs());
         }
-
+        StringBuilder polyline = new StringBuilder();
+        for (ComputeRoutesResponse response : responses) {
+            for (ComputeRoutesResponse.Route.Leg leg : response.routes().get(0).legs()) {
+                polyline.append(leg.polyline().encodedPolyline());
+            }
+        }
         ComputeRoutesResponse.Route combinedRoute = new ComputeRoutesResponse.Route(
                 totalDistance,
                 totalDuration + "s",
-                new Polyline(polyline.toString()),
+                new ComputeRoutesResponse.Polyline(polyline.toString()),
                 combinedLegs);
 
         return new ComputeRoutesResponse(List.of(combinedRoute));

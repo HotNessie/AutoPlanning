@@ -29,32 +29,11 @@ public record ComputeRoutesResponse(
         public record Leg(
                 int distanceMeters,
                 String duration,
-                Location startLocation,
-                Location endLocation,
-                List<Step> steps) {
-
-        }
-
-        public record Polyline(
-                String encodedPolyline) {
-
-        }
-
-        public record Location(
-                LatLng latLng) {
-
-            public record LatLng(
-                    double latitude,
-                    double longitude) {
-
-            }
+                Polyline polyline) {
         }
     }
 
-    public record Step(
-            int distanceMeters,
-            String instruction,
-            Transport travelMode) {
-
+    public record Polyline(
+            String encodedPolyline) {
     }
 }
