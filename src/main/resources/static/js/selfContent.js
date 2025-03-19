@@ -2,6 +2,7 @@ let placeCount = 2; // 초기 장소 개수
 const MAX_PLACES = 7; // 최대 장소 개수
 const MIN_PLACES = 2; //최소 장소 개수
 let transportSelections = Object.create(null);// 교통 수단 선택 상태 저장 객체 초기화
+let routePolylines = []; // 그려진 경로선들을 저장하는 배열
 
 // 캐싱 디테일 캐치해야 됨
 function generateCacheKey(request) {
@@ -106,6 +107,18 @@ function selectTransport(placeId, transport) {
     if (transportInput) transportInput.value = transport;
 }
 
+// 경로 삭제 함수 전역파일 하나 만들어서 관리하는게 좋을 듯
+function clearAllRoutes() {
+    // 모든 경로를 지도에서 제거
+    for (let i = 0; i < routePolylines.length; i++) {
+        routePolylines[i].setMap(null);
+    }
+    routePolylines = [];
+}
+
+// 전역에서 함수 접근 가능하도록 설정
+window.clearAllRoutes = clearAllRoutes;
+
 document.addEventListener("DOMContentLoaded", () => {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -155,6 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             return;
                         }
 
+                        // 기존 경로 제거
+                        clearAllRoutes();
+
                         // geometry 라이브러리 로드 확인 및 로드
                         let geometry;
 
@@ -173,13 +189,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             try {
                                 const path = geometry.encoding.decodePath(leg.polyline.encodedPolyline);
-                                new google.maps.Polyline({
+                                const polyline = new google.maps.Polyline({
                                     path: path,
-                                    strokeColor: index % 2 === 0 ? '#FF0000' : '#0000FF', // 구간별 색상
+                                    strokeColor: '#f0659b',
                                     // strokeOpacity: 1.0,
-                                    strokeWeight: 3,
+                                    strokeWeight: 5,
                                     map: window.map // initMap.js의 전역 map
                                 });
+                                // 생성된 폴리라인을 배열에 저장
+                                routePolylines.push(polyline);
                             } catch (e) {
                                 console.error("폴리라인 디코딩 오류:", e);
                             }

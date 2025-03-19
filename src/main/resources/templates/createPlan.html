@@ -138,6 +138,13 @@
   <div id="map" style="width:125vw; height: 100vh;"></div>
 
   <div class="customBottomRight"></div>
+  <!-- 경로 지우기 버튼 추가 -->
+  <button class="clearRoutesBtn custom-map-control-button" onclick="clearAllRoutes()">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
+      <path
+        d="M19.36,2.72L20.78,4.14L16.06,8.85L16.92,9.71L21.63,5L23.05,6.42L16.63,12.84L10.71,18.76L7.29,15.34L3,19.63V3L19.36,2.72M16.92,7.44L18.33,6.03L5.97,6.18V17L7.8,15.17L10.71,18.08L15.3,13.5L16.92,7.44Z" />
+    </svg>
+  </button>
   <button class="customCurrentPosition custom-map-control-button">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
       <path
@@ -190,6 +197,11 @@
       const searchResultsContainer = document.getElementById("searchResultsContainer");
       const collapseButton = document.getElementById("collapseButton");
       const autoComplete = document.getElementById("autocomplete");
+
+      // 메뉴 변경 시 경로 지우기
+      if (window.clearAllRoutes) {
+        window.clearAllRoutes();
+      }
 
       fetch(url)
         .then(response => {
