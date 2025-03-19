@@ -1,6 +1,21 @@
 let placeCount = 2; // 초기 장소 개수
 const MAX_PLACES = 7; // 최대 장소 개수
 const MIN_PLACES = 2; //최소 장소 개수
+let transportSelections = Object.create(null);// 교통 수단 선택 상태 저장 객체 초기화
+
+// 캐싱 디테일 캐치해야 됨
+function generateCacheKey(request) {
+    return `route_${request.origin}_${request.destination}_${request.mode}`;
+}
+
+function cacheRoute(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
+
+function getCachedRoute(key) {
+    const cached = localStorage.getItem(key);
+    return cached ? JSON.parse(cached) : null;
+}
 
 function addPlace() {
     const placeContainer = document.getElementById("placeContainer");
@@ -70,7 +85,7 @@ function removePlace(placeId) {
         delete transportSelections[placeId];
     }
 }
-let transportSelections = {}; // 각 placeInput의 교통 수단 선택 저장
+// let transportSelections = {}; // 각 placeInput의 교통 수단 선택 저장
 
 function selectTransport(placeId, transport) {
     // 선택된 교통 수단 저장
@@ -87,31 +102,110 @@ function selectTransport(placeId, transport) {
     });
 
     // console.log(`Selected transport for ${placeId}: ${transport}`);
+    const transportInput = document.getElementById(`transport${placeId.replace('place', '')}`)
+    if (transportInput) transportInput.value = transport;
 }
 
-// 출발/도착 시간 기본값 설정 (MutationObserver로 프래그먼트 로드 감지)
 document.addEventListener("DOMContentLoaded", () => {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.addedNodes.length) {
-                const selfContent = document.querySelector(".selfContent");
-                if (selfContent) {
-                    const departureTimeInput = document.getElementById("departureTime");
+                const routeForm = document.getElementById("routeForm");
+                if (routeForm && !routeForm.dataset.listenerAdded) {
+                    routeForm.addEventListener("submit", async (event) => {
+                        event.preventDefault();
 
-                    const now = new Date();
-                    const year = now.getFullYear();
-                    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-                    const day = now.getDate().toString().padStart(2, '0');
-                    const hours = now.getHours().toString().padStart(2, '0');
-                    const minutes = now.getMinutes().toString().padStart(2, '0');
-                    departureTimeInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                        const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
+                        let hasError = false;
+                        // self 검색창 엔터 눌러서 입력시키기 validation 여기서 해
+                        placeIdInputs.forEach(input => {
+                            if (!input.value) {
+                                hasError = true;
+                                const nameInput = input.previousElementSibling; // placeName input
+                                nameInput.style.border = "1px solid red"; // 시각적 피드백
+                            }
+                        });
+                        if (hasError) {
+                            event.preventDefault();
+                            const existingError = routeForm.querySelector(".error-message");
+                            if (existingError) existingError.remove();
+                            const errorDiv = document.createElement("div");
+                            errorDiv.className = "error-message";
+                            errorDiv.style.color = "red";
+                            errorDiv.style.fontSize = "14px";
+                            //안내메시지 수정하는게 좋을 듯
+                            errorDiv.textContent = "검색을 통해 정확한 장소를 선택해 주세요.";
+                            routeForm.prepend(errorDiv);
+                            return;
+                        }
 
-                    observer.disconnect(); // 관찰 중단 (한 번만 실행)
+                        //그냥 여기서 controller를 호출. 페이지 리로드 하지마
+                        const formData = new FormData(routeForm);
+                        const response = await fetch("/route/compute", {
+                            method: "POST",
+                            body: formData,
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            let errorMessage = "입력 오류:\n";
+                            for (let field in errorData) {
+                                errorMessage += `${field}: ${errorData[field]}\n`;
+                            }
+                            return;
+                        }
+
+                        // geometry 라이브러리 로드 확인 및 로드
+                        let geometry;
+
+                        geometry = await google.maps.importLibrary("geometry");
+                        console.log("Geometry library loaded successfully");
+
+                        const data = await response.json();
+                        const legs = data.routes[0].legs;
+
+                        //routes 표시
+                        legs.forEach((leg, index) => {
+                            if (!leg.polyline || !leg.polyline.encodedPolyline) {
+                                console.warn("폴리라인 정보가 없습니다:", leg);
+                                return;
+                            }
+
+                            try {
+                                const path = geometry.encoding.decodePath(leg.polyline.encodedPolyline);
+                                new google.maps.Polyline({
+                                    path: path,
+                                    strokeColor: index % 2 === 0 ? '#FF0000' : '#0000FF', // 구간별 색상
+                                    // strokeOpacity: 1.0,
+                                    strokeWeight: 3,
+                                    map: window.map // initMap.js의 전역 map
+                                });
+                            } catch (e) {
+                                console.error("폴리라인 디코딩 오류:", e);
+                            }
+                        });
+
+                        // 지도 경계 조정
+                        try {
+                            const bounds = new google.maps.LatLngBounds();
+                            legs.forEach(leg => {
+                                if (leg.polyline && leg.polyline.encodedPolyline) {
+                                    geometry.encoding.decodePath(leg.polyline.encodedPolyline)
+                                        .forEach(coord => bounds.extend(coord));
+                                }
+                            });
+                            if (!bounds.isEmpty()) {
+                                window.map.fitBounds(bounds);
+                            }
+                        } catch (e) {
+                            console.error("지도 경계 조정 오류:", e);
+                        }
+                    });
+                    routeForm.dataset.listenerAdded = "true"; // 중복 추가 방지
+                    observer.disconnect(); // 감지 종료
                 }
             }
         });
     });
-
-    // 문서 전체를 관찰 (selfContent 프래그먼트 추가 감지)
     observer.observe(document.body, { childList: true, subtree: true });
 });

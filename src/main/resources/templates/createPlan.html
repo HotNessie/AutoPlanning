@@ -88,8 +88,6 @@
             <span id="bookmark_content_span" class="navbar_text hover_li">My</span>
           </button>
         </li>
-
-
         <li id="history_content_list" class="content_list">
           <button id="historyButton"
             onclick="loadContent('/historyContent'); selectMenu('history_content_list','history_menuSvg','history_content_span');"
@@ -107,8 +105,6 @@
             <span id="history_content_span" class="navbar_text hover_li">Past</span>
           </button>
         </li>
-
-
       </ul>
     </nav>
   </header>
@@ -165,10 +161,17 @@
 
   <!--구글 지도 라이브러리-->
   <script>
-    (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
-      key: "",
-      v: "weekly"
-    });
+    fetch("/api/google-maps-key")
+      .then(response => response.text()) // 응답을 텍스트로 변환
+      .then(apiKey => {
+        // Google Maps API 로드
+        (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+          key: apiKey,
+          v: "weekly",
+          libraries: "geometry" // geometry 라이브러리 명시적 추가
+        });
+      })
+      .catch(error => console.error("API 키를 가져오는 데 실패했습니다:", error));
   </script>
   <script type="module" src="js/map/initMap.js"></script>
 

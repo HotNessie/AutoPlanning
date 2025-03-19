@@ -1,5 +1,4 @@
 //지도 기본 위치
-//지도 기본 위치
 import { handleSearch } from './handlingSearch/handleSearch.js';
 import { findBySearch } from './handlingSearch/findBySearch.js';
 import { selectSuggestion, handleEmptyInput, handleSelection } from './handlingSearch/selectSuggestionEvent.js';
@@ -19,6 +18,9 @@ async function initMap() {
     await google.maps.importLibrary("places");
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
+  // Geometry 라이브러리 명시적 로드
+  const { Geometry } = await google.maps.importLibrary("geometry");
+  window.googleGeometry = Geometry; // 전역에서 사용 가능하도록 저장
 
   infoWindow = new google.maps.InfoWindow();
 
@@ -53,6 +55,7 @@ async function initMap() {
       }
     );
     // marker(map, map.getCenter(), "NOW", infoWindow, content);
+    window.map = map;
 
     const parser = new DOMParser();
     // A marker with a custom inline SVG.
@@ -129,6 +132,7 @@ async function initMap() {
     map.setZoom(map.getZoom() - 2);
   });
 }
+
 function updateInfoWindow(content, center) {
   infoWindow.setContent(content);
   infoWindow.setPosition(center);
