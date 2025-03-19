@@ -1,9 +1,10 @@
 package com.preplan.autoplan.googleApi;
 
-import com.preplan.autoplan.domain.keyword.Transport;
 import java.time.Duration;
 import java.util.List;
 
+//google api와의 통신용
+//Plan에 저장시킬 수 있음. Route의 정보(Polyline, 소요 시간, 거리)
 public record ComputeRoutesResponse(
         List<Route> routes) {
 
@@ -30,10 +31,12 @@ public record ComputeRoutesResponse(
                 int distanceMeters,
                 String duration,
                 Polyline polyline) {
+
         }
     }
 
     public record Polyline(
             String encodedPolyline) {
+
     }
 }

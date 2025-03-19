@@ -1,0 +1,102 @@
+---
+id: 1fcc6d4b-4a22-44ef-9e19-2f7dbbd7a03a
+---
+erDiagram
+    %% Tables and Attributes
+    Member {
+        long id PK
+        string password
+        string name
+        string email UK
+        int birthYear
+        enum sex
+        enum status
+        datetime createdDate
+    }
+
+    Plan {
+        long id PK
+        long member_id FK
+        string region
+        datetime startTime
+        datetime endTime
+        int likes
+        int bookmarks
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    Route {
+        long id PK
+        long plan_id FK
+        long place_id FK
+        int sequence
+        string transportMode
+        long stayTime
+        string memo
+    }
+
+    Place {
+        long id PK
+        string placeId UK
+        string name
+        string address
+        double latitude
+        double longitude
+        int searchCount
+        long averageStayTime
+    }
+
+    PlaceKeyword {
+        long id PK
+        long place_id FK
+        enum purposeKeyword
+        enum moodKeyword
+        int count
+    }
+
+    Like {
+        long id PK
+        long member_id FK
+        long plan_id FK
+        datetime createdAt
+    }
+
+    Bookmark {
+        long id PK
+        long member_id FK
+        long plan_id FK
+        datetime createdAt
+    }
+
+    %% ElementCollection Tables
+    PlaceTopPurposeKeywords {
+        long place_id FK
+        string top_purpose_keyword
+    }
+
+    PlaceTopMoodKeywords {
+        long place_id FK
+        string top_mood_keyword
+    }
+
+    PlanPurposeKeywords {
+        long plan_id FK
+        string purpose_keyword
+    }
+
+    PlanMoodKeywords {
+        long plan_id FK
+        string mood_keyword
+    }
+
+    %% Relationships
+    Member ||--o{ Plan : "creates"
+    Member ||--o{ Like : "adds"
+    Member ||--o{ Bookmark : "adds"
+    Plan ||--o{ Route : "contains"
+    Plan ||--o{ Like : "receives"
+    Plan ||--o{ Bookmark : "receives"
+    Place ||--o{ Route : "is part of"
+    Place ||--o{ PlaceKeyword : "has"
+    Place ||--o{ PlaceTopPurposeKeywords : "has"
