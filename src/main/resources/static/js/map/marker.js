@@ -8,21 +8,28 @@ export async function marker(map, place) {
 
   const infoWindow = new google.maps.InfoWindow();
 
-  let photoUri = "";
+  // 장소 정보에서 사진 가져오기
+  let photoHtml = "";
   if (place.photos && place.photos.length > 0) {
-    photoUri = await place.photos[0].getURI();
+    try {
+      const photoUri = await place.photos[0].getURI({ maxWidth: 150, maxHeight: 150 });
+      photoHtml = `<img src="${photoUri}" alt="${place.displayName}" style="width:150px;height:auto;margin-bottom:8px;">`;
+    } catch (error) {
+      console.warn("사진을 가져오는 데 실패했습니다:", error);
+    }
   }
 
+  // 인포윈도우 내용 설정
   const content = `
-            <div>
-                ${photoUri ? `<img src="${photoUri}" alt="Photo" style="width: 100px; height: 100px;">` : ""}
-            </div>
-            <div style="font-size:14px; line-height:1.5;">
-                <strong style="color:blue;">${place.displayName}</strong><br>
-                <span>Rating: ${place.rating} (${place.userRatingCount} reviews)</span>
-                <span>lat: ${place.location.lat()}, lng: ${place.location.lng()}</span>
-            </div>
-            `;
+    <div style="padding: 5px; max-width: 250px;">
+      ${photoHtml}
+      <div style="font-size:14px; line-height:1.5;">
+        <strong style="color:#c154ec;">${place.displayName}</strong>
+        ${place.formattedAddress ? `<p style="margin: 5px 0; font-size: 12px;">${place.formattedAddress}</p>` : ''}
+        ${place.rating ? `<div>★ ${place.rating.toFixed(1)} (${place.userRatingCount || 0})</div>` : ''}
+      </div>
+    </div>
+  `;
 
   const marker = new AdvancedMarkerElement({
     position: place.location,
@@ -33,23 +40,29 @@ export async function marker(map, place) {
     // content: scaleElement.element
   });
 
-  marker.addListener('click', ({ domEvent, latLng }) => {
-    infoWindow.setContent(content)
-    console.log(infoWindow)
-
-    infoWindow.open(map, marker);
+  // 'gmp-click' 이벤트 사용
+  marker.addListener('gmp-click', () => {
+    infoWindow.setContent(content);
+    infoWindow.open({
+      anchor: marker,
+      map: map
+    });
   });
 
-  marker.addListener('mouseover', ({ domEvent, latLng }) => { //왜 안대....
-    infoWindow.setContent(content)
-    console.log(infoWindow)
-    infoWindow.open(map, marker);
-    console.log(infoWindow)
+  // 'gmp-mouseover' 이벤트
+  marker.addListener('gmp-mouseover', () => {
+    infoWindow.setContent(content);
+    infoWindow.open({
+      anchor: marker,
+      map: map
+    });
   });
 
-  marker.addListener("mouseout", () => {
+  // 'gmp-mouseout' 이벤트
+  marker.addListener("gmp-mouseout", () => {
     infoWindow.close();
   });
+
   return marker;
 }
 

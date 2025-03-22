@@ -81,12 +81,18 @@ selfButton.addEventListener("click", () => {
 function removePlace(placeId) {
     const placeDiv = document.getElementById(`place${placeId}`);
     if (placeCount > MIN_PLACES) { // 최소 2개 유지
+        // 해당 장소의 마커도 제거
+        const placeIdInput = document.getElementById(`placeId${placeId}`);
+        if (placeIdInput && placeIdInput.value && window.placeMarkers && window.placeMarkers[placeIdInput.value]) {
+            window.placeMarkers[placeIdInput.value].setMap(null);
+            delete window.placeMarkers[placeIdInput.value];
+        }
+
         placeDiv.remove();
         placeCount--;
         delete transportSelections[placeId];
     }
 }
-// let transportSelections = {}; // 각 placeInput의 교통 수단 선택 저장
 
 function selectTransport(placeId, transport) {
     // 선택된 교통 수단 저장
@@ -107,13 +113,18 @@ function selectTransport(placeId, transport) {
     if (transportInput) transportInput.value = transport;
 }
 
-// 경로 삭제 함수 전역파일 하나 만들어서 관리하는게 좋을 듯
+// 경로와 마커 모두 지우는 함수 
 function clearAllRoutes() {
     // 모든 경로를 지도에서 제거
     for (let i = 0; i < routePolylines.length; i++) {
         routePolylines[i].setMap(null);
     }
     routePolylines = [];
+
+    // 모든 마커도 제거
+    if (window.clearAllPlaceMarkers) {
+        window.clearAllPlaceMarkers();
+    }
 }
 
 // 전역에서 함수 접근 가능하도록 설정
@@ -168,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             return;
                         }
 
-                        // 기존 경로 제거
+                        // 기존 경로 및 마커 제거
                         clearAllRoutes();
 
                         // geometry 라이브러리 로드 확인 및 로드

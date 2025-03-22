@@ -28,7 +28,8 @@ export async function findBySearch(Place, map) {
             "location",
             "rating",
             "userRatingCount",
-            "photos"
+            "photos",
+            "formattedAddress" // 주소 정보 추가
         ], // 가져올 필드
         maxResultCount: 20,
         locationBias: {
@@ -46,7 +47,27 @@ export async function findBySearch(Place, map) {
         const bounds = new google.maps.LatLngBounds();
 
         const markerPromises = places.map(async (place) => {
-            //marker
+            // place 객체에 formattedAddress 속성 직접 추가 (없는 경우 대비)
+            if (!place.formattedAddress && place.location) {
+                try {
+                    // 역지오코딩으로 주소 가져오기
+                    const geocoder = new google.maps.Geocoder();
+                    const response = await new Promise((resolve) => {
+                        geocoder.geocode({ 'location': place.location }, (results, status) => {
+                            if (status === google.maps.GeocoderStatus.OK && results[0]) {
+                                resolve(results[0].formatted_address);
+                            } else {
+                                resolve("");
+                            }
+                        });
+                    });
+                    place.formattedAddress = response;
+                } catch (error) {
+                    console.warn("주소를 가져오는 데 실패했습니다:", error);
+                }
+            }
+
+            // 마커 생성
             const newMarker = await marker(map, place);
             markers.push(newMarker);
 

@@ -198,9 +198,11 @@
       const collapseButton = document.getElementById("collapseButton");
       const autoComplete = document.getElementById("autocomplete");
 
-      // 메뉴 변경 시 경로 지우기
+      // 메뉴 변경 시 경로와 마커 모두 지우기
       if (window.clearAllRoutes) {
         window.clearAllRoutes();
+      } else if (window.clearAllPlaceMarkers) {
+        window.clearAllPlaceMarkers();
       }
 
       fetch(url)
