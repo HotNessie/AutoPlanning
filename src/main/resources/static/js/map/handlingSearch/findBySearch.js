@@ -1,16 +1,6 @@
 //검색, marker, bound지정
 import { searchInput, suggestion } from '../dom-elements.js';
-import { marker } from '../marker.js';
-
-let markers = [];
-
-//기존 마커 삭제
-function clearMarkers() {
-    if (markers.length > 0) {
-        markers.forEach((marker) => { marker.map = null; })
-    }
-    markers = [];
-}
+import { marker, markerManager } from '../marker.js';
 
 export async function findBySearch(Place, map) {
     const inputText = searchInput.value.trim(); // 검색어 가져오기
@@ -40,7 +30,8 @@ export async function findBySearch(Place, map) {
 
     const { places } = await Place.searchByText(request);
 
-    clearMarkers();
+    // 기존 마커 지우기
+    markerManager.clearMarkers();
 
     //하나씩 마커 찍어주기
     if (places.length) {
@@ -69,7 +60,7 @@ export async function findBySearch(Place, map) {
 
             // 마커 생성
             const newMarker = await marker(map, place);
-            markers.push(newMarker);
+            markerManager.addMarker(newMarker);
 
             //zoom레벨 설정을 위한
             bounds.extend(place.location);

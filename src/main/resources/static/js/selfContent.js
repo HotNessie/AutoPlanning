@@ -20,11 +20,13 @@ function getCachedRoute(key) {
 
 function addPlace() {
     const placeContainer = document.getElementById("placeContainer");
+    const placeEnd = document.getElementById("placeEnd");
 
     if (placeCount < MAX_PLACES) {
         const newPlaceDiv = document.createElement("div");
         newPlaceDiv.className = "placeInput";
         newPlaceDiv.id = `place${placeCount}`;
+
         newPlaceDiv.innerHTML = `
                 <button type="button" class="removePlaceBtn" onclick="removePlace('${placeCount}')">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
@@ -59,8 +61,9 @@ function addPlace() {
                 <input type="number" id="placeTime${placeCount}" name="placeNames[${placeCount}].time" min="1" placeholder="분" required>
             </div>
         `;
-        const secPlaceInput = document.getElementById("placeEnd")
-        placeContainer.insertBefore(newPlaceDiv, secPlaceInput);
+
+        // 항상 도착지 앞에 추가
+        placeContainer.insertBefore(newPlaceDiv, placeEnd);
         placeCount++;
     } else {
         placeCount++;
@@ -83,9 +86,8 @@ function removePlace(placeId) {
     if (placeCount > MIN_PLACES) { // 최소 2개 유지
         // 해당 장소의 마커도 제거
         const placeIdInput = document.getElementById(`placeId${placeId}`);
-        if (placeIdInput && placeIdInput.value && window.placeMarkers && window.placeMarkers[placeIdInput.value]) {
-            window.placeMarkers[placeIdInput.value].setMap(null);
-            delete window.placeMarkers[placeIdInput.value];
+        if (placeIdInput && placeIdInput.value && window.markerManager) {
+            window.markerManager.removePlaceMarker(placeIdInput.value);
         }
 
         placeDiv.remove();
@@ -121,9 +123,9 @@ function clearAllRoutes() {
     }
     routePolylines = [];
 
-    // 모든 마커도 제거
-    if (window.clearAllPlaceMarkers) {
-        window.clearAllPlaceMarkers();
+    // 모든 마커도 제거 (선택적)
+    if (window.markerManager) {
+        window.markerManager.clearAllPlaceMarkers();
     }
 }
 
@@ -139,6 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     routeForm.addEventListener("submit", async (event) => {
                         event.preventDefault();
 
+                        // 경로 순서를 올바르게 조정하는 로직 추가
+                        adjustPlaceIndices();
+
+                        //검증
                         const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
                         let hasError = false;
                         // self 검색창 엔터 눌러서 입력시키기 validation 여기서 해
@@ -199,12 +205,13 @@ document.addEventListener("DOMContentLoaded", () => {
                             }
 
                             try {
+                                const strokeColor = index % 2 === 0 ? '#f0659b' : '#c154ec';
+                                const strokeWeight = index % 2 === 0 ? 5 : 3;
                                 const path = geometry.encoding.decodePath(leg.polyline.encodedPolyline);
                                 const polyline = new google.maps.Polyline({
                                     path: path,
-                                    strokeColor: '#f0659b',
-                                    // strokeOpacity: 1.0,
-                                    strokeWeight: 5,
+                                    strokeColor: strokeColor,
+                                    strokeWeight: strokeWeight,
                                     map: window.map // initMap.js의 전역 map
                                 });
                                 // 생성된 폴리라인을 배열에 저장
@@ -238,3 +245,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 });
+
+// 경로 순서 조정 함수
+function adjustPlaceIndices() {
+    const placeContainer = document.getElementById("placeContainer");
+    const allPlaceInputs = placeContainer.querySelectorAll(".placeInput");
+    const totalPlaces = allPlaceInputs.length;
+
+    // 모든 장소 input 태그에 대해 인덱스 재조정
+    allPlaceInputs.forEach((placeDiv, index) => {
+        const isEnd = placeDiv.id === "placeEnd";
+        const actualIndex = isEnd ? totalPlaces - 1 : index; // 도착지는 항상 마지막 인덱스
+
+        // 이름 input 재설정
+        const nameInput = placeDiv.querySelector("input[type='text']");
+        if (nameInput) {
+            nameInput.name = `placeNames[${actualIndex}].name`;
+        }
+
+        // placeId input 재설정
+        const placeIdInput = placeDiv.querySelector("input[type='hidden'][name$='.placeId']");
+        if (placeIdInput) {
+            placeIdInput.name = `placeNames[${actualIndex}].placeId`;
+        }
+
+        // transport input 재설정 (있는 경우)
+        const transportInput = placeDiv.querySelector("input[type='hidden'][name$='.transport']");
+        if (transportInput) {
+            transportInput.name = `placeNames[${actualIndex}].transport`;
+        }
+
+        // time input 재설정
+        const timeInput = placeDiv.querySelector("input[type='number'][name$='.time']");
+        if (timeInput) {
+            timeInput.name = `placeNames[${actualIndex}].time`;
+        }
+    });
+}

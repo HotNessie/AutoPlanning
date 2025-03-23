@@ -184,7 +184,13 @@
 
   <!--self js-->
   <script src="js/selfContent.js"></script>
-  <script src="js/map/handlingSearch/selfFind.js"></script>
+  <script type="module" src="js/map/handlingSearch/selfFind.js"></script>
+
+  <!-- 마커 호출 -->
+  <script type="module">
+    import { markerManager } from '/js/map/marker.js';
+    window.markerManager = markerManager;
+  </script>
 
   <!--html css요소 script-->
   <script>
