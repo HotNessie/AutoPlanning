@@ -62,7 +62,7 @@ async function searchPlaceByText(map) {
         ? place.photos.slice(0, 3).map(photo => photo.getURI({ maxWidth: 100, maxHeight: 100 }))
         : [];
       resultItem.innerHTML = `
-                <div class="place-name">${place.displayName}</div>
+                <button class="place-name">${place.displayName}</button>
                 <div class="place-rating">
                     Rating: ${place.rating || "N/A"} 
                     (${place.userRatingCount || "N/A"} reviews)
@@ -145,7 +145,8 @@ function attachEventsToSingleInput(input, map) {
   });
 }
 
-function initializePlaceEvents(map) {
+// initializePlaceEvents 함수를 export하여 외부에서 사용 가능하게 함
+export function initializePlaceEvents(map) {
   const placeInputs = document.querySelectorAll(".placeInput input[type='text']");
   // console.log("초기 placeInputs 개수:", placeInputs.length);
   placeInputs.forEach(input => {
@@ -174,6 +175,9 @@ function initializePlaceEvents(map) {
     observer.observe(placeContainer, { childList: true, subtree: true });
     // console.log("placeContainer 관찰 시작");
   }
+
+  // 전역 접근을 위해 window 객체에도 할당
+  window.searchPlaceByText = (map) => searchPlaceByText(map);
 }
 
 // DOM 로드 후 selfContent 감지

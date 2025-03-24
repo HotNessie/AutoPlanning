@@ -71,6 +71,7 @@ function addPlace() {
     }
 }
 
+//self 메뉴 확장시 자동완성창 삭제
 function removeAutoComplete() {
     const autoComplete = document.getElementById("autocomplete");
     autoComplete.classList.add("autoComplete_displayNone");
@@ -81,6 +82,7 @@ selfButton.addEventListener("click", () => {
     removeAutoComplete();
 })
 
+//경유지 삭제
 function removePlace(placeId) {
     const placeDiv = document.getElementById(`place${placeId}`);
     if (placeCount > MIN_PLACES) { // 최소 2개 유지
@@ -122,122 +124,130 @@ function clearAllRoutes() {
         routePolylines[i].setMap(null);
     }
     routePolylines = [];
-
-    // 모든 마커도 제거 (선택적)
-    if (window.markerManager) {
-        window.markerManager.clearAllPlaceMarkers();
-    }
 }
 
 // 전역에서 함수 접근 가능하도록 설정
 window.clearAllRoutes = clearAllRoutes;
 
+// 전역 함수로 경로 폼 이벤트 핸들러 설정
+window.initRouteFormHandler = function () {
+    const routeForm = document.getElementById("routeForm");
+    if (routeForm && !routeForm.dataset.listenerAdded) {
+        routeForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            // 경로 순서를 올바르게 조정하는 로직 추가
+            adjustPlaceIndices();
+
+            //검증
+            const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
+            let hasError = false;
+            // self 검색창 엔터 눌러서 입력시키기 validation 여기서 해
+            //TODO: validation 걸린 뒤 올바른 값으로 수정하면 validation 사라지도록 해야 함
+            placeIdInputs.forEach(input => {
+                if (!input.value) {
+                    hasError = true;
+                    const nameInput = input.previousElementSibling; // placeName input
+                    nameInput.style.border = "1px solid red";
+                }
+            });
+            if (hasError) {
+                event.preventDefault();
+                const existingError = routeForm.querySelector(".error-message");
+                if (existingError) existingError.remove();
+                const errorDiv = document.createElement("div");
+                errorDiv.className = "error-message";
+                errorDiv.style.color = "red";
+                errorDiv.style.fontSize = "14px";
+                //안내메시지 수정하는게 좋을 듯
+                errorDiv.textContent = "검색을 통해 정확한 장소를 선택해 주세요.";
+                routeForm.prepend(errorDiv);
+                return;
+            }
+
+            //그냥 여기서 controller를 호출. 페이지 리로드 하지마
+            //TODO: 가끔 json페이지가 반환되는 경우가 있음 확인 필요
+            const formData = new FormData(routeForm);
+            const response = await fetch("/route/compute", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                let errorMessage = "입력 오류:\n";
+                for (let field in errorData) {
+                    errorMessage += `${field}: ${errorData[field]}\n`;
+                }
+                return;
+            }
+
+            // 기존 경로 및 마커 제거
+            clearAllRoutes();
+
+            // geometry 라이브러리 로드 확인 및 로드
+            let geometry;
+
+            geometry = await google.maps.importLibrary("geometry");
+            console.log("Geometry library loaded successfully");
+
+            const data = await response.json();
+            const legs = data.routes[0].legs;
+
+            //routes 표시
+            legs.forEach((leg, index) => {
+                if (!leg.polyline || !leg.polyline.encodedPolyline) {
+                    console.warn("폴리라인 정보가 없습니다:", leg);
+                    return;
+                }
+
+                try {
+                    const strokeColor = index % 2 === 0 ? '#f0659b' : '#c154ec';
+                    const strokeWeight = index % 2 === 0 ? 5 : 3;
+                    const path = geometry.encoding.decodePath(leg.polyline.encodedPolyline);
+                    const polyline = new google.maps.Polyline({
+                        path: path,
+                        strokeColor: strokeColor,
+                        strokeWeight: strokeWeight,
+                        map: window.map // initMap.js의 전역 map
+                    });
+                    // 생성된 폴리라인을 배열에 저장
+                    routePolylines.push(polyline);
+                } catch (e) {
+                    console.error("폴리라인 디코딩 오류:", e);
+                }
+            });
+
+            // 지도 경계 조정
+            try {
+                const bounds = new google.maps.LatLngBounds();
+                legs.forEach(leg => {
+                    if (leg.polyline && leg.polyline.encodedPolyline) {
+                        geometry.encoding.decodePath(leg.polyline.encodedPolyline)
+                            .forEach(coord => bounds.extend(coord));
+                    }
+                });
+                if (!bounds.isEmpty()) {
+                    window.map.fitBounds(bounds);
+                }
+            } catch (e) {
+                console.error("지도 경계 조정 오류:", e);
+            }
+        });
+        routeForm.dataset.listenerAdded = "true"; // 중복 추가 방지
+    }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.addedNodes.length) {
-                const routeForm = document.getElementById("routeForm");
-                if (routeForm && !routeForm.dataset.listenerAdded) {
-                    routeForm.addEventListener("submit", async (event) => {
-                        event.preventDefault();
-
-                        // 경로 순서를 올바르게 조정하는 로직 추가
-                        adjustPlaceIndices();
-
-                        //검증
-                        const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
-                        let hasError = false;
-                        // self 검색창 엔터 눌러서 입력시키기 validation 여기서 해
-                        placeIdInputs.forEach(input => {
-                            if (!input.value) {
-                                hasError = true;
-                                const nameInput = input.previousElementSibling; // placeName input
-                                nameInput.style.border = "1px solid red"; // 시각적 피드백
-                            }
-                        });
-                        if (hasError) {
-                            event.preventDefault();
-                            const existingError = routeForm.querySelector(".error-message");
-                            if (existingError) existingError.remove();
-                            const errorDiv = document.createElement("div");
-                            errorDiv.className = "error-message";
-                            errorDiv.style.color = "red";
-                            errorDiv.style.fontSize = "14px";
-                            //안내메시지 수정하는게 좋을 듯
-                            errorDiv.textContent = "검색을 통해 정확한 장소를 선택해 주세요.";
-                            routeForm.prepend(errorDiv);
-                            return;
-                        }
-
-                        //그냥 여기서 controller를 호출. 페이지 리로드 하지마
-                        const formData = new FormData(routeForm);
-                        const response = await fetch("/route/compute", {
-                            method: "POST",
-                            body: formData,
-                        });
-
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            let errorMessage = "입력 오류:\n";
-                            for (let field in errorData) {
-                                errorMessage += `${field}: ${errorData[field]}\n`;
-                            }
-                            return;
-                        }
-
-                        // 기존 경로 및 마커 제거
-                        clearAllRoutes();
-
-                        // geometry 라이브러리 로드 확인 및 로드
-                        let geometry;
-
-                        geometry = await google.maps.importLibrary("geometry");
-                        console.log("Geometry library loaded successfully");
-
-                        const data = await response.json();
-                        const legs = data.routes[0].legs;
-
-                        //routes 표시
-                        legs.forEach((leg, index) => {
-                            if (!leg.polyline || !leg.polyline.encodedPolyline) {
-                                console.warn("폴리라인 정보가 없습니다:", leg);
-                                return;
-                            }
-
-                            try {
-                                const strokeColor = index % 2 === 0 ? '#f0659b' : '#c154ec';
-                                const strokeWeight = index % 2 === 0 ? 5 : 3;
-                                const path = geometry.encoding.decodePath(leg.polyline.encodedPolyline);
-                                const polyline = new google.maps.Polyline({
-                                    path: path,
-                                    strokeColor: strokeColor,
-                                    strokeWeight: strokeWeight,
-                                    map: window.map // initMap.js의 전역 map
-                                });
-                                // 생성된 폴리라인을 배열에 저장
-                                routePolylines.push(polyline);
-                            } catch (e) {
-                                console.error("폴리라인 디코딩 오류:", e);
-                            }
-                        });
-
-                        // 지도 경계 조정
-                        try {
-                            const bounds = new google.maps.LatLngBounds();
-                            legs.forEach(leg => {
-                                if (leg.polyline && leg.polyline.encodedPolyline) {
-                                    geometry.encoding.decodePath(leg.polyline.encodedPolyline)
-                                        .forEach(coord => bounds.extend(coord));
-                                }
-                            });
-                            if (!bounds.isEmpty()) {
-                                window.map.fitBounds(bounds);
-                            }
-                        } catch (e) {
-                            console.error("지도 경계 조정 오류:", e);
-                        }
-                    });
-                    routeForm.dataset.listenerAdded = "true"; // 중복 추가 방지
+                const selfContent = document.querySelector(".selfContent");
+                if (selfContent) {
+                    // 전역 함수 호출로 변경
+                    if (window.initRouteFormHandler) {
+                        window.initRouteFormHandler();
+                    }
                     observer.disconnect(); // 감지 종료
                 }
             }

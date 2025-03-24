@@ -24,7 +24,8 @@
 <div class="selfContent" th:fragment="selfContent">
     <div id="collapseSelfBody" class="card card-body">
         <!-- 출발/도착 시간 및 교통 수단 입력 -->
-        <form id="routeForm" action="/route/compute" method="POST">
+        <form id="routeForm" action="/route/compute" method="POST" onsubmit="return false;">
+            <!-- submit을 항상 반환하지 않음 -->
             <div class="travel departure">
                 <div class="time-label">출발 시간</div>
                 <div class="time-display">
