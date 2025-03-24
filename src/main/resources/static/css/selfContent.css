@@ -241,6 +241,10 @@
 .place-name {
     font-size: 17px;
     color: #c154ec;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    display: flex;
 }
 
 .place-rating {
