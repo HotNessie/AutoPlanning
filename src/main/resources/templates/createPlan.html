@@ -111,7 +111,7 @@
   <!--메뉴 상세-->
   <div id="content">
     <div id="collapseBody">
-      <div th:replace="fragments/planContent::hotContent">default message</div>
+      <div th:replace="~{fragments/hotContent :: .hotContent}">default message</div>
     </div>
 
     <!-- 여닫기 버튼 -->

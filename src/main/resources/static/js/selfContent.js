@@ -129,9 +129,11 @@ function clearAllRoutes() {
 // 전역에서 함수 접근 가능하도록 설정
 window.clearAllRoutes = clearAllRoutes;
 
-// 전역 함수로 경로 폼 이벤트 핸들러 설정
+// 컨트롤러 반환값 변경에 따른 DOM 구조 조정
 window.initRouteFormHandler = function () {
     const routeForm = document.getElementById("routeForm");
+
+    // selfContent 파일로 분리된 경우, 클래스 선택자 변경
     if (routeForm && !routeForm.dataset.listenerAdded) {
         routeForm.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -238,10 +240,12 @@ window.initRouteFormHandler = function () {
     }
 };
 
+// DOM 로드 후 selfContent 감지
 document.addEventListener("DOMContentLoaded", () => {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.addedNodes.length) {
+                // 새로운 fragment 구조에 맞게 조정
                 const selfContent = document.querySelector(".selfContent");
                 if (selfContent) {
                     // 전역 함수 호출로 변경
