@@ -18,6 +18,7 @@ function getCachedRoute(key) {
     return cached ? JSON.parse(cached) : null;
 }
 
+// 장소 추가 시 검색 버튼도 함께 추가
 function addPlace() {
     const placeContainer = document.getElementById("placeContainer");
     const placeEnd = document.getElementById("placeEnd");
@@ -34,7 +35,14 @@ function addPlace() {
                     </svg>
                 </button>
             <div class="placeInput-row">
-                <input type="text" id="placeName${placeCount}" name="placeNames[${placeCount}].name" placeholder="장소명">
+                <div class="search-input-container">
+                    <input type="text" id="placeName${placeCount}" name="placeNames[${placeCount}].name" placeholder="장소명">
+                    <button type="button" class="search-place-btn" onclick="searchPlaceByInputId('placeName${placeCount}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M21.71,20.29,18,16.61A9,9,0,1,0,16.61,18l3.68,3.68a1,1,0,0,0,1.42,0A1,1,0,0,0,21.71,20.29ZM11,18a7,7,0,1,1,7-7A7,7,0,0,1,11,18Z"/>
+                        </svg>
+                    </button>
+                </div>
                 <input type="hidden" id="placeId${placeCount}" name="placeNames[${placeCount}].placeId">
             </div>
 
@@ -51,7 +59,7 @@ function addPlace() {
                 </button>
                 <button type="button" class="transport-btn" data-transport="WALK" onclick="selectTransport('place${placeCount}', 'WALK')">
                     <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 24 24" width="16" height="16">
-                        <path d="m11,2.5c0-1.381,1.119-2.5,2.5-2.5s2.5,1.119,2.5,2.5-1.119,2.5-2.5,2.5-2.5-1.119-2.5-2.5Zm9.171,9.658l-2.625-1.312s-2.268-3.592-2.319-3.651c-.665-.76-1.625-1.195-2.634-1.195-1.274,0-2.549.301-3.688.871l-2.526,1.263c-.641.321-1.114.902-1.298,1.596l-.633,2.387c-.212.801.265,1.622,1.065,1.834.802.213,1.622-.264,1.834-1.065l.575-2.168,1.831-.916-.662,2.83c-.351,1.5.339,3.079,1.679,3.84l3.976,2.258c.156.089.253.256.253.436v3.336c0,.829.672,1.5,1.5,1.5s1.5-.671,1.5-1.5v-3.336c0-1.256-.679-2.422-1.771-3.043l-2.724-1.547.849-3.165.875,1.39c.146.232.354.42.599.543l3,1.5c.216.107.444.159.67.159.55,0,1.08-.304,1.343-.83.37-.741.07-1.642-.671-2.013Zm-10.312,5.465c-.812-.161-1.6.378-1.754,1.192l-.039.2-1.407,2.814c-.37.741-.07,1.642.671,2.013.215.107.444.159.67.159.55,0,1.08-.304,1.343-.83l1.5-3c.062-.123.106-.254.131-.39l.077-.404c.156-.813-.378-1.599-1.192-1.754Z"/>
+                        <path d="m11,2.5c0-1.381,1.119-2.5,2.5-2.5s2.5,1.119,2.5,2.5-1.119,2.5-2.5,2.5-2.5-1.119-2.5-2.5Zm9.171,9.658l-2.625-1.312s-2.268-3.592-2.319-3.651c-.665-.76-1.625-1.195-2.634-1.195-1.274,0-2.549.301-3.688,.871l-2.526,1.263c-.641.321-1.114.902-1.298,1.596l-.633,2.387c-.212.801.265,1.622,1.065,1.834.802.213,1.622-.264,1.834-1.065l.575-2.168,1.831-.916-.662,2.83c-.351,1.5.339,3.079,1.679,3.84l3.976,2.258c.156.089.253.256.253.436v3.336c0,.829.672,1.5,1.5,1.5s1.5-.671,1.5-1.5v-3.336c0-1.256-.679-2.422-1.771-3.043l-2.724-1.547.849-3.165.875,1.39c.146.232.354.42.599.543l3,1.5c.216.107.444.159.67.159.55,0,1.08-.304,1.343-.83.37-.741.07-1.642-.671-2.013Zm-10.312,5.465c-.812-.161-1.6.378-1.754,1.192l-.039.2-1.407,2.814c-.37.741-.07,1.642.671,2.013.215.107.444.159.67.159.55,0,1.08-.304,1.343-.83l1.5-3c.062-.123.106-.254.131-.39l.077-.404c.156-.813-.378-1.599-1.192-1.754Z"/>
                     </svg>
                 </button>
                 <input type="hidden" id="transport${placeCount}" name="placeNames[${placeCount}].transport" value="TRANSIT">
@@ -70,6 +78,31 @@ function addPlace() {
         alert("최대 7개 장소까지 추가 가능합니다.");
     }
 }
+
+// 전달된 ID를 가진 입력 요소로 검색 실행
+function searchPlaceByInputId(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input.value) {
+        return;
+    }
+
+    if (input) {
+        // 현재 입력 필드 설정
+        currentPlaceInput = input;
+
+        // 검색 실행
+        searchPlaceByText(window.map);
+
+        // collapse 버튼 확장
+        const collapseButton = document.getElementById("collapseButton");
+        if (collapseButton) {
+            collapseButton.classList.add("expanded");
+        }
+    }
+}
+
+// 전역에서 함수 접근 가능하도록 설정
+window.searchPlaceByInputId = searchPlaceByInputId;
 
 //self 메뉴 확장시 자동완성창 삭제
 function removeAutoComplete() {

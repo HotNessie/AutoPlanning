@@ -19,6 +19,7 @@ function removePreviousMarker(newPlaceId) {
   markerManager.removeUnusedMarkers(currentPlaceIds);
 }
 
+// searchPlaceByText 함수를 외부로 노출
 async function searchPlaceByText(map) {
   const { Place } = await google.maps.importLibrary("places");
 
@@ -111,21 +112,6 @@ async function searchPlaceByText(map) {
 
               // 적절한 줌 레벨 설정 (필요에 따라 조정)
               window.map.setZoom(15);
-
-              // 마커 정보창 표시 (사용자에게 시각적 피드백)
-              const infoWindow = new google.maps.InfoWindow({
-                content: `<div style="color:#333; padding:3px;"><strong>${place.displayName}</strong></div>`
-              });
-              infoWindow.open({
-                anchor: newMarker,
-                map: window.map,
-                shouldFocus: false
-              });
-
-              // 2초 후에 정보창 닫기
-              setTimeout(() => {
-                infoWindow.close();
-              }, 2000);
             }
           } else {
             console.error(`placeId를 저장할 input을 찾을 수 없습니다: ${currentPlaceInput.id}`);

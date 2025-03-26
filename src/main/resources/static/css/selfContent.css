@@ -289,3 +289,40 @@
     margin: 5px 0 0;
     font-size: 12px;
 }
+
+.search-input-container {
+    display: flex;
+    width: 100%;
+    position: relative;
+    align-items: center;
+}
+
+.search-input-container input {
+    flex-grow: 1;
+    padding-right: 30px;
+}
+
+.search-place-btn {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    width: 30px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-place-btn svg {
+    width: 14px;
+    height: 14px;
+    fill: rgba(193, 84, 236, 0.8);
+    /* transform 속성 제거 - 더 이상 회전이 필요없음 */
+}
+
+.search-place-btn:hover svg {
+    fill: rgba(240, 101, 155, 1);
+}
