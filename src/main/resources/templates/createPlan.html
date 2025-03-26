@@ -137,14 +137,26 @@
 
   <div id="map" style="width:125vw; height: 100vh;"></div>
 
-  <div class="customBottomRight"></div>
-  <!-- 경로 지우기 버튼 추가 -->
+  <div class="customBottomRight">
+    <!-- 모든 마커 보기 버튼 - 함수 호출 변경 -->
+    <button id="fitMarkersBtn" class="custom-map-control-button" onclick="window.fitAllMarkers()" title="모든 장소 보기">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <path d="M21,21H16v3h5.546A2.457,2.457,0,0,0,24,21.545V16H21Z" />
+        <path d="M0,2.455V8H3V3H8V0H2.454A2.457,2.457,0,0,0,0,2.455Z" />
+        <path d="M3,16H0v5.545A2.457,2.457,0,0,0,2.454,24H8V21H3Z" />
+        <path d="M21.546,0H16V3h5V8h3V2.455A2.457,2.457,0,0,0,21.546,0Z" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- 경로 지우기 버튼 - 아이콘 변경 -->
   <button class="clearRoutesBtn custom-map-control-button" onclick="clearAllRoutes(), clearAllPlaceMarkers()">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
       <path
-        d="M19.36,2.72L20.78,4.14L16.06,8.85L16.92,9.71L21.63,5L23.05,6.42L16.63,12.84L10.71,18.76L7.29,15.34L3,19.63V3L19.36,2.72M16.92,7.44L18.33,6.03L5.97,6.18V17L7.8,15.17L10.71,18.08L15.3,13.5L16.92,7.44Z" />
+        d="M16.24,3.56L21.19,8.5C21.97,9.29,21.97,10.55,21.19,11.34L12,20.53C10.44,22.09,7.91,22.09,6.34,20.53L2.81,17C2.03,16.21,2.03,14.95,2.81,14.16L13.41,3.56C14.2,2.78,15.46,2.78,16.24,3.56M4.22,15.58L7.76,19.11C8.54,19.9,9.8,19.9,10.59,19.11L14.12,15.58L9.17,10.63L4.22,15.58Z" />
     </svg>
   </button>
+
   <button class="customCurrentPosition custom-map-control-button">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
       <path

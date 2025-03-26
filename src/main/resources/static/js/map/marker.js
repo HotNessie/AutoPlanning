@@ -222,3 +222,44 @@ export class MarkerManager {
 
 // 글로벌 마커 매니저 인스턴스 생성
 export const markerManager = new MarkerManager();
+
+// 모든 마커가 지도에 표시되도록 경계 설정
+export function fitAllMarkers() {
+  // 현재 등록된 모든 placeId 수집
+  const placeIdInputs = document.querySelectorAll('input[type="hidden"][name$=".placeId"]');
+  const validPlaceIds = Array.from(placeIdInputs)
+    .filter(input => input.value) // 값이 있는 input만 선택
+    .map(input => input.value);    // placeId 값만 추출
+
+  // 마커 매니저에서 해당 placeId의 마커 위치 가져오기
+  if (window.markerManager && Object.keys(window.markerManager.placeMarkers).length > 0) {
+    const bounds = new google.maps.LatLngBounds();
+    let hasValidMarkers = false;
+
+    // 각 마커를 경계에 추가
+    for (const placeId of validPlaceIds) {
+      const marker = window.markerManager.placeMarkers[placeId];
+      if (marker && marker.position) {
+        bounds.extend(marker.position);
+        hasValidMarkers = true;
+      }
+    }
+
+    if (hasValidMarkers) {
+      // 경계에 맞춰 지도 조정 (약간의 패딩 추가)
+      window.map.fitBounds(bounds, {
+        top: 50,
+        right: 50,
+        bottom: 50,
+        left: 50
+      });
+
+      // 줌 레벨이 너무 높을 경우 (단일 마커 또는 가까운 마커들) 최대 줌 제한
+      google.maps.event.addListenerOnce(window.map, 'bounds_changed', function () {
+        if (window.map.getZoom() > 16) {
+          window.map.setZoom(16);
+        }
+      });
+    }
+  }
+}

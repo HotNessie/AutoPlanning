@@ -456,10 +456,34 @@ nav ul {
 }
 
 .clearRoutesBtn svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
 }
 
 .customCurrentPosition {
     bottom: 110px !important;
+}
+
+.customBottomRight {
+    position: fixed;
+    right: 1vw;
+    bottom: 200px;
+    /* 다른 컨트롤보다 위에 위치 */
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#fitMarkersBtn {
+    background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+    margin: 0;
+    position: relative;
+    /* fixed에서 relative로 변경 */
+}
+
+#fitMarkersBtn svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
 }
