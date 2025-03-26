@@ -399,7 +399,6 @@ nav ul {
     align-items: center;
     position: fixed !important;
     right: 1vw !important;
-    bottom: 110px !important;
     width: 40px;
     height: 40px;
     border: none;
@@ -478,12 +477,11 @@ nav ul {
 #fitMarkersBtn {
     background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
     margin: 0;
-    position: relative;
-    /* fixed에서 relative로 변경 */
+    bottom: 200px;
 }
 
 #fitMarkersBtn svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     fill: white;
 }
