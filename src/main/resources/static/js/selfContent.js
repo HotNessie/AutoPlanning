@@ -36,7 +36,7 @@ function addPlace() {
                 </button>
             <div class="placeInput-row">
                 <div class="search-input-container">
-                    <input type="text" id="placeName${placeCount}" name="placeNames[${placeCount}].name" placeholder="장소명">
+                    <input type="text" autocomplete="off" id="placeName${placeCount}" name="placeNames[${placeCount}].name" placeholder="장소명">
                     <button type="button" class="search-place-btn" onclick="searchPlaceByInputId('placeName${placeCount}')">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M21.71,20.29,18,16.61A9,9,0,1,0,16.61,18l3.68,3.68a1,1,0,0,0,1.42,0A1,1,0,0,0,21.71,20.29ZM11,18a7,7,0,1,1,7-7A7,7,0,0,1,11,18Z"/>
@@ -66,7 +66,7 @@ function addPlace() {
             </div>
             <div class="placeInput-row">
                 <label for="placeTime${placeCount}">체류시간:</label>
-                <input type="number" id="placeTime${placeCount}" name="placeNames[${placeCount}].time" min="1" placeholder="분" required>
+                <input type="number" autocomplete="off" id="placeTime${placeCount}" name="placeNames[${placeCount}].time" min="1" placeholder="분" required>
             </div>
         `;
 

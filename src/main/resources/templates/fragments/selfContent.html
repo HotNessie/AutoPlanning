@@ -25,7 +25,8 @@
         <div class="placeInput" id="place1">
           <div class="placeInput-row">
             <div class="search-input-container">
-              <input type="text" id="placeName1" name="placeNames[0].name" placeholder="출발지" required>
+              <input type="text" autocomplete="off" id="placeName1" name="placeNames[0].name" placeholder="출발지"
+                required>
               <button type="button" class="search-place-btn" onclick="searchPlaceByInputId('placeName1')">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path
@@ -61,13 +62,15 @@
           </div>
           <div class="placeInput-row">
             <label for="placeTime1">체류시간:</label>
-            <input type="number" id="placeTime1" name="placeNames[0].time" min="1" placeholder="분" required>
+            <input type="number" autocomplete="off" id="placeTime1" name="placeNames[0].time" min="1" placeholder="분"
+              required>
           </div>
         </div>
         <div class="placeInput" id="placeEnd">
           <div class="placeInput-row">
             <div class="search-input-container">
-              <input type="text" id="placeNameEnd" name="placeNames[1].name" placeholder="도착지" required>
+              <input type="text" autocomplete="off" id="placeNameEnd" name="placeNames[1].name" placeholder="도착지"
+                required>
               <button type="button" class="search-place-btn" onclick="searchPlaceByInputId('placeNameEnd')">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path
@@ -79,7 +82,8 @@
           </div>
           <div class="placeInput-row">
             <label for="placeTimeEnd">체류시간:</label>
-            <input type="number" id="placeTimeEnd" name="placeNames[1].time" min="1" placeholder="분" required>
+            <input type="number" autocomplete="off" id="placeTimeEnd" name="placeNames[1].time" min="1" placeholder="분"
+              required>
           </div>
         </div>
       </div>
