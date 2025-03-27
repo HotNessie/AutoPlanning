@@ -96,6 +96,13 @@ async function searchPlaceByText(map) {
             placeIdInput.value = place.id;
             console.log(`장소 ID ${place.id}가 ${placeIdInput.id}에 저장되었습니다.`);
 
+            // validation 상태 업데이트를 위한 change 이벤트 발생
+            const changeEvent = new Event('change', { bubbles: true });
+            placeIdInput.dispatchEvent(changeEvent);
+
+            // 입력 필드의 테두리 스타일 초기화 (검증 오류 표시 제거)
+            currentPlaceInput.style.border = "";
+
             // 이전 마커 제거
             if (prevValue) {
               markerManager.removePlaceMarker(prevValue);

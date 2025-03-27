@@ -326,3 +326,18 @@
 .search-place-btn:hover svg {
     fill: rgba(240, 101, 155, 1);
 }
+
+/* 유효성 검사 관련 스타일 */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: rgba(255, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+input.error {
+    border: 1px solid red !important;
+}

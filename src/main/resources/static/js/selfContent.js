@@ -66,7 +66,7 @@ function addPlace() {
             </div>
             <div class="placeInput-row">
                 <label for="placeTime${placeCount}">체류시간:</label>
-                <input type="number" autocomplete="off" id="placeTime${placeCount}" name="placeNames[${placeCount}].time" min="1" placeholder="분" required>
+                <input type="number" autocomplete="off" id="placeTime${placeCount}" name="placeNames[${placeCount}].time" min="0" value="0" placeholder="분" required>
             </div>
         `;
 
@@ -221,33 +221,102 @@ window.initRouteFormHandler = function () {
 
     // selfContent 파일로 분리된 경우, 클래스 선택자 변경
     if (routeForm && !routeForm.dataset.listenerAdded) {
+        // 실시간 입력 필드 확인. validation안내 문구 지우기
+        const clearValidationError = (inputField) => {
+            if (inputField) {
+                // input 필드의 테두리 스타일 초기화
+                inputField.style.border = "";
+
+                // form에서 에러 메시지가 있다면 제거
+                const errorMessage = routeForm.querySelector(".error-message");
+                if (errorMessage) {
+                    errorMessage.remove();
+                }
+            }
+        };
+
+        // placeId 입력 필드 이벤트 리스너 추가
+        const setupValidationClearEvents = () => {
+            const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
+            placeIdInputs.forEach(input => {
+                // hidden input의 값이 변경되면 관련 텍스트 입력 필드의 오류 스타일 제거
+                input.addEventListener('change', () => {
+                    const textInput = input.previousElementSibling instanceof HTMLDivElement
+                        ? input.previousElementSibling.querySelector('input[type="text"]')
+                        : input.previousElementSibling;
+                    clearValidationError(textInput);
+                });
+
+                // 관련 텍스트 입력 필드에도 검색 선택 후 이벤트 리스너 추가
+                const textInput = input.previousElementSibling instanceof HTMLDivElement
+                    ? input.previousElementSibling.querySelector('input[type="text"]')
+                    : input.previousElementSibling;
+
+                if (textInput && !textInput.dataset.validationListenerAdded) {
+                    textInput.addEventListener('change', () => {
+                        // 만약 검색으로 선택된 값(placeId가 있다면) 오류 스타일 제거
+                        if (input.value) {
+                            clearValidationError(textInput);
+                        }
+                    });
+                    textInput.dataset.validationListenerAdded = "true";
+                }
+            });
+        };
+
+        // 초기 설정 및 동적으로 추가된 장소에 대한 이벤트 설정
+        setupValidationClearEvents();
+
+        // 장소가 추가될 때마다 새 필드에 대한 검증 이벤트 설정
+        const placeContainer = document.getElementById("placeContainer");
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach(mutation => {
+                if (mutation.addedNodes.length) {
+                    setupValidationClearEvents();
+                }
+            });
+        });
+        observer.observe(placeContainer, { childList: true, subtree: true });
+
         routeForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
             // 경로 순서를 올바르게 조정하는 로직 추가
             adjustPlaceIndices();
 
+            // 기존 오류 메시지 제거
+            const existingError = routeForm.querySelector(".error-message");
+            if (existingError) existingError.remove();
+
             //검증
             const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
             let hasError = false;
-            // self 검색창 엔터 눌러서 입력시키기 validation 여기서 해
-            //TODO: validation 걸린 뒤 올바른 값으로 수정하면 validation 사라지도록 해야 함
+
+            // 모든 입력 필드의 테두리 스타일 초기화
+            document.querySelectorAll(".placeInput input[type='text']").forEach(input => {
+                input.style.border = "";
+            });
+
             placeIdInputs.forEach(input => {
                 if (!input.value) {
                     hasError = true;
-                    const nameInput = input.previousElementSibling; // placeName input
-                    nameInput.style.border = "1px solid red";
+                    // 검색 컨테이너 div인 경우
+                    const textInput = input.previousElementSibling instanceof HTMLDivElement
+                        ? input.previousElementSibling.querySelector('input[type="text"]')
+                        : input.previousElementSibling;
+
+                    if (textInput) {
+                        textInput.style.border = "1px solid red";
+                    }
                 }
             });
+
             if (hasError) {
-                event.preventDefault();
-                const existingError = routeForm.querySelector(".error-message");
-                if (existingError) existingError.remove();
                 const errorDiv = document.createElement("div");
                 errorDiv.className = "error-message";
                 errorDiv.style.color = "red";
                 errorDiv.style.fontSize = "14px";
-                //안내메시지 수정하는게 좋을 듯
+                errorDiv.style.marginBottom = "10px";
                 errorDiv.textContent = "검색을 통해 정확한 장소를 선택해 주세요.";
                 routeForm.prepend(errorDiv);
                 return;
