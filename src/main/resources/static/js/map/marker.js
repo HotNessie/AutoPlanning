@@ -90,23 +90,17 @@ export async function createMarkerForPlace(placeId, placeName, map) {
     });
 
     // Places API를 사용하여 장소에 대한 더 자세한 정보 가져오기
-    const placesService = new google.maps.places.PlacesService(map);
-    const placeDetails = await new Promise((resolve, reject) => {
-      placesService.getDetails(
-        { placeId: placeId, fields: ['name', 'formatted_address', 'rating', 'user_ratings_total', 'photos'] },
-        (place, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK) {
-            resolve(place);
-          } else {
-            // 상세 정보를 가져오지 못해도 기본 정보로 진행
-            resolve({
-              name: placeName || result.formatted_address,
-              formatted_address: result.formatted_address
-            });
-          }
-        }
-      );
-    });
+    const placesService = new google.maps.places.Place({ id: placeId });
+    const placeDetails = await placesService.fetchFields(
+      {
+        fields: [
+          'displayName',
+          'formattedAddress',
+          'rating',
+          'userRatingCount',
+          'photos']
+      }
+    );
 
     // 마커 생성
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
