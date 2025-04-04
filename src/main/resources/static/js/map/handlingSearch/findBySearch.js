@@ -41,7 +41,7 @@ export async function findBySearch(Place, map) {
             // place 객체에 formattedAddress 속성 직접 추가 (없는 경우 대비)
             if (!place.formattedAddress && place.location) {
                 try {
-                    // 역지오코딩으로 주소 가져오기
+                    // 지오코딩으로 주소 가져오기
                     const geocoder = new google.maps.Geocoder();
                     const response = await new Promise((resolve) => {
                         geocoder.geocode({ 'location': place.location }, (results, status) => {

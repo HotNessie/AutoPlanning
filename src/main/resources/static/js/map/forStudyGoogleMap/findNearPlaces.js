@@ -1,4 +1,5 @@
 //주변 장소 검색 with 현재위치
+//공부용
 import { marker } from './marker.js';
 
 export async function nearbySearch(map, infoWindow) {

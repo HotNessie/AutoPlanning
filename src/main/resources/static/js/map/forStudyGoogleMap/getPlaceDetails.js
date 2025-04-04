@@ -1,6 +1,5 @@
 //장소 세부 가져오기  사진
-//장소 세부 가져오기
-//장소 세부 가져오기
+//공부용
 export async function getPlaceDetails(infoWindow) {
     const { Place } = await google.maps.importLibrary("places");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");

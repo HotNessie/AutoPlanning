@@ -1,5 +1,5 @@
 // selfContent에서 검색
-import { createMarkerForPlace, markerManager } from '../../map/marker.js';
+import { createMarkerForPlace, markerManager } from '../marker.js';
 
 let currentPlaceInput = null;
 let isSearchVisible = false;

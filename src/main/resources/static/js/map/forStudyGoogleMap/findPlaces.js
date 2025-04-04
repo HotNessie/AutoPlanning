@@ -1,6 +1,5 @@
 //지정 정보 기반 주변 탐색
-//지정 정보 기반 주변 탐색
-//지정 정보 기반 주변 탐색
+//공부용
 export async function findPlaces(map,) {
     const { Place } = await google.maps.importLibrary("places");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");

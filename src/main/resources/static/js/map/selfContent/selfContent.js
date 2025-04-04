@@ -18,7 +18,7 @@ function getCachedRoute(key) {
     return cached ? JSON.parse(cached) : null;
 }
 
-// 장소 추가 시 검색 버튼도 함께 추가
+// 장소 추가
 function addPlace() {
     const placeContainer = document.getElementById("placeContainer");
     const placeEnd = document.getElementById("placeEnd");
@@ -79,7 +79,7 @@ function addPlace() {
     }
 }
 
-// 전달된 ID를 가진 입력 요소로 검색 실행
+// placeId로 검색
 function searchPlaceByInputId(inputId) {
     const input = document.getElementById(inputId);
     if (!input.value) {
@@ -93,7 +93,7 @@ function searchPlaceByInputId(inputId) {
         // 검색 실행
         searchPlaceByText(window.map);
 
-        // collapse 버튼 확장
+        // collapse 버튼 확장 TODO: 펼치는 버튼 이상하게 펼쳐짐 css조작해얃댐
         const collapseButton = document.getElementById("collapseButton");
         if (collapseButton) {
             collapseButton.classList.add("expanded");
@@ -150,7 +150,7 @@ function selectTransport(placeId, transport) {
     if (transportInput) transportInput.value = transport;
 }
 
-// 경로와 마커 모두 지우는 함수 
+// 경로만 지우기
 function clearAllRoutes() {
     // 모든 경로를 지도에서 제거
     for (let i = 0; i < routePolylines.length; i++) {
@@ -162,18 +162,13 @@ function clearAllRoutes() {
 // 전역에서 함수 접근 가능하도록 설정
 window.clearAllRoutes = clearAllRoutes;
 
-// 모든 마커가 지도에 표시되도록 경계 설정
+// marker기준 bounds 설정
 function fitAllMarkers() {
     // 현재 등록된 모든 placeId 수집
     const placeIdInputs = document.querySelectorAll('input[type="hidden"][name$=".placeId"]');
     const validPlaceIds = Array.from(placeIdInputs)
         .filter(input => input.value) // 값이 있는 input만 선택
         .map(input => input.value);    // placeId 값만 추출
-
-    // if (validPlaceIds.length === 0) {
-    // alert("선택된 장소가 없습니다.");
-    // return;
-    // }
 
     // 마커 매니저에서 해당 placeId의 마커 위치 가져오기
     if (window.markerManager && Object.keys(window.markerManager.placeMarkers).length > 0) {
@@ -190,15 +185,15 @@ function fitAllMarkers() {
         }
 
         if (hasValidMarkers) {
-            // 경계에 맞춰 지도 조정 (약간의 패딩 추가)
-            window.map.fitBounds(bounds, {
+            // 경계에 맞춰 지도 조정
+            window.map.fitBounds(bounds, { //여백 조금
                 top: 50,
                 right: 50,
                 bottom: 50,
                 left: 50
             });
 
-            // 줌 레벨이 너무 높을 경우 (단일 마커 또는 가까운 마커들) 최대 줌 제한
+            // 줌 레벨이 너무 높을 경우 (너무 확대된 경우, 단일 마커 또는 가까운 마커들) 최대 줌 제한
             google.maps.event.addListenerOnce(window.map, 'bounds_changed', function () {
                 if (window.map.getZoom() > 16) {
                     window.map.setZoom(16);
@@ -217,7 +212,7 @@ window.fitAllMarkers = fitAllMarkers;
 
 // 컨트롤러 반환값 변경에 따른 DOM 구조 조정
 window.initRouteFormHandler = function () {
-    const routeForm = document.getElementById("routeForm");
+    const routeForm = document.getElementById("routeForm")
 
     // selfContent 파일로 분리된 경우, 클래스 선택자 변경
     if (routeForm && !routeForm.dataset.listenerAdded) {

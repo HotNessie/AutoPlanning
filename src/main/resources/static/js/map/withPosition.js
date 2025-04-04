@@ -1,5 +1,5 @@
 //현 위치 정의
-export function currentPosition(map, infoWindow) {
+export function currentPosition(map) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {

@@ -133,14 +133,4 @@ async function initMap() {
   });
 }
 
-function updateInfoWindow(content, center) {
-  infoWindow.setContent(content);
-  infoWindow.setPosition(center);
-  infoWindow.open({
-    map,
-    // anchor: marker,
-    shouldFocus: false,
-  });
-}
-
 initMap();

@@ -112,6 +112,7 @@
   <div id="content">
     <div id="collapseBody">
       <div th:replace="~{fragments/hotContent :: .hotContent}">default message</div>
+      <!-- 뭐지 이거 어케했더라 -->
     </div>
 
     <!-- 여닫기 버튼 -->
@@ -197,6 +198,7 @@
 
   <!--self js-->
   <script src="js/selfContent.js"></script>
+  <!-- <script type="module" src="js/index.js"></script> -->
 
   <!-- 마커 호출 -->
   <script type="module">
@@ -207,7 +209,7 @@
     window.initializePlaceEvents = initializePlaceEvents;
   </script>
 
-  <!--html css요소 script-->
+  <!--html css script, selfContent 호출처리-->
   <script>
     //메뉴바 내용 교체 및 닫혀있을 때 열기
     function loadContent(url) {
@@ -233,7 +235,7 @@
           return response.text();
         })
         .then(data => {
-          contentDiv.innerHTML = data;
+          contentDiv.innerHTML = data; //덮어씌우기
           if (content.classList.contains("hide")) {
             content.classList.remove("hide");
             rightArrow.style.display = "none";
@@ -244,7 +246,7 @@
           }
           collapseButton.style.left = "100%";
 
-          //Self
+          //Self 호출시점 처러용
           if (url === '/selfContent') {
             const map = window.map;
             // 메뉴가 변경된 후 필요한 이벤트 핸들러 다시 초기화
