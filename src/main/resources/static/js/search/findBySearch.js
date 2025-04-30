@@ -1,15 +1,28 @@
 //검색, marker, bound지정
-import { searchInput, suggestion } from '../dom-elements.js';
-import { marker, markerManager } from '../marker.js';
+// import domElements from '../../ui/dom-elements.js';
+// import { marker, MarkerManager } from '../marker.js';
+import { cacheElement } from '../ui/dom-elements.js';
+import { markerManager, createMarker } from '../map/marker.js';
+import { getMapInstance } from '../store/map-store.js';
 
-export async function findBySearch(Place, map) {
-    const inputText = searchInput.value.trim(); // 검색어 가져오기
+// export async function findBySearch(Place, map) {
+export async function findBySearch() {
+    const { Place } = await google.maps.importLibrary('places');
+    const map = getMapInstance();
+    const input = cacheElement('searchInput', '#searchInput');
+    const suggestion = cacheElement('suggestion', '#suggestion');
+
+    // const inputText = domElements.getSearchInput.value.trim(); // 검색어 가져오기
+    const inputText = input.value.trim(); // 검색어 가져오기
+
+    // domElements.getSuggestion().style.display = "none";
     suggestion.style.display = "none";
 
-    if (inputText === "") {
+    if (!inputText) {
         alert("검색어를 입력해주세요.");
         return;
     }
+
     //요청 정보
     const request = {
         textQuery: inputText, // 검색어
@@ -33,42 +46,22 @@ export async function findBySearch(Place, map) {
     // 기존 마커 지우기
     markerManager.clearMarkers();
 
+
+
     //하나씩 마커 찍어주기
     if (places.length) {
         const bounds = new google.maps.LatLngBounds();
 
         const markerPromises = places.map(async (place) => {
-            // place 객체에 formattedAddress 속성 직접 추가 (없는 경우 대비)
-            if (!place.formattedAddress && place.location) {
-                try {
-                    // 지오코딩으로 주소 가져오기
-                    const geocoder = new google.maps.Geocoder();
-                    const response = await new Promise((resolve) => {
-                        geocoder.geocode({ 'location': place.location }, (results, status) => {
-                            if (status === google.maps.GeocoderStatus.OK && results[0]) {
-                                resolve(results[0].formatted_address);
-                            } else {
-                                resolve("");
-                            }
-                        });
-                    });
-                    place.formattedAddress = response;
-                } catch (error) {
-                    console.warn("주소를 가져오는 데 실패했습니다:", error);
-                }
-            }
-
             // 마커 생성
-            const newMarker = await marker(map, place);
-            markerManager.addMarker(newMarker);
-
+            // const newMarker = await marker(map, place);
+            const marker = await createMarker(place, map);
+            // markerManager.addMarker(newMarker);
             //zoom레벨 설정을 위한
             bounds.extend(place.location);
-
-            return newMarker;
+            return marker;
         });
         await Promise.all(markerPromises);
-        // bounds 유효성 검사 후 적용
         if (!bounds.isEmpty()) {
             map.fitBounds(bounds, {
                 top: 100,
