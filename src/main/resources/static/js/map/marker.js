@@ -5,6 +5,7 @@ import { getMapInstance } from "../store/map-store.js";
 class MarkerManager {
   static instance = null;
   markers = [];
+  placeMarkers = {};
 
   constructor() {
     if (MarkerManager.instance) return MarkerManager.instance;
@@ -14,8 +15,29 @@ class MarkerManager {
   // 마커 추가
   addMarker(marker) {
     this.markers.push(marker);
-    console.log("마커 추가됨:", markers);
     return marker;
+  }
+
+  addPlaceMarker(placeId, marker) {
+    this.placeMarkers[placeId] = marker;
+    return this.addMarker(marker);
+  }
+
+  removePlaceMarker(placeId) {
+    const marker = this.placeMarkers[placeId];
+    if (marker) {
+      marker.setMap(null);
+      this.markers = this.markers.filter(m => m !== marker);
+      delete this.placeMarkers[placeId];
+    }
+  }
+
+  removeUnusedMarkers(currentPlaceIds) {
+    Object.keys(this.placeMarkers).forEach(placeId => {
+      if (!currentPlaceIds.includes(placeId)) {
+        this.removePlaceMarker(placeId);
+      }
+    });
   }
 
   // 일반 마커 지우기
@@ -23,51 +45,11 @@ class MarkerManager {
     // this.markers.forEach((marker) => { marker.map = null; }); //확인 필요
     this.markers.forEach(marker => marker.setMap(null));
     this.markers = [];
+    this.placeMarkers = {};
   }
-
-  // placeId 기반 마커 지우기
-  // clearAllPlaceMarkers() {
-  //   for (const placeId in this.placeMarkers) {
-  //     if (this.placeMarkers[placeId]) {
-  //       this.placeMarkers[placeId].map = null;
-  //     }
-  //   }
-  //   this.placeMarkers = {};
-  //   console.log("모든 장소 마커가 지워졌습니다.");
-  // }
-
-  // 모든 마커 지우기
-  // clearAll() {
-  // this.clearMarkers();
-  // this.clearAllPlaceMarkers();
-  // }
-
-  // placeId 기반 마커 추가
-  // addPlaceMarker(placeId, marker) {
-  // // 이전에 같은 placeId로 등록된 마커가 있으면 제거
-  // this.removePlaceMarker(placeId);
-  //   this.placeMarkers[placeId] = marker;
-  //   return marker;
-  // }
-
-  // placeId 기반 마커 제거
-  // removePlaceMarker(placeId) {
-  //   if (this.placeMarkers[placeId]) {
-  //     this.placeMarkers[placeId].map = null;
-  //     delete this.placeMarkers[placeId];
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
-  // 사용하지 않는 마커 제거
-  // removeUnusedMarkers(usedPlaceIds) {
-  //   for (const placeId in this.placeMarkers) {
-  //     if (!usedPlaceIds.includes(placeId)) {
-  //       this.removePlaceMarker(placeId);
-  //     }
-  //   }
-  // }
+  getMarkers() {
+    return this.markers;
+  }
 }
 
 // 글로벌 마커 매니저 인스턴스 생성

@@ -1,12 +1,17 @@
+import { cacheElement, bindEvent } from '../ui/dom-elements.js';
+import { getMapInstance } from '../store/map-store.js';
+import { markerManager } from '../map/marker.js';
+
 let placeCount = 2; // 초기 장소 개수
 const MAX_PLACES = 7; // 최대 장소 개수
 const MIN_PLACES = 2; //최소 장소 개수
-let transportSelections = Object.create(null);// 교통 수단 선택 상태 저장 객체 초기화
+// let transportSelections = Object.create(null);// 교통 수단 선택 상태 저장 객체 초기화
+let transportSelections = {};
 let routePolylines = []; // 그려진 경로선들을 저장하는 배열
 
 // 캐싱 디테일 캐치해야 됨
 function generateCacheKey(request) {
-    return `route_${request.origin}_${request.destination}_${request.mode}`;
+    return `route_${request.origin}_${request.destination}_${request.mode}_${Date.now()}`;
 }
 
 function cacheRoute(key, data) {
@@ -18,10 +23,10 @@ function getCachedRoute(key) {
     return cached ? JSON.parse(cached) : null;
 }
 
-// 장소 추가
-function addPlace() {
-    const placeContainer = document.getElementById("placeContainer");
-    const placeEnd = document.getElementById("placeEnd");
+// 장소 입력란 추가
+export function addPlace() {
+    const placeContainer = cacheElement('placeContainer', '#placeContainer');
+    const placeEnd = cacheElement('placeEnd', '#placeEnd');
 
     if (placeCount < MAX_PLACES) {
         const newPlaceDiv = document.createElement("div");
@@ -29,7 +34,7 @@ function addPlace() {
         newPlaceDiv.id = `place${placeCount}`;
 
         newPlaceDiv.innerHTML = `
-                <button type="button" class="removePlaceBtn" onclick="removePlace('${placeCount}')">
+                <button type="button" class="removePlaceBtn" data-place-id="${placeCount}">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round"/>
                     </svg>
@@ -37,7 +42,7 @@ function addPlace() {
             <div class="placeInput-row">
                 <div class="search-input-container">
                     <input type="text" autocomplete="off" id="placeName${placeCount}" name="placeNames[${placeCount}].name" placeholder="장소명">
-                    <button type="button" class="search-place-btn" onclick="searchPlaceByInputId('placeName${placeCount}')">
+                    <button type="button" class="search-place-btn" data-input-id="placeName${placeCount}">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M21.71,20.29,18,16.61A9,9,0,1,0,16.61,18l3.68,3.68a1,1,0,0,0,1.42,0A1,1,0,0,0,21.71,20.29ZM11,18a7,7,0,1,1,7-7A7,7,0,0,1,11,18Z"/>
                         </svg>
@@ -47,17 +52,17 @@ function addPlace() {
             </div>
 
             <div class="transport-buttons">
-                <button type="button" class="transport-btn" data-transport="DRIVE" onclick="selectTransport('place${placeCount}', 'DRIVE')">
+                <button type="button" class="transport-btn" data-transport="DRIVE" data-place-id="place${placeCount}">
                     <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 24 24" width="16" height="16">
                         <path d="M22.357,8A34.789,34.789,0,0,0,19.21,3.245a4.4,4.4,0,0,0-2.258-1.54A15.235,15.235,0,0,0,12,1a19.175,19.175,0,0,0-5.479.713A4.382,4.382,0,0,0,4.29,3.245,23.466,23.466,0,0,0,1.464,8H0V20H3v3H7V20H17v3h4V20h3V8ZM5.5,17A1.5,1.5,0,1,1,7,15.5,1.5,1.5,0,0,1,5.5,17ZM12,11a64.834,64.834,0,0,0-8.8.711A23.405,23.405,0,0,1,6.671,5.07a1.394,1.394,0,0,1,.714-.484A16.164,16.164,0,0,1,12,4a12.3,12.3,0,0,1,4.115.586,1.4,1.4,0,0,1,.714.483,27.139,27.139,0,0,1,3.956,6.64A64.92,64.92,0,0,0,12,11Zm6.5,6A1.5,1.5,0,1,1,20,15.5,1.5,1.5,0,0,1,18.5,17Z"/>
                     </svg>
                 </button>
-                <button type="button" class="transport-btn" data-transport="TRANSIT" onclick="selectTransport('place${placeCount}', 'TRANSIT')">
+                <button type="button" class="transport-btn" data-transport="TRANSIT" data-place-id="${placeCount}">
                     <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 24 24" width="16" height="16">
                         <path d="M22,10V4.229a2.987,2.987,0,0,0-1.821-2.76c-3.673-1.9-12.695-1.893-16.358,0A2.986,2.986,0,0,0,2,4.229V10H0v3a2,2,0,0,0,2,2v7H4v2H9V22h6v2h5V22h2V15a2,2,0,0,0,2-2V10ZM4,13V7H20v6Zm.6-9.688A19.013,19.013,0,0,1,12,2a19.018,19.018,0,0,1,7.4,1.311.99.99,0,0,1,.6.918V5H15V4H9V5H4V4.229A.989.989,0,0,1,4.6,3.312ZM4,20V15H6v1a1,1,0,0,0,2,0V15h8v1a1,1,0,0,0,2,0V15h2v5Z"/>
                     </svg>
                 </button>
-                <button type="button" class="transport-btn" data-transport="WALK" onclick="selectTransport('place${placeCount}', 'WALK')">
+                <button type="button" class="transport-btn" data-transport="WALK" data-place-id="place${placeCount}">
                     <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 24 24" width="16" height="16">
                         <path d="m11,2.5c0-1.381,1.119-2.5,2.5-2.5s2.5,1.119,2.5,2.5-1.119,2.5-2.5,2.5-2.5-1.119-2.5-2.5Zm9.171,9.658l-2.625-1.312s-2.268-3.592-2.319-3.651c-.665-.76-1.625-1.195-2.634-1.195-1.274,0-2.549.301-3.688,.871l-2.526,1.263c-.641.321-1.114.902-1.298,1.596l-.633,2.387c-.212.801.265,1.622,1.065,1.834.802.213,1.622-.264,1.834-1.065l.575-2.168,1.831-.916-.662,2.83c-.351,1.5.339,3.079,1.679,3.84l3.976,2.258c.156.089.253.256.253.436v3.336c0,.829.672,1.5,1.5,1.5s1.5-.671,1.5-1.5v-3.336c0-1.256-.679-2.422-1.771-3.043l-2.724-1.547.849-3.165.875,1.39c.146.232.354.42.599.543l3,1.5c.216.107.444.159.67.159.55,0,1.08-.304,1.343-.83.37-.741.07-1.642-.671-2.013Zm-10.312,5.465c-.812-.161-1.6.378-1.754,1.192l-.039.2-1.407,2.814c-.37.741-.07,1.642.671,2.013.215.107.444.159.67.159.55,0,1.08-.304,1.343-.83l1.5-3c.062-.123.106-.254.131-.39l.077-.404c.156-.813-.378-1.599-1.192-1.754Z"/>
                     </svg>
@@ -79,150 +84,71 @@ function addPlace() {
     }
 }
 
-// placeId로 검색
-function searchPlaceByInputId(inputId) {
-    const input = document.getElementById(inputId);
-    if (!input.value) {
-        return;
-    }
-
-    if (input) {
-        // 현재 입력 필드 설정
-        currentPlaceInput = input;
-
-        // 검색 실행
-        searchPlaceByText(window.map);
-
-        // collapse 버튼 확장 TODO: 펼치는 버튼 이상하게 펼쳐짐 css조작해얃댐
-        const collapseButton = document.getElementById("collapseButton");
-        if (collapseButton) {
-            collapseButton.classList.add("expanded");
-        }
-    }
-}
-
-// 전역에서 함수 접근 가능하도록 설정
-window.searchPlaceByInputId = searchPlaceByInputId;
-
-//self 메뉴 확장시 자동완성창 삭제
-function removeAutoComplete() {
-    const autoComplete = document.getElementById("autocomplete");
-    autoComplete.classList.add("autoComplete_displayNone");
-}
-
-const selfButton = document.getElementById("selfButton");
-selfButton.addEventListener("click", () => {
-    removeAutoComplete();
-})
-
 //경유지 삭제
-function removePlace(placeId) {
+export function removePlace(placeId) {
     const placeDiv = document.getElementById(`place${placeId}`);
-    if (placeCount > MIN_PLACES) { // 최소 2개 유지
-        // 해당 장소의 마커도 제거
+    if (placeCount > MIN_PLACES) {
         const placeIdInput = document.getElementById(`placeId${placeId}`);
-        if (placeIdInput && placeIdInput.value && window.markerManager) {
-            window.markerManager.removePlaceMarker(placeIdInput.value);
+        if (placeIdInput && placeIdInput.value) {
+            markerManager.removePlaceMarker(placeIdInput.value);
         }
-
         placeDiv.remove();
         placeCount--;
-        delete transportSelections[placeId];
+        delete transportSelections[`place${placeId}`];
     }
 }
 
-function selectTransport(placeId, transport) {
+export function selectTransport(placeId, transport) {
     // 선택된 교통 수단 저장
     transportSelections[placeId] = transport;
 
     // 버튼 스타일 업데이트
     const buttons = document.getElementById(placeId).querySelectorAll(".transport-btn");
     buttons.forEach(btn => {
-        if (btn.dataset.transport === transport) {
-            btn.classList.add("selected_transport");
-        } else {
-            btn.classList.remove("selected_transport");
-        }
+        btn.classList.toggle('selected_transport', btn.dataset.transport === transport);
     });
-
-    // console.log(`Selected transport for ${placeId}: ${transport}`);
-    const transportInput = document.getElementById(`transport${placeId.replace('place', '')}`)
+    const transportInput = document.getElementById(`transport${placeId.replace('place', '')}`);
     if (transportInput) transportInput.value = transport;
-}
+};
 
 // 경로만 지우기
-function clearAllRoutes() {
+export function clearAllRoutes() {
     // 모든 경로를 지도에서 제거
-    for (let i = 0; i < routePolylines.length; i++) {
-        routePolylines[i].setMap(null);
-    }
+    routePolylines.forEach(polyline => polyline.setMap(null));
     routePolylines = [];
 }
 
-// 전역에서 함수 접근 가능하도록 설정
-window.clearAllRoutes = clearAllRoutes;
+// 경로 순서 조정 함수
+export function adjustPlaceIndices() {
+    const placeContainer = cacheElement('placeContainer', '#placeContainer');
+    const allPlaceInputs = placeContainer.querySelectorAll('.placeInput');
+    const totalPlaces = allPlaceInputs.length;
 
-// marker기준 bounds 설정
-function fitAllMarkers() {
-    // 현재 등록된 모든 placeId 수집
-    const placeIdInputs = document.querySelectorAll('input[type="hidden"][name$=".placeId"]');
-    const validPlaceIds = Array.from(placeIdInputs)
-        .filter(input => input.value) // 값이 있는 input만 선택
-        .map(input => input.value);    // placeId 값만 추출
+    // 모든 장소 input 태그에 대해 인덱스 재조정
+    allPlaceInputs.forEach((placeDiv, index) => {
+        const isEnd = placeDiv.id === "placeEnd";
+        const actualIndex = isEnd ? totalPlaces - 1 : index; // 도착지는 항상 마지막 인덱스
 
-    // 마커 매니저에서 해당 placeId의 마커 위치 가져오기
-    if (window.markerManager && Object.keys(window.markerManager.placeMarkers).length > 0) {
-        const bounds = new google.maps.LatLngBounds();
-        let hasValidMarkers = false;
-
-        // 각 마커를 경계에 추가
-        for (const placeId of validPlaceIds) {
-            const marker = window.markerManager.placeMarkers[placeId];
-            if (marker && marker.position) {
-                bounds.extend(marker.position);
-                hasValidMarkers = true;
-            }
-        }
-
-        if (hasValidMarkers) {
-            // 경계에 맞춰 지도 조정
-            window.map.fitBounds(bounds, { //여백 조금
-                top: 50,
-                right: 50,
-                bottom: 50,
-                left: 50
-            });
-
-            // 줌 레벨이 너무 높을 경우 (너무 확대된 경우, 단일 마커 또는 가까운 마커들) 최대 줌 제한
-            google.maps.event.addListenerOnce(window.map, 'bounds_changed', function () {
-                if (window.map.getZoom() > 16) {
-                    window.map.setZoom(16);
-                }
-            });
-        } else {
-            // alert("표시할 수 있는 장소 마커가 없습니다.");
-        }
-    } else {
-        // alert("표시할 수 있는 장소 마커가 없습니다.");
-    }
+        const updateName = (selector, suffix) => {
+            const input = placeDiv.querySelector(selector);
+            if (input) input.name = `placeNames[${actualIndex}].${suffix}`;
+        };
+        updateName('input[type="text"]', 'name');
+        updateName('input[type="hidden"][name$=".placeId"]', 'placeId');
+        updateName('input[type="hidden"][name$=".transport"]', 'transport');
+        updateName('input[type="number"][name$=".time"]', 'time');
+    });
 }
 
-// 전역에서 함수 접근 가능하도록 설정
-window.fitAllMarkers = fitAllMarkers;
-
 // 컨트롤러 반환값 변경에 따른 DOM 구조 조정
-window.initRouteFormHandler = function () {
-    const routeForm = document.getElementById("routeForm")
+export function initRouteFormHandler() {
+    const routeForm = cacheElement('routeForm', '#routeForm');
 
-    // selfContent 파일로 분리된 경우, 클래스 선택자 변경
     if (routeForm && !routeForm.dataset.listenerAdded) {
-        // 실시간 입력 필드 확인. validation안내 문구 지우기
+        // 실시간 입력 필드 확인. validation 지우기
         const clearValidationError = (inputField) => {
             if (inputField) {
-                // input 필드의 테두리 스타일 초기화
                 inputField.style.border = "";
-
-                // form에서 에러 메시지가 있다면 제거
                 const errorMessage = routeForm.querySelector(".error-message");
                 if (errorMessage) {
                     errorMessage.remove();
@@ -235,26 +161,18 @@ window.initRouteFormHandler = function () {
             const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
             placeIdInputs.forEach(input => {
                 // hidden input의 값이 변경되면 관련 텍스트 입력 필드의 오류 스타일 제거
-                input.addEventListener('change', () => {
-                    const textInput = input.previousElementSibling instanceof HTMLDivElement
-                        ? input.previousElementSibling.querySelector('input[type="text"]')
-                        : input.previousElementSibling;
+                bindEvent(input.id, 'change', () => {
+                    const textInput = input.previousElementSibling.querySelector('input[type="text"]');
                     clearValidationError(textInput);
                 });
 
                 // 관련 텍스트 입력 필드에도 검색 선택 후 이벤트 리스너 추가
-                const textInput = input.previousElementSibling instanceof HTMLDivElement
-                    ? input.previousElementSibling.querySelector('input[type="text"]')
-                    : input.previousElementSibling;
-
+                const textInput = input.previousElementSibling.querySelector('input[type="text"]');
                 if (textInput && !textInput.dataset.validationListenerAdded) {
-                    textInput.addEventListener('change', () => {
-                        // 만약 검색으로 선택된 값(placeId가 있다면) 오류 스타일 제거
-                        if (input.value) {
-                            clearValidationError(textInput);
-                        }
+                    bindEvent(textInput.id, 'change', () => {
+                        if (input.value) clearValidationError(textInput);
                     });
-                    textInput.dataset.validationListenerAdded = "true";
+                    textInput.dataset.validationListenerAdded = 'true';
                 }
             });
         };
@@ -263,22 +181,17 @@ window.initRouteFormHandler = function () {
         setupValidationClearEvents();
 
         // 장소가 추가될 때마다 새 필드에 대한 검증 이벤트 설정
-        const placeContainer = document.getElementById("placeContainer");
+        const placeContainer = cacheElement('placeContainer', '#placeContainer');
         const observer = new MutationObserver((mutations) => {
-            mutations.forEach(mutation => {
-                if (mutation.addedNodes.length) {
-                    setupValidationClearEvents();
-                }
-            });
+            if (mutations.some(m => m.addedNodes.length))
+                setupValidationClearEvents();
         });
         observer.observe(placeContainer, { childList: true, subtree: true });
 
-        routeForm.addEventListener("submit", async (event) => {
+        bindEvent('routeForm', 'submit', async (event) => {
             event.preventDefault();
-
             // 경로 순서를 올바르게 조정하는 로직 추가
             adjustPlaceIndices();
-
             // 기존 오류 메시지 제거
             const existingError = routeForm.querySelector(".error-message");
             if (existingError) existingError.remove();
@@ -296,15 +209,11 @@ window.initRouteFormHandler = function () {
                 if (!input.value) {
                     hasError = true;
                     // 검색 컨테이너 div인 경우
-                    const textInput = input.previousElementSibling instanceof HTMLDivElement
-                        ? input.previousElementSibling.querySelector('input[type="text"]')
-                        : input.previousElementSibling;
-
-                    if (textInput) {
-                        textInput.style.border = "1px solid red";
-                    }
+                    const textInput = input.previousElementSibling.querySelector('input[type="text"]');
+                    if (textInput) textInput.style.border = '1px solid red';
                 }
             });
+
 
             if (hasError) {
                 const errorDiv = document.createElement("div");
@@ -318,7 +227,6 @@ window.initRouteFormHandler = function () {
             }
 
             //그냥 여기서 controller를 호출. 페이지 리로드 하지마
-            //TODO: 가끔 json페이지가 반환되는 경우가 있음 확인 필요
             const formData = new FormData(routeForm);
             const response = await fetch("/route/compute", {
                 method: "POST",
@@ -329,7 +237,7 @@ window.initRouteFormHandler = function () {
                 const errorData = await response.json();
                 let errorMessage = "입력 오류:\n";
                 for (let field in errorData) {
-                    errorMessage += `${field}: ${errorData[field]}\n`;
+                    errorMessage += `${field}: ${errorData[field]} \n`;
                 }
                 return;
             }
@@ -338,13 +246,10 @@ window.initRouteFormHandler = function () {
             clearAllRoutes();
 
             // geometry 라이브러리 로드 확인 및 로드
-            let geometry;
-
-            geometry = await google.maps.importLibrary("geometry");
-            console.log("Geometry library loaded successfully");
-
+            const geometry = await google.maps.importLibrary("geometry");
             const data = await response.json();
             const legs = data.routes[0].legs;
+            const map = getMapInstance();
 
             //routes 표시
             legs.forEach((leg, index) => {
@@ -380,7 +285,7 @@ window.initRouteFormHandler = function () {
                     }
                 });
                 if (!bounds.isEmpty()) {
-                    window.map.fitBounds(bounds);
+                    map.fitBounds(bounds); //전역으로 끌고 오는데 import하셈
                 }
             } catch (e) {
                 console.error("지도 경계 조정 오류:", e);
@@ -390,59 +295,37 @@ window.initRouteFormHandler = function () {
     }
 };
 
-// DOM 로드 후 selfContent 감지
-document.addEventListener("DOMContentLoaded", () => {
+export function initSelfContent() {
+    const selfButton = cacheElement('selfButton', '#selfButton');
+    bindEvent(selfButton.id, 'click', () => {
+        const autoComplete = document.getElementById("autocomplete");
+        autoComplete.classList.add("autoComplete_displayNone");
+    });
+    // DOM 로드 후 selfContent 감지
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-            if (mutation.addedNodes.length) {
-                // 새로운 fragment 구조에 맞게 조정
-                const selfContent = document.querySelector(".selfContent");
-                if (selfContent) {
-                    // 전역 함수 호출로 변경
-                    if (window.initRouteFormHandler) {
-                        window.initRouteFormHandler();
-                    }
-                    observer.disconnect(); // 감지 종료
-                }
+            if (mutation.addedNodes.length && document.querySelector('.selfContent')) {
+                initRouteFormHandler();
+                observer.disconnect(); // 감지 종료
             }
-        });
+        })
     });
     observer.observe(document.body, { childList: true, subtree: true });
-});
+};
 
-// 경로 순서 조정 함수
-function adjustPlaceIndices() {
-    const placeContainer = document.getElementById("placeContainer");
-    const allPlaceInputs = placeContainer.querySelectorAll(".placeInput");
-    const totalPlaces = allPlaceInputs.length;
 
-    // 모든 장소 input 태그에 대해 인덱스 재조정
-    allPlaceInputs.forEach((placeDiv, index) => {
-        const isEnd = placeDiv.id === "placeEnd";
-        const actualIndex = isEnd ? totalPlaces - 1 : index; // 도착지는 항상 마지막 인덱스
 
-        // 이름 input 재설정
-        const nameInput = placeDiv.querySelector("input[type='text']");
-        if (nameInput) {
-            nameInput.name = `placeNames[${actualIndex}].name`;
-        }
 
-        // placeId input 재설정
-        const placeIdInput = placeDiv.querySelector("input[type='hidden'][name$='.placeId']");
-        if (placeIdInput) {
-            placeIdInput.name = `placeNames[${actualIndex}].placeId`;
-        }
 
-        // transport input 재설정 (있는 경우)
-        const transportInput = placeDiv.querySelector("input[type='hidden'][name$='.transport']");
-        if (transportInput) {
-            transportInput.name = `placeNames[${actualIndex}].transport`;
-        }
 
-        // time input 재설정
-        const timeInput = placeDiv.querySelector("input[type='number'][name$='.time']");
-        if (timeInput) {
-            timeInput.name = `placeNames[${actualIndex}].time`;
-        }
-    });
-}
+
+// //self 메뉴 확장시 자동완성창 삭제
+// function removeAutoComplete() {
+//     const autoComplete = document.getElementById("autocomplete");
+//     autoComplete.classList.add("autoComplete_displayNone");
+// }
+
+// const selfButton = document.getElementById("selfButton");
+// selfButton.addEventListener("click", () => {
+//     removeAutoComplete();
+// })

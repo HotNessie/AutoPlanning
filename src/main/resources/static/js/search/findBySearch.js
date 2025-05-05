@@ -12,10 +12,8 @@ export async function findBySearch() {
     const input = cacheElement('searchInput', '#searchInput');
     const suggestion = cacheElement('suggestion', '#suggestion');
 
-    // const inputText = domElements.getSearchInput.value.trim(); // 검색어 가져오기
     const inputText = input.value.trim(); // 검색어 가져오기
 
-    // domElements.getSuggestion().style.display = "none";
     suggestion.style.display = "none";
 
     if (!inputText) {
@@ -47,16 +45,13 @@ export async function findBySearch() {
     markerManager.clearMarkers();
 
 
-
     //하나씩 마커 찍어주기
     if (places.length) {
         const bounds = new google.maps.LatLngBounds();
 
         const markerPromises = places.map(async (place) => {
             // 마커 생성
-            // const newMarker = await marker(map, place);
             const marker = await createMarker(place, map);
-            // markerManager.addMarker(newMarker);
             //zoom레벨 설정을 위한
             bounds.extend(place.location);
             return marker;
