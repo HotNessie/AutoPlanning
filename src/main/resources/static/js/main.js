@@ -3,11 +3,12 @@ import { initMap } from './map/initMap.js';
 import { initAutocomplete } from './search/autocomplete.js';
 import { findBySearch } from './search/findBySearch.js';
 import { initControls } from './ui/controls.js';
-import { bindEvent, initDomElements, cacheElement } from './ui/dom-elements.js';
+import { initDomElements, cacheElement, elements, bindEvent } from './ui/dom-elements.js';
 import { initSelfContent, initRouteFormHandler, addPlace, removePlace, selectTransport } from './selfContent/selfContent.js';
 import { initializePlaceEvents, initSearchResults, searchPlaceByInputId } from './selfContent/selfFind.js';
 
 async function bootstrap() {
+  console.log('bootstrap');
   await initMap();
   initDomElements();
   // initAutocomplete(); // 요청 너무 많아서 임시 주석
@@ -15,7 +16,7 @@ async function bootstrap() {
   initSelfContent();
   initSearchResults();
   initSearchResults();
-  bindEvent('searchButton', 'click', findBySearch);
+  searchButton.addEventListener('click', findBySearch);
 
   // 메뉴 전환 로직
   const loadContent = async url => {
@@ -38,7 +39,6 @@ async function bootstrap() {
         rightArrow.style.display = 'none';
         leftArrow.style.display = 'inline';
       }
-      //selfContent 관련 내용
       collapseButton.style.left = '100%';
 
       if (url === '/selfContent') {
@@ -64,6 +64,7 @@ async function bootstrap() {
 
   menus.forEach(menu => {
     bindEvent(menu.id, 'click', () => {
+      console.log('click menu');
       loadContent(menu.url);
       selectMenu(menu.list, menu.svg, menu.span);
     });
@@ -80,8 +81,10 @@ async function bootstrap() {
     cacheElement(spanId, `#${spanId}`).classList.add('menu_color');
   };
 
+  cacheElement('collapseButton', '#collapseButton');
   // 토글 버튼
-  bindEvent(collapseButton, 'click', () => {
+  bindEvent('collapseButton', 'click', () => {
+    console.log('click collapseButton');
     const content = cacheElement('content', '#content');
     const rightArrow = cacheElement('rightArrow', '#rightArrow');
     const leftArrow = cacheElement('leftArrow', '#leftArrow');
@@ -89,6 +92,7 @@ async function bootstrap() {
     const isSelfContent = document.querySelector('.selfContent') !== null;
 
     content.classList.toggle('hide');
+    console.log('click collapseButton');
 
     if (content.classList.contains('hide')) {
       rightArrow.style.display = 'inline';
@@ -105,11 +109,13 @@ async function bootstrap() {
       }
     }
   });
+
+  //mutationObserver 후에 해야 될 듯?
   document.addEventListener('click', event => {
     const removeBtn = event.target.closest('.removePlaceBtn');
     const transportBtn = event.target.closest('.transport-Btn');
     const searchBtn = event.target.closest('.search-place-btn');
-
+    console.log('click Button', removeBtn);
     if (removeBtn) {
       removePlace(removeBtn.dataset.placeId);
     } else if (transportBtn) {
@@ -118,7 +124,10 @@ async function bootstrap() {
       searchPlaceByInputId(searchBtn.dataset.inputId);
     }
   });
-  bindEvent('addPlaceBtn', 'click', addPlace);
+
+  cacheElement('addPlace', '#addPlaceBtn');
+  bindEvent('addPlace', 'click', addPlace);//이거 addPlaceButton 할당 안했음
+  console.log('elements', elements);
 }
 
 document.addEventListener('DOMContentLoaded', bootstrap);

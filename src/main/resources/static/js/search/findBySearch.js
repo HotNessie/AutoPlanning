@@ -1,12 +1,11 @@
 //검색, marker, bound지정
-// import domElements from '../../ui/dom-elements.js';
-// import { marker, MarkerManager } from '../marker.js';
 import { cacheElement } from '../ui/dom-elements.js';
 import { markerManager, createMarker } from '../map/marker.js';
 import { getMapInstance } from '../store/map-store.js';
 
 // export async function findBySearch(Place, map) {
 export async function findBySearch() {
+    console.log("findBySearch");
     const { Place } = await google.maps.importLibrary('places');
     const map = getMapInstance();
     const input = cacheElement('searchInput', '#searchInput');

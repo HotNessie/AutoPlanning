@@ -5,7 +5,6 @@ import { markerManager } from '../map/marker.js';
 let placeCount = 2; // 초기 장소 개수
 const MAX_PLACES = 7; // 최대 장소 개수
 const MIN_PLACES = 2; //최소 장소 개수
-// let transportSelections = Object.create(null);// 교통 수단 선택 상태 저장 객체 초기화
 let transportSelections = {};
 let routePolylines = []; // 그려진 경로선들을 저장하는 배열
 
@@ -25,6 +24,7 @@ function getCachedRoute(key) {
 
 // 장소 입력란 추가
 export function addPlace() {
+    console.log("addPlace");
     const placeContainer = cacheElement('placeContainer', '#placeContainer');
     const placeEnd = cacheElement('placeEnd', '#placeEnd');
 
@@ -162,6 +162,7 @@ export function initRouteFormHandler() {
             placeIdInputs.forEach(input => {
                 // hidden input의 값이 변경되면 관련 텍스트 입력 필드의 오류 스타일 제거
                 bindEvent(input.id, 'change', () => {
+                    console.log("hidden input changed");
                     const textInput = input.previousElementSibling.querySelector('input[type="text"]');
                     clearValidationError(textInput);
                 });
@@ -170,6 +171,7 @@ export function initRouteFormHandler() {
                 const textInput = input.previousElementSibling.querySelector('input[type="text"]');
                 if (textInput && !textInput.dataset.validationListenerAdded) {
                     bindEvent(textInput.id, 'change', () => {
+                        console.log("text input changed");
                         if (input.value) clearValidationError(textInput);
                     });
                     textInput.dataset.validationListenerAdded = 'true';
@@ -189,6 +191,7 @@ export function initRouteFormHandler() {
         observer.observe(placeContainer, { childList: true, subtree: true });
 
         bindEvent('routeForm', 'submit', async (event) => {
+            console.log("submit routeForm");
             event.preventDefault();
             // 경로 순서를 올바르게 조정하는 로직 추가
             adjustPlaceIndices();
@@ -298,6 +301,7 @@ export function initRouteFormHandler() {
 export function initSelfContent() {
     const selfButton = cacheElement('selfButton', '#selfButton');
     bindEvent(selfButton.id, 'click', () => {
+        console.log("selfButton clicked");
         const autoComplete = document.getElementById("autocomplete");
         autoComplete.classList.add("autoComplete_displayNone");
     });
@@ -312,20 +316,3 @@ export function initSelfContent() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 };
-
-
-
-
-
-
-
-// //self 메뉴 확장시 자동완성창 삭제
-// function removeAutoComplete() {
-//     const autoComplete = document.getElementById("autocomplete");
-//     autoComplete.classList.add("autoComplete_displayNone");
-// }
-
-// const selfButton = document.getElementById("selfButton");
-// selfButton.addEventListener("click", () => {
-//     removeAutoComplete();
-// })

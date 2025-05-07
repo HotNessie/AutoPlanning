@@ -7,7 +7,10 @@ import { bindEvent } from './dom-elements.js';
 export function initControls() {
   const map = getMapInstance();
 
-  bindEvent('currentPosition', 'click', () => centerMapToCurrentPosition(map));
+  bindEvent('currentPosition', 'click', () => {
+    console.log();
+    centerMapToCurrentPosition(map);
+  })
   bindEvent('zoomIn', 'click', () => map.setZoom(map.getZoom() + 2));
   bindEvent('zoomOut', 'click', () => map.setZoom(map.getZoom() - 2));
   bindEvent('fitMarkers', 'click', () => fitAllMarkers());

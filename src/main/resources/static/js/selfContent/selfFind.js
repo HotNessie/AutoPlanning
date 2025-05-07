@@ -11,12 +11,12 @@ let isSearchVisible = false;
 // searchPlaceByText 합쳐도 될 듯
 export function searchPlaceByInputId(inputId) {
   const input = cacheElement("placeName", `#${inputId}`);
-  if (!input.value) {
-    return;
-  }
+  if (!input.value) return;
+
 
   // 현재 입력 필드 설정
   currentPlaceInput = input;
+
   // 검색 실행
   findBySearch().then(() => {
     const searchResultsContainer = cacheElement("searchResultsContainer", "#searchResultsContainer");
@@ -28,14 +28,15 @@ export function searchPlaceByInputId(inputId) {
   })
 }
 
-// initializePlaceEvents
-//로드시마다 이벤트를 붙여줌 - 첫 HTML로드시에만 이벤트가 붙음 다시 로드할 때 이벤트가 없는 경우 대비
+// initializePlaceEvents - input을 긁어서 searchPlaceByInputId를 실행 시키는 이벤트 붙여주기
 export function initializePlaceEvents(map) {
   const placeInputs = document.querySelectorAll(".placeInput input[type='text']");
-  // console.log("초기 placeInputs 개수:", placeInputs.length);
+  //장소 input.value를 findBySearch()
   placeInputs.forEach(input => {
     if (!input.dataset.eventAttached) {
+      //이것도 이벤트 안먹는데?????
       bindEvent(input, "keydown", (event) => {
+        console.log("각 장소 input에 이벤트 추가");
         if (event.key === "Enter" && input.name.startsWith("placeNames")) {
           event.preventDefault();
           searchPlaceByInputId(input.id);
@@ -44,7 +45,7 @@ export function initializePlaceEvents(map) {
       input.dataset.eventAttached = "true";
     }
   });
-
+  //로드시마다 이벤트를 붙여줌 - 첫 HTML로드시에만 이벤트가 붙음 다시 로드할 때 이벤트가 없는 경우 대비
   const placeContainer = cacheElement("placeContainer", "#placeContainer");
   const observer = new MutationObserver((mutations) => {
     mutations.forEach(m => {
@@ -52,6 +53,7 @@ export function initializePlaceEvents(map) {
         document.querySelectorAll(".placeInput input[type='text']").forEach(input => {
           if (!input.dataset.eventAttached) {
             bindEvent(input, "keydown", (event) => {
+              console.log("각 장소 input에 이벤트 추가 mutation observer");
               if (event.key === "Enter" && input.name.startsWith("placeNames")) {
                 event.preventDefault();
                 searchPlaceByInputId(input.id);
@@ -64,11 +66,11 @@ export function initializePlaceEvents(map) {
     });
   });
   observer.observe(placeContainer, { childList: true, subtree: true });
-  // console.log("placeContainer 관찰 시작");
 
+  //이미 채워진 placeId가 있으면 마커 생성
   setTimeout(() => {
-    document.querySelectorAll(".placeInput input[type='text']").forEach(input => {
-      if (!input.value) {
+    document.querySelectorAll(".placeInput input[type='hidden'][name='.placeId']").forEach(input => {
+      if (input.value) {
         const nameInput = document.getElementById(input.id.replace('placeId', 'placeName'));
         createMarker(place, map).then(marker => {
           if (marker) {
@@ -83,6 +85,7 @@ export function initializePlaceEvents(map) {
 export function initSearchResults() {
   const searchResults = document.getElementById("searchResults");
   bindEvent(searchResults, "click", async (event) => {
+    console.log("searchResults click");
     const resultItem = event.target.closest(".result-item");
     if (resultItem && currentPlaceInput) {
       const placeId = resultItem.dataset.placeId;
