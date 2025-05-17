@@ -243,7 +243,8 @@ nav ul {
 }
 
 #collapseButton.expanded {
-    left: 194% !important;
+    /* left: 194% !important; */
+    transform: translateX(368px);
 }
 
 #rightArrow,

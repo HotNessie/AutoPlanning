@@ -2,7 +2,7 @@
 import { getMapInstance } from '../store/map-store.js';
 import { centerMapToCurrentPosition } from '../map/position.js';
 import { fitAllMarkers, markerManager } from '../map/marker.js';
-import { bindEvent } from './dom-elements.js';
+import { bindEvent, elements } from './dom-elements.js';
 
 export function initControls() {
   const map = getMapInstance();
@@ -11,10 +11,10 @@ export function initControls() {
     console.log();
     centerMapToCurrentPosition(map);
   })
-  bindEvent('zoomIn', 'click', () => map.setZoom(map.getZoom() + 2));
-  bindEvent('zoomOut', 'click', () => map.setZoom(map.getZoom() - 2));
-  bindEvent('fitMarkers', 'click', () => fitAllMarkers());
-  bindEvent('clearRoutes', 'click', () => {
+  elements.zoomIn.addEventListener('click', () => map.setZoom(map.getZoom() + 2));
+  elements.zoomOut.addEventListener('click', () => map.setZoom(map.getZoom() - 2));
+  elements.fitMarkers.addEventListener('click', () => fitAllMarkers());
+  elements.clearRoutes.addEventListener('click', () => {
     markerManager.clearMarkers();
     // clearAllRoutes()는 selfContent.js에서 관리, 나중에 통합
   });
