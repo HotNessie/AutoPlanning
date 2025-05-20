@@ -20,9 +20,18 @@ async function bootstrap() {
   initSelfContent();//selfContent.js
   // initSearchResults();//selfFind.js
   initializePlaceEvents();//selfFind.js
-  elements.searchButton.addEventListener('click', () => findBySearch(searchInput.id));//autocomplete
-  elements.searchInput.addEventListener('keydown',
-    (event) => { if (event.key === 'Enter') { findBySearch(searchInput.id); } })//autocomplete
+  elements.searchButton.addEventListener('click', () => {//autocomplete
+    if (event.isComposing) return;
+    findBySearch(searchInput.id);
+  });
+
+  elements.searchInput.addEventListener('keydown',//autocomplete
+    (event) => {
+      if (event.key === 'Enter') {
+        if (event.isComposing) return;
+        findBySearch(searchInput.id);
+      }
+    })
 
   // 메뉴 전환 로직
   // 메뉴 전환 로직
@@ -109,21 +118,6 @@ async function bootstrap() {
     else if (action === 'selectTransport') { selectTransport(placeId, transport); console.log('click transportBtn', action); }
     // else if (action === 'searchPlaceBtn') { searchPlaceByInputId(inputId); console.log('click searchBtn', action); }
     else if (action === 'searchPlaceBtn') { dumiSearch(); console.log('click searchBtn', action); }
-  });
-
-  collapseBody.addEventListener('keydown', event => {
-    if (event.isComposing) return;
-    const target = event.target.closest('[data-action]');
-    if (!target) return;
-    const action = target.dataset.action;
-    const inputId = target.id;
-
-    if (event.key === 'Enter' && action === 'searchPlace') {
-      event.preventDefault();
-      // searchPlaceByInputId(inputId);
-      dumiSearch();
-      console.log('Enter searchBtn inputId:', inputId);
-    }
   });
 
   function cleanupEvents() {

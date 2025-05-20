@@ -15,12 +15,29 @@ export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeN
   console.log("self x번째 검색란:", inputId.replace("placeName", ""));
   console.log("이거 검색했음:", document.querySelector(`#${inputId}`).value);
   if (!input.value) return;
+
+  const searchResultsContainer = document.querySelector("#searchResultsContainer");
+  const lastQuery = searchResultsContainer.dataset.lastQuery;
+  const inputIdKey = searchResultsContainer.dataset.lastInputId;
+
+  // 현재 검색어와 마지막 검색어가 같고, 동일한 입력 필드에서 검색한 경우 API 호출을 하지 않음
+  // if (lastQuery === input.value && inputIdKey === inputId) {
+  if (lastQuery === input.value) {
+    console.log("동일한 검색어 감지, 캐시된 결과 사용:", input.value);
+    searchResultsContainer.classList.add("visible");
+    const collapseButton = cacheElement("collapseButton", "#collapseButton");
+    collapseButton.classList.add("expanded");
+    currentPlaceInput = input; // 현재 입력 필드 설정 (이 부분은 중요함)
+    console.log("그냥 펼침");
+    return;
+  }
+
   // 현재 입력 필드 설정
   currentPlaceInput = input;
+
   // 검색 실행
   findBySearch(inputId).then((places) => {
     const searchResults = document.querySelector("#searchResults");
-    const searchResultsContainer = document.querySelector("#searchResultsContainer");
     searchResults.innerHTML = '';
 
     if (places.length) {
@@ -42,6 +59,11 @@ export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeN
         `;
         searchResults.appendChild(resultItem);
       });
+
+      // 검색 결과와 현재 검색어를 저장
+      searchResultsContainer.dataset.lastQuery = input.value;
+      // searchResultsContainer.dataset.lastInputId = inputId;
+
       searchResultsContainer.classList.add("visible");
       console.log("searchResultsContainer.classList", searchResultsContainer.classList);
       // collapse 버튼 확장 TODO: 펼치는 버튼 이상하게 펼쳐짐 css조작해얃댐
@@ -49,6 +71,9 @@ export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeN
       collapseButton.classList.add("expanded");
     } else {
       searchResults.innerHTML = "<p>검색 결과가 없습니다.</p>";
+      // 검색 결과가 없는 경우에도 쿼리를 저장 (중복 요청 방지)
+      searchResultsContainer.dataset.lastQuery = input.value;
+      // searchResultsContainer.dataset.lastInputId = inputId;
       searchResultsContainer.classList.add("visible");
     }
   });
@@ -58,14 +83,14 @@ export async function dumiSearch() {
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
   const placeInputs = document.querySelectorAll(".placeInput input[type='text']");
   const dumiData = [
-    { placeId: "수락산역", position: { lat: 37.678017, lng: 127.055218 } },
-    { placeId: "노원역", position: { lat: 37.654688, lng: 127.060551 } },
-    { placeId: "건대역", position: { lat: 37.539020, lng: 127.070159 } },
-    { placeId: "홍대역", position: { lat: 37.557723, lng: 126.924478 } },
-    { placeId: "강남역", position: { lat: 37.498595, lng: 127.030026 } },
+    { placeName: "수락산역", position: { lat: 37.678017, lng: 127.055218 }, placeId: "ChIJu5r4xti4fDURipdcST_0DmA" },
+    { placeName: "노원역", position: { lat: 37.654688, lng: 127.060551 }, placeId: "ChIJv98ROkC5fDURcL4ufuuX1mk" },
+    { placeName: "건대역", position: { lat: 37.539020, lng: 127.070159 }, placeId: "ChIJC7gU5uikfDURj6CjED_CmOk" },
+    { placeName: "홍대역", position: { lat: 37.557723, lng: 126.924478 }, placeId: "ChIJ4d9T2emYfDURGK_RrkTeN0o" },
+    { placeName: "강남역", position: { lat: 37.498595, lng: 127.030026 }, placeId: "ChIJKxs2jFmhfDURPP--kvKavw0" },
   ];
   placeInputs.forEach(input => {
-    const selectedPlace = dumiData.find(data => data.placeId === input.value);
+    const selectedPlace = dumiData.find(data => data.placeName === input.value);
     // let position = { lat: 37.655, lng: 127.077 };
     let position = {};
     if (selectedPlace) {
@@ -82,13 +107,14 @@ export async function dumiSearch() {
     placeInputs.forEach(placeInput => {
       const inputValue = placeInput.value.trim();
       if (inputValue) {
-        const matchingPlace = dumiData.find(data => data.placeId === inputValue);
+        const matchingPlace = dumiData.find(data => data.placeName === inputValue);
         if (matchingPlace) {
           positionSet.push(matchingPlace.position);
+          document.querySelector(`#${placeInput.id.replace("placeName", "placeId")}`).value = matchingPlace.placeId;
         }
       }
     });
-    console.log("positionSet:", positionSet);
+    // console.log("positionSet:", positionSet);
 
     const bounds = new google.maps.LatLngBounds();
     positionSet.map(async (place) => {
@@ -107,7 +133,7 @@ export async function dumiSearch() {
           }
         });
       }
-      console.log("position lat:", position.lat, ", lng:", position.lng);
+      // console.log("position lat:", position.lat, ", lng:", position.lng);
     });
   });
 }
@@ -173,11 +199,11 @@ export async function handelSearchResultsClick() {
       placeIdInput = cacheElement("placeIdEnd", "#placeIdEnd");
     } else {
       const placeNum = currentPlaceInput.id.replace('placeName', '');
-      placeIdInput = cacheElement(`placeId${placeNum}`, `#placeId${placeNum}`);
+      placeIdInput = cacheElement(`placeId${placeNum}`, `#placeId${placeNum}`); //이게 hidden input임
     }
     if (placeIdInput) {
       const prevValue = placeIdInput.value;
-      placeIdInput.value = placeId;
+      placeIdInput.value = placeId; // hidden input에 placeId를 할당
 
       const changeEvent = new Event('change', { bubbles: true });
       placeIdInput.dispatchEvent(changeEvent);

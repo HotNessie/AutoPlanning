@@ -230,6 +230,7 @@ export function initRouteFormHandler() {
         // 초기 설정 및 동적으로 추가된 장소에 대한 이벤트 설정
         setupValidationClearEvents();
 
+        //selfForm 제출시 이벤트
         bindEvent('routeForm', 'submit', async (event) => {
             console.log("submit routeForm");
             event.preventDefault();
