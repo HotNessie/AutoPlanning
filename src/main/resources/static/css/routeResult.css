@@ -1,0 +1,207 @@
+/* 경로 결과 스타일 */
+.result-header {
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.result-header h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+.result-time-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.time-info {
+  display: flex;
+  font-size: 14px;
+}
+
+.time-info .label {
+  font-weight: bold;
+  margin-right: 8px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.time-info .value {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.route-info-container {
+  display: flex;
+  gap: 20px;
+}
+
+.route-timeline {
+  flex: 1;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 15px;
+}
+
+.route-timeline::-webkit-scrollbar {
+  width: 2px;
+}
+
+.route-timeline::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border-radius: 4px;
+}
+
+.timeline-container {
+  position: relative;
+}
+
+.timeline-item {
+  margin-bottom: 10px;
+}
+
+.place-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.place-time {
+  min-width: 45px;
+  font-weight: bold;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.place-point {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  margin: 0 10px;
+}
+
+.place-details {
+  flex: 1;
+}
+
+.place-name {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.place-stay-time {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.route-info {
+  display: flex;
+  margin-left: 45px;
+  margin-bottom: 15px;
+}
+
+.route-line {
+  width: 2px;
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  margin-left: 5px;
+  margin-right: 15px;
+  height: 40px;
+}
+
+.route-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.transport-icon {
+  fill: rgba(255, 255, 255, 0.7);
+  margin-bottom: 3px;
+}
+
+.keyword-selection {
+  flex: 1;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding: 0 5px;
+}
+
+.keyword-selection::-webkit-scrollbar {
+  width: 2px;
+}
+
+.keyword-selection::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border-radius: 4px;
+}
+
+.keyword-section {
+  margin-bottom: 20px;
+}
+
+.keyword-section h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.keyword-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.keyword-btn {
+  padding: 6px 12px;
+  background-color: rgba(51, 51, 51, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.keyword-btn:hover {
+  background-color: rgba(76, 76, 76, 0.8);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.keyword-btn.selected {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border: none;
+  color: white;
+}
+
+.keyword-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.action-btn {
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+
+.save-btn {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  color: white;
+}
+
+.edit-btn {
+  background-color: rgba(51, 51, 51, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+}

@@ -123,7 +123,7 @@
     </button>
 
     <div id="autocomplete">
-      <input id="searchInput" type="text" style="color:rgba(255,255,255,0.8)">
+      <input id="searchInput" autocomplete="off" type="text" style="color:rgba(255,255,255,0.8)">
       <button id="searchButton" style="color:rgba(193, 84, 236)">검색</button>
       <div id="suggestion">
         <ul id="results" style="color:rgba(255,255,255,0.8)"></ul>
@@ -134,12 +134,10 @@
   <div id="map" style="width:125vw; height: 100vh;"></div>
 
 
-  <!-- TODO: onclick 부분 수정 필요 -->
-  <!-- TODO: onclick 부분 수정 필요 -->
-  <!-- TODO: onclick 부분 수정 필요 -->
   <div class="customBottomRight">
     <!-- 경로 지우기 버튼 -->
-    <button class="clearRoutesBtn custom-map-control-button" onclick="clearAllRoutes(), clearMarkers()">
+    <!-- <button class="clearRoutesBtn custom-map-control-button" onclick="clearAllRoutes(), clearMarkers()"> -->
+    <button class="clearRoutesBtn custom-map-control-button">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
         <path
           d="M16.24,3.56L21.19,8.5C21.97,9.29,21.97,10.55,21.19,11.34L12,20.53C10.44,22.09,7.91,22.09,6.34,20.53L2.81,17C2.03,16.21,2.03,14.95,2.81,14.16L13.41,3.56C14.2,2.78,15.46,2.78,16.24,3.56M4.22,15.58L7.76,19.11C8.54,19.9,9.8,19.9,10.59,19.11L14.12,15.58L9.17,10.63L4.22,15.58Z" />
@@ -147,7 +145,8 @@
     </button>
 
     <!-- 모든 마커 보기 버튼 -->
-    <button id="fitMarkersBtn" class="custom-map-control-button" onclick="window.fitAllMarkers()" title="모든 장소 보기">
+    <!-- <button id="fitMarkersBtn" class="custom-map-control-button" onclick="window.fitAllMarkers()" title="모든 장소 보기"> -->
+    <button id="fitMarkersBtn" class="custom-map-control-button" title="모든 장소 보기">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
         <path d="M21,21H16v3h5.546A2.457,2.457,0,0,0,24,21.545V16H21Z" />
         <path d="M0,2.455V8H3V3H8V0H2.454A2.457,2.457,0,0,0,0,2.455Z" />
@@ -194,10 +193,6 @@
   </script>
 
   <script type="module" src="js/main.js"></script>
-
-  <!--self js-->
-  <!-- <script src="js/map/selfContent/selfContent.js"></script> -->
-  <!-- <script type="module" src="js/index.js"></script> -->
 
   <!-- 마커 호출 -->
   <!-- <script type="module">
@@ -315,6 +310,8 @@
         if (searchResultsContainer) {
           searchResultsContainer.classList.remove("visible");
         }
+
+
         collapseButton.style.left = "100%";
         if (isSelfContent && autoComplete) {
           autoComplete.classList.remove("autoComplete_displayNone");

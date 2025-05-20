@@ -1,21 +1,22 @@
 //검색, marker, bound지정
-// import domElements from '../../ui/dom-elements.js';
-// import { marker, MarkerManager } from '../marker.js';
 import { cacheElement } from '../ui/dom-elements.js';
 import { markerManager, createMarker } from '../map/marker.js';
 import { getMapInstance } from '../store/map-store.js';
 
 // export async function findBySearch(Place, map) {
-export async function findBySearch() {
+export async function findBySearch(inputElementId) {
+    console.log("findBySearch 실행");
     const { Place } = await google.maps.importLibrary('places');
     const map = getMapInstance();
-    const input = cacheElement('searchInput', '#searchInput');
+    // const input = cacheElement('searchInput', '#searchInput');
+    // const input = cacheElement(inputElementId, `#${inputElementId}`);
+    console.log("findBySearch inputElementId:", inputElementId);
+    const input = document.querySelector(`#${inputElementId}`);
     const suggestion = cacheElement('suggestion', '#suggestion');
 
-    // const inputText = domElements.getSearchInput.value.trim(); // 검색어 가져오기
     const inputText = input.value.trim(); // 검색어 가져오기
+    console.log("inputText:", inputText);
 
-    // domElements.getSuggestion().style.display = "none";
     suggestion.style.display = "none";
 
     if (!inputText) {
@@ -34,7 +35,8 @@ export async function findBySearch() {
             "photos",
             "formattedAddress" // 주소 정보 추가
         ], // 가져올 필드
-        maxResultCount: 20,
+        // maxResultCount: 20,
+        maxResultCount: 1,//뭔 혼자 검색만 했는데 5천원 이러고 있네;;;;;;;;;;;
         locationBias: {
             center: map.getCenter(),
             radius: 500,
@@ -42,10 +44,10 @@ export async function findBySearch() {
     };
 
     const { places } = await Place.searchByText(request);
+    console.log("검색 결과:", places);
 
     // 기존 마커 지우기
     markerManager.clearMarkers();
-
 
 
     //하나씩 마커 찍어주기
@@ -54,9 +56,7 @@ export async function findBySearch() {
 
         const markerPromises = places.map(async (place) => {
             // 마커 생성
-            // const newMarker = await marker(map, place);
             const marker = await createMarker(place, map);
-            // markerManager.addMarker(newMarker);
             //zoom레벨 설정을 위한
             bounds.extend(place.location);
             return marker;
@@ -78,4 +78,5 @@ export async function findBySearch() {
     } else {
         alert("검색 결과가 없습니다.");
     }
+    return places;
 }

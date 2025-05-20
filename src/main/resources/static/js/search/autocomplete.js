@@ -14,6 +14,7 @@ export async function initAutocomplete(inputId = 'searchInput', resultsId = 'res
   let lastInput = '';
 
   const updateSuggestions = async () => {
+    console.log("updateSuggestions");
     const inputText = input.value.trim();
     if (!inputText) {
       suggestion.style.display = 'none';
@@ -45,6 +46,7 @@ export async function initAutocomplete(inputId = 'searchInput', resultsId = 'res
   };
 
   const handleKeydown = event => {
+    console.log("keydown");
     const items = results.querySelectorAll('button');
     if (!items.length) return;
 
@@ -77,6 +79,7 @@ export async function initAutocomplete(inputId = 'searchInput', resultsId = 'res
   };
 
   const handleSelection = event => {
+    console.log("handleSelection");
     if (event.target.tagName === 'LI') {
       input.value = event.target.textContent;
       suggestion.style.display = 'none';
@@ -85,6 +88,7 @@ export async function initAutocomplete(inputId = 'searchInput', resultsId = 'res
   };
 
   const handleEmptyInput = () => {
+    console.log("keyup");
     if (!input.value.trim()) {
       suggestion.style.display = 'none';
       results.innerHTML = '';
@@ -92,10 +96,12 @@ export async function initAutocomplete(inputId = 'searchInput', resultsId = 'res
     lastInput = input.value.trim();
   };
 
-  const handleOutsideClick = event => {
+  const handleOutsideClick = (event) => {
+    console.log("handleOutsideClick");
     if (event.target !== input && !results.contains(event.target)) {
       suggestion.style.display = 'none';
     }
+    console.log("click outside");
   };
 
   bindEvent('searchInput', 'input', updateSuggestions);
