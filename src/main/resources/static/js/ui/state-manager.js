@@ -1,14 +1,8 @@
-import { cacheElement, bindEvent, elements } from './dom-elements.js';
+import { elements } from './dom-elements.js';
 import { cleanupFunctions } from '../main.js';
 
 export function initUIState() {
-  // // 공통 UI 요소 캐싱
-  // cacheElement('content', '#content');
-  // cacheElement('rightArrow', '#rightArrow');
-  // cacheElement('leftArrow', '#leftArrow');
-  // cacheElement('autocomplete', '#autocomplete');
-  // cacheElement('collapseButton', '#collapseButton');
-  // cacheElement('collapseBody', '#collapseBody');
+  // 공통 UI 요소 캐싱
   const content = elements.content;
   const rightArrow = elements.rightArrow;
   const leftArrow = elements.leftArrow;
@@ -20,6 +14,9 @@ export function initUIState() {
   collapseButton.addEventListener('click', () => { toggleContent(); console.log("collapseButton 클릭"); });
 }
 
+//content 상태 초기화
+//content 상태 초기화
+//content 상태 초기화
 export function resetUIState(isSelfContent = false) {
   const content = elements.content;
   const rightArrow = elements.rightArrow;
@@ -47,6 +44,9 @@ export function resetUIState(isSelfContent = false) {
   }
 }
 
+// collapseButton 토글
+// collapseButton 토글
+// collapseButton 토글
 export function toggleContent() {
   const content = elements.content;
   const rightArrow = elements.rightArrow;

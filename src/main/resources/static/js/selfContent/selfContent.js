@@ -1,6 +1,7 @@
 import { cacheElement, bindEvent, elements } from '../ui/dom-elements.js';
 import { getMapInstance } from '../store/map-store.js';
 import { markerManager } from '../map/marker.js';
+import { handelSearchResultsClick } from './selfFind.js';
 
 let placeCount = 2; // 초기 장소 개수
 const MAX_PLACES = 7; // 최대 장소 개수
@@ -13,17 +14,17 @@ export function getDynamicElements() {
         { id: 'addPlace', selector: '#addPlaceBtn', events: [{ event: 'click', callback: addPlace }] },
         { id: 'routeForm', selector: '#routeForm', events: [] },
         { id: 'placeContainer', selector: '#placeContainer', events: [] },
-        { id: 'searchResults', selector: '#searchResults', events: [] },
+        { id: 'searchResults', selector: '#searchResults', events: [{ event: 'click', callback: handelSearchResultsClick }] },
         { id: 'searchResultsContainer', selector: '#searchResultsContainer', events: [] },
         { id: 'collapseButton', selector: '#collapseButton', events: [] },
     ];
 }
 
-export function resetConstentState() {
-    placeCount = 2;
-    transportSelections = {};
-    routePolylines.forEach(polyline => polyline.setMap(null));
-    routePolylines = [];
+export function resetConstentState() { //서버 로드라 알아서 초기화됨
+    // placeCount = 2;
+    // transportSelections = {};
+    // routePolylines.forEach(polyline => polyline.setMap(null));
+    // routePolylines = [];
 }
 
 // 캐싱 디테일 캐치해야 됨
@@ -41,10 +42,10 @@ function getCachedRoute(key) {
 }
 
 // 장소 입력란 추가
+// 장소 입력란 추가
+// 장소 입력란 추가
 export function addPlace() {
     console.log("addPlace");
-    // const placeContainer = cacheElement('placeContainer', '#placeContainer');
-    // const placeEnd = cacheElement('placeEnd', '#placeEnd');
     const placeContainer = document.querySelector('#placeContainer');
     const placeEnd = document.querySelector('#placeEnd');
 
@@ -105,11 +106,14 @@ export function addPlace() {
         console.log("placeCount:", placeCount);
     } else {
         placeCount++;
+        placeCount = Math.min(placeCount, MAX_PLACES); // placeCount가 MAX_PLACES를 초과하지 않도록 제한
         console.log("placeCount:", placeCount);
         alert("최대 7개 장소까지 추가 가능합니다.");
     }
 }
 
+//경유지 삭제
+//경유지 삭제
 //경유지 삭제
 export function removePlace(placeId) {
     // console.log("removePlace placeId:", placeId);
@@ -127,6 +131,9 @@ export function removePlace(placeId) {
     }
 }
 
+// 교통 수단 선택
+// 교통 수단 선택
+// 교통 수단 선택
 export function selectTransport(placeId, transport) {
     // 선택된 교통 수단 저장
     transportSelections[placeId] = transport;
@@ -136,10 +143,6 @@ export function selectTransport(placeId, transport) {
     // 버튼 스타일 업데이트
     const buttons = document.querySelectorAll(`.place${placeId}`); //이게 한번 실행되면서 생기는 문제겠지?
     buttons.forEach(button => {
-        // if (button.dataset.transport === transport) {
-        //     console.log("button", button);
-        //     button.classList.toggle('selected_transport');//만약 이미 선택된 교통수단이 있다면 해당 교통수단은 선택 해제 처리 해야 됨
-        // }; //토글 빼서 처리함
         button.classList.remove('selected_transport'); // 모든 버튼에서 클래스 제거
         if (button.dataset.transport === transport) {
             button.classList.add('selected_transport'); // 선택된 버튼에만 추가
@@ -151,12 +154,16 @@ export function selectTransport(placeId, transport) {
 };
 
 // 경로만 지우기
+// 경로만 지우기
+// 경로만 지우기
 export function clearAllRoutes() {
     // 모든 경로를 지도에서 제거
     routePolylines.forEach(polyline => polyline.setMap(null));
     routePolylines = [];
 }
 
+// 경로 순서 조정 함수
+// 경로 순서 조정 함수
 // 경로 순서 조정 함수
 export function adjustPlaceIndices() {
     const placeContainer = cacheElement('placeContainer', '#placeContainer');
@@ -179,6 +186,8 @@ export function adjustPlaceIndices() {
     });
 }
 
+// 컨트롤러 반환값 변경에 따른 DOM 구조 조정
+// 컨트롤러 반환값 변경에 따른 DOM 구조 조정
 // 컨트롤러 반환값 변경에 따른 DOM 구조 조정
 export function initRouteFormHandler() {
     const routeForm = cacheElement('routeForm', '#routeForm');
@@ -330,6 +339,9 @@ export function initRouteFormHandler() {
     }
 };
 
+// initSelfContent
+// initSelfContent
+// initSelfContent
 export function initSelfContent() {
     cacheElement('selfButton', '#selfButton');
     elements.selfButton.addEventListener('click', () => {

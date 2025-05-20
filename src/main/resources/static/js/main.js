@@ -3,9 +3,9 @@ import { initMap } from './map/initMap.js';
 import { initAutocomplete } from './search/autocomplete.js';
 import { findBySearch } from './search/findBySearch.js';
 import { initControls } from './ui/controls.js';
-import { initDomElements, cacheElement, elements, bindEvent, bindDynamicElements } from './ui/dom-elements.js';
-import { initSelfContent, initRouteFormHandler, addPlace, removePlace, selectTransport, resetConstentState, getDynamicElements } from './selfContent/selfContent.js';
-import { initializePlaceEvents, initSearchResults, searchPlaceByInputId } from './selfContent/selfFind.js';
+import { initDomElements, cacheElement, elements, bindDynamicElements } from './ui/dom-elements.js';
+import { initSelfContent, initRouteFormHandler, removePlace, selectTransport, resetConstentState, getDynamicElements } from './selfContent/selfContent.js';
+import { dumiSearch, initializePlaceEvents, initSearchResults, searchPlaceByInputId } from './selfContent/selfFind.js';
 import { initUIState, resetUIState } from './ui/state-manager.js';
 
 export const cleanupFunctions = [];
@@ -38,7 +38,7 @@ async function bootstrap() {
 
       if (url === '/selfContent') {
         resetUIState(url === '/selfContent');
-        // resetConstentState();  아직 안함
+        // resetConstentState();  아직 안함 아니 할 필요가 없지않냐
         bindDynamicElements(getDynamicElements());
         initSelfContent();
         initializePlaceEvents();
@@ -106,7 +106,9 @@ async function bootstrap() {
 
     if (action === 'removePlace') { removePlace(placeId); console.log('click removeButton', action); }
     else if (action === 'selectTransport') { selectTransport(placeId, transport); console.log('click transportBtn', action); }
-    else if (action === 'searchPlaceBtn') { searchPlaceByInputId(inputId); console.log('click searchBtn', action); }
+    else if (action === 'selectTransport') { selectTransport(placeId, transport); console.log('click transportBtn', action); }
+    // else if (action === 'searchPlaceBtn') { searchPlaceByInputId(inputId); console.log('click searchBtn', action); }
+    else if (action === 'searchPlaceBtn') { dumiSearch(); console.log('click searchBtn', action); }
   });
 
   collapseBody.addEventListener('keydown', event => {
@@ -118,7 +120,8 @@ async function bootstrap() {
 
     if (event.key === 'Enter' && action === 'searchPlace') {
       event.preventDefault();
-      searchPlaceByInputId(inputId);
+      // searchPlaceByInputId(inputId);
+      dumiSearch();
       console.log('Enter searchBtn inputId:', inputId);
     }
   });
