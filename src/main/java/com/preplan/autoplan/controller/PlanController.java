@@ -16,27 +16,32 @@ public class PlanController {
     // 메뉴 선택시 fragment 호출
     @GetMapping("/hotContent")
     public String getHotContent() {
-        return "fragments/planContent :: hotContent";
+        return "fragments/hotContent";
     }
 
     @GetMapping("/autoContent")
     public String getAutoContent() {
-        return "fragments/planContent :: autoContent";
+        return "fragments/autoContent";
     }
 
     @GetMapping("/selfContent")
     public String getSelfContent() {
-        return "fragments/planContent :: selfContent";
+        return "fragments/selfContent";
+    }
+
+    @GetMapping("/routeResult")
+    public String getSelfResult() {
+        return "fragments/RouteResult";
     }
 
     @GetMapping("/bookmarkContent")
     public String getBookmarkContent() {
-        return "fragments/planContent :: bookmarkContent";
+        return "fragments/bookmarkContent";
     }
 
     @GetMapping("/historyContent")
-    public String gethistoryContent() {
-        return "fragments/planContent :: historyContent";
+    public String getHistoryContent() {
+        return "fragments/historyContent";
     }
 
 }

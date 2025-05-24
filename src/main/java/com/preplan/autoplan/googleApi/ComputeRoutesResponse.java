@@ -3,7 +3,7 @@ package com.preplan.autoplan.googleApi;
 import java.time.Duration;
 import java.util.List;
 
-//google api와의 통신용
+//google api와의 통신용 DTO
 //Plan에 저장시킬 수 있음. Route의 정보(Polyline, 소요 시간, 거리)
 public record ComputeRoutesResponse(
         List<Route> routes) {
