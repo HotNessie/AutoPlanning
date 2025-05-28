@@ -1,4 +1,4 @@
-package com.preplan.autoplan.apiController.plan;
+package com.preplan.autoplan.controller.plan;
 
 public class PlanController {
 

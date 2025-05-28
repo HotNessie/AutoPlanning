@@ -13,8 +13,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 @Entity
 @Getter
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Plan {
 
@@ -26,8 +31,9 @@ public class Plan {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false)
-    private String region;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id", nullable = false)
+    private Region region;
 
     @Column(nullable = false)
     private LocalDateTime startTime;
@@ -59,8 +65,14 @@ public class Plan {
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Route> routes = new ArrayList<>();
 
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    @LastModifiedDate
+    private LocalDateTime lastModifiedDate;
+
     @Builder
-    public Plan(Member member, String region, LocalDateTime startTime, LocalDateTime endTime,
+    public Plan(Member member, Region region, LocalDateTime startTime, LocalDateTime endTime,
             List<PurposeField> purposeKeywords, List<MoodField> moodKeywords) {
         this.member = member;
         this.region = region;
@@ -91,14 +103,6 @@ public class Plan {
             List<MoodField> moodKeywords) {
         for (Route route : routes) {
             Place place = route.getPlace();
-            // purposeKeywords.forEach(purpose -> {
-            // PurposeField purposeField = PurposeField.valueOf(purpose);
-            // place.addPurposeKeyword(purposeField); // 가중치 반영 가능하도록 수정
-            // });
-            // moodKeywords.forEach(mood -> {
-            // MoodField moodField = MoodField.valueOf(mood);
-            // place.addMoodKeyword(moodField);
-            // });
             purposeKeywords.forEach(place::addPurposeKeyword);
             moodKeywords.forEach(place::addMoodKeyword);
         }

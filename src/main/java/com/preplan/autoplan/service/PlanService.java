@@ -12,6 +12,7 @@ import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import com.preplan.autoplan.domain.member.Member;
 import com.preplan.autoplan.domain.planPlace.Place;
 import com.preplan.autoplan.domain.planPlace.Plan;
+import com.preplan.autoplan.domain.planPlace.Region;
 import com.preplan.autoplan.domain.planPlace.Route;
 import com.preplan.autoplan.dto.plan.PlanCreateRequestDto;
 import com.preplan.autoplan.exception.MemberNotFoundException;
@@ -29,6 +30,7 @@ public class PlanService {
   private final PlanRepository planRepository;
   private final PlaceService placeService;
   private final MemberRepository memberRepository;
+  private final RegionService regionService;
 
   @Transactional(readOnly = true)
   public Plan findById(Long id) { // Plan 역시 id로 찾으면 안될거같은데?? pk를 search의 기준으로 사용하는게 힘들듯
@@ -58,10 +60,13 @@ public class PlanService {
         .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" + memberDto.getName()));
 
     // 계획 생성
+    // Region region = regionService.findOrCreateRegion(dto.regionName(),
+    // dto.regionType());
+    Region region = regionService.findOrCreateRegion(dto.regionName(), "CITY"); // 지역 생성
     Plan plan = Plan.builder()
         .member(member)
-        .region(dto.region())
-        .startTime(dto.endTime())
+        .region(region)
+        .startTime(dto.startTime())
         .endTime(dto.endTime())
         .purposeKeywords(dto.purposeKeywords().stream()
             .map(PurposeField::valueOf).collect(Collectors.toList()))
@@ -93,7 +98,9 @@ public class PlanService {
     plan.getRoutes().addAll(routes); // 계획에 경로 추가
     plan.applyKeywordsToPlaces(
         dto.purposeKeywords().stream().map(PurposeField::valueOf).collect(Collectors.toList()),
+        // dto.purposeKeywords(),
         dto.moodKeywords().stream().map(MoodField::valueOf).collect(Collectors.toList()));
+    // dto.moodKeywords());
 
     return savePlan(plan);
   }

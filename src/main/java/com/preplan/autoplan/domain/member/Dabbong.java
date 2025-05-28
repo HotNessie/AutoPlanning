@@ -8,11 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like {
+@EntityListeners(AuditingEntityListener.class)
+public class Dabbong {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,12 +30,13 @@ public class Like {
     private Plan plan;
 
     @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
     @Builder
-    public Like(Member member, Plan plan) {
+    public Dabbong(Member member, Plan plan) {
         this.member = member;
         this.plan = plan;
-        this.createdAt = LocalDateTime.now();
+//        this.createdAt = LocalDateTime.now();
     }
 }

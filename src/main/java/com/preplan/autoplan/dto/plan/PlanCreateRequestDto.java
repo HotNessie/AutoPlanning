@@ -6,11 +6,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record PlanCreateRequestDto(
-        String region,
-        LocalDateTime startTime,
-        LocalDateTime endTime,
-        List<String> purposeKeywords,
-        List<String> moodKeywords,
-        List<RouteCreateRequestDto> routes) {
+                String regionName,
+                LocalDateTime startTime,
+                LocalDateTime endTime,
+                List<String> purposeKeywords,
+                List<String> moodKeywords,
+                List<RouteCreateRequestDto> routes) {
 
 }
