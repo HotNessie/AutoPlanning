@@ -23,6 +23,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Plan {
 
+    // Plan은 여행 계획을 나타내는 엔티티로, 여행의 목적, 감정, 장소, 기간 등을 포함합니다.
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -73,7 +75,7 @@ public class Plan {
 
     @Builder
     public Plan(Member member, Region region, LocalDateTime startTime, LocalDateTime endTime,
-            List<PurposeField> purposeKeywords, List<MoodField> moodKeywords) {
+        List<PurposeField> purposeKeywords, List<MoodField> moodKeywords) {
         this.member = member;
         this.region = region;
         this.startTime = startTime;
@@ -99,8 +101,8 @@ public class Plan {
 
     // 계획에 포함된 장소에 키워드 반영
     public void applyKeywordsToPlaces(
-            List<PurposeField> purposeKeywords,
-            List<MoodField> moodKeywords) {
+        List<PurposeField> purposeKeywords,
+        List<MoodField> moodKeywords) {
         for (Route route : routes) {
             Place place = route.getPlace();
             purposeKeywords.forEach(place::addPurposeKeyword);

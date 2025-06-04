@@ -2,6 +2,7 @@ package com.preplan.autoplan.domain.planPlace;
 
 import com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
+import com.preplan.autoplan.dto.place.PlaceResponseDto;
 import jakarta.persistence.*;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -17,6 +18,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Place {
 
+    // Place는 여행지 정보를 담고 있는 엔티티로, 장소의 ID, 이름, 주소, 좌표, 검색 횟수 등을 포함합니다.
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,13 +33,13 @@ public class Place {
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false)
+    @Column
     private Double latitude;
 
-    @Column(nullable = false)
+    @Column
     private Double longitude;
 
-    @Column(nullable = false)
+    @Column
     private int searchCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -114,6 +117,7 @@ public class Place {
     }
 
     // 상위 3개 목적 키워드 갱신
+    // TODO: 장소 등록 초기에 너무 많이 업데이트 될 수 있으니, 이 부분은 나중에 최적화 필요
     private void updateTopPurposeKeywords() {
         this.topPurposeKeywords = purposeKeywords.stream()
                 .sorted((a, b) -> Integer.compare(b.getCount(), a.getCount()))
@@ -136,4 +140,13 @@ public class Place {
         this.averageStayTime = (this.averageStayTime + newStayTime) / 2;
     }
 
+    public static Place toEntity(PlaceResponseDto placeResponseDto) {
+        return Place.builder()
+                .placeId(placeResponseDto.placeId())
+                .name(placeResponseDto.name())
+                .address(placeResponseDto.address())
+                .latitude(placeResponseDto.latitude())
+                .longitude(placeResponseDto.longitude())
+                .build();
+    }
 }
