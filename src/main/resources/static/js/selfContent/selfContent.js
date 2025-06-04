@@ -20,27 +20,6 @@ export function getDynamicElements() {
     ];
 }
 
-export function resetConstentState() { //서버 로드라 알아서 초기화됨
-    // placeCount = 2;
-    // transportSelections = {};
-    // routePolylines.forEach(polyline => polyline.setMap(null));
-    // routePolylines = [];
-}
-
-// 캐싱 디테일 캐치해야 됨
-function generateCacheKey(request) {
-    return `route_${request.origin}_${request.destination}_${request.mode}_${Date.now()}`;
-}
-
-function cacheRoute(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-}
-
-function getCachedRoute(key) {
-    const cached = localStorage.getItem(key);
-    return cached ? JSON.parse(cached) : null;
-}
-
 // 장소 입력란 추가
 // 장소 입력란 추가
 // 장소 입력란 추가

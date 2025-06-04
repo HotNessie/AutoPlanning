@@ -6,7 +6,8 @@ public record PlaceCreateRequestDto(
     String name,
     String address,
     Double latitude,
-    Double longitude
-) {
+    Double longitude,
+    String regionName,
+    String regionType) {
 
 }

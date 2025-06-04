@@ -9,7 +9,7 @@ import org.springframework.web.service.annotation.PostExchange;
 
 @Component
 @HttpExchange(contentType = "application/json")
-public interface GoogleRouteClient {
+public interface GoogleRouteClient { // REST API 호출용 interface
 
     @PostExchange("directions/v2:computeRoutes")
     ComputeRoutesResponse getRoute(

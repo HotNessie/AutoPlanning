@@ -8,6 +8,8 @@ let currentPlaceInput = null;
 let routePolylines = []; // 그려진 경로선들을 저장하는 배열
 
 // placeId로 검색
+// placeId로 검색
+// placeId로 검색
 // searchPlaceByText 합쳐도 될 듯
 export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeName2, placeName3 등
   console.log("searchPlaceByInputId 실행:", inputId);
@@ -78,7 +80,9 @@ export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeN
     }
   });
 }
-
+//더미데이터
+//더미데이터
+//더미데이터
 export async function dumiSearch() {
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
   const placeInputs = document.querySelectorAll(".placeInput input[type='text']");
@@ -133,14 +137,108 @@ export async function dumiSearch() {
           }
         });
       }
-      // console.log("position lat:", position.lat, ", lng:", position.lng);
     });
   });
 }
 
 
 
+// 서버에서 검색된 장소 결과표시
+// 서버에서 검색된 장소 결과표시
+// 서버에서 검색된 장소 결과표시
+async function displaySearchResults(places, inputId) {
+  console.log("서버에서 검색된 장소 표시:", places);
 
+  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+  const infoWindow = new google.maps.InfoWindow();
+
+  currentPlaceInput = document.getElementById(inputId);
+
+  const searchResults = document.querySelector("#searchResults");
+  searchResults.innerHTML = '';
+
+  places.forEach(place => {
+    const resultItem = document.createElement('div');
+    resultItem.className = 'result-item';
+    resultItem.dataset.placeId = place.placeId;
+
+    resultItem.innerHTML = `
+      <button class="place-name">${place.name}</button>
+      <div class="place-address">${place.address}</div>
+      <div class="place-keywords">
+        ${place.topPurposeKeywords && place.topPurposeKeywords.length > 0
+        ? `<div class="keywords-group">
+              <span>목적: </span>
+              ${place.topPurposeKeywords.map(keyword =>
+          `<span class="keyword">${keyword}</span>`).join('')}
+              </div>`
+        : ''}
+        ${place.topMoodKeywords && place.topMoodKeywords.length > 0
+        ? `<div class="keywords-group">
+              <span>분위기: </span>
+              ${place.topMoodKeywords.map(keyword =>
+          `<span class="keyword">${keyword}</span>`).join('')}
+              </div>`
+        : ''}
+      </div>
+    `;
+    searchResults.appendChild(resultItem);
+
+    const searchResultsContainer = document.querySelector("#searchResultsContainer");
+    searchResultsContainer.classList.add("visible");
+    const collapseButton = cacheElement("collapseButton", "#collapseButton");
+    collapseButton.classList.add("expanded");
+
+    // 검색 결과와 현재 검색어를 저장
+    searchResultsContainer.dataset.lastQuery = place.value;
+
+    const hidden = document.querySelectorAll(".placeINput input[type='hidden'][name='.placeId']")
+    hidden.forEach(hiddenInput => {
+      hiddenInput.value = place.placeId
+    });
+    //
+    //
+    //marker
+    markerManager.clearMarkers();
+
+    let location = { lat: place.latitude, lng: place.longitude };
+    const markerElement = new AdvancedMarkerElement({
+      map: getMapInstance(),
+      position: location
+    })
+    markerElement.addListener('gmp-click', () => {
+      infoWindow.setContent(content);
+      infoWindow.open({
+        anchor: markerElement,
+        map: getMapInstance(),
+      });
+    });
+    return markerManager.addMarker(markerElement);
+  });
+
+  const bounds = new google.maps.LatLngBounds();//bounds
+  const markerPromises = places.map(async place => {
+    bounds.extend({ lat: place.latitude, lng: place.longitude });
+  });
+  await Promise.all(markerPromises);
+  if (!bounds.isEmpty()) {
+    getMapInstance().fitBounds(bounds, {
+      top: 100,
+      right: 100,
+      bottom: 100,
+      left: 100
+    });
+    google.maps.event.addListenerOnce(getMapInstance(), "bounds_changed", () => {
+      if (getMapInstance().getZoom() > 17) {
+        getMapInstance().setZoom(17);
+      }
+    });
+  }
+  console.log("검색 결과 표시 완료");
+}
+
+// initializePlaceEvents - input을 긁어서 searchPlaceByInputId를 실행 시키는 이벤트 붙여주기
+// initializePlaceEvents - input을 긁어서 searchPlaceByInputId를 실행 시키는 이벤트 붙여주기
 // initializePlaceEvents - input을 긁어서 searchPlaceByInputId를 실행 시키는 이벤트 붙여주기
 export async function initializePlaceEvents() {
   console.log("initializePlaceEvents");
@@ -151,13 +249,35 @@ export async function initializePlaceEvents() {
       input.addEventListener("keydown", async (event) => {
         if (event.isComposing) return;
         if (event.key === "Enter" && input.name.startsWith("placeNames")) {
+          event.preventDefault();
           console.log("Enter 눌렀음");
           console.log("장소 input:", input.value);
-          event.preventDefault();
 
+          try {
+            //일단 내 서버를 통해서 검색 시도
+            const searchTerm = input.value.trim();
+            if (!searchTerm) {
+              alert("검색어를 입력해주세요.");
+              return;
+            }
+            const response = await fetch(`/places/search?name=${encodeURIComponent(searchTerm)}`);
+            if (response.ok) {
+              const places = await response.json();
+              if (places && places.length > 0) {
+                displaySearchResults(places, input);
+                return;
+              }
+            }
+            return
+          }
+          catch (error) {
+            console.log("DB에 장소 데이터 없음 고로 구글 API요청 보냄", error);
+            // searchPlaceByInputId(input.id);
+            dumiSearch();
+          }
           // searchPlaceByInputId(input.id); 
           //  돈 내기 시렁 더미 데이터로 대체하겠다
-          dumiSearch();
+          //          dumiSearch();
           input.dataset.eventAttached = "true";
         }
       });
@@ -184,9 +304,6 @@ export function initSearchResults() { }
 export async function handelSearchResultsClick() {
   console.log("initSearchResults");
 
-  // cacheElement("searchResults", "#searchResults");
-  // const searchResults = document.querySelector("#searchResults");
-  // searchResults.addEventListener("click", async (event) => {
   console.log("searchResults click");
   const resultItem = event.target.closest(".result-item");
   if (resultItem && currentPlaceInput) {
@@ -219,11 +336,6 @@ export async function handelSearchResultsClick() {
           getMapInstance().setZoom(15);
         }
       }
-      // const transportInput = cacheElement(`transport${currentPlaceInput.id.replace('placeName', '')}`, `#transport${currentPlaceInput.id.replace('placeName', '')}`);
-      // if (transportInput) {
-      //   transportInput.value = transportSelections[currentPlaceInput.id.replace('placeName', '')] || "TRANSIT";
-      //   console.log("transportInput", transportInput.value);
-      // }
       const searchResultsContainer = document.querySelector("#searchResultsContainer");
       searchResultsContainer.classList.remove("visible");
       console.log("searchResultsContainer.classList", searchResultsContainer.classList);

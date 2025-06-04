@@ -1,4 +1,4 @@
-package com.preplan.autoplan.apiController.route;
+package com.preplan.autoplan.controller.route;
 
 import com.preplan.autoplan.domain.planPlace.Plan;
 import com.preplan.autoplan.domain.planPlace.Route;
