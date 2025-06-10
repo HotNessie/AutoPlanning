@@ -80,3 +80,25 @@ export function toggleContent() {
     collapseButton.classList.remove('expanded');
   }
 }
+
+// 검색 결과 컨테이너 표시/숨김 관리
+export function toggleSearchResultsVisibility(visible = true) {
+  const searchResultsContainer = document.querySelector("#searchResultsContainer");
+  const collapseButton = document.querySelector('#collapseButton');
+
+  if (visible) {
+    searchResultsContainer.classList.add("visible");
+    collapseButton.classList.add("expanded");
+  } else {
+    searchResultsContainer.classList.remove("visible");
+    collapseButton.classList.remove("expanded");
+  }
+}
+
+export function resetSearchResultState() {
+  const searchResultsContainer = document.querySelector("#searchResultsContainer");
+  if (searchResultsContainer) {
+    searchResultsContainer.classList.remove("visible");
+    searchResultsContainer.dataset.lastQuery = '';
+  }
+}

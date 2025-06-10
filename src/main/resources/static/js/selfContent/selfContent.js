@@ -1,7 +1,7 @@
 import { cacheElement, bindEvent, elements } from '../ui/dom-elements.js';
 import { getMapInstance } from '../store/map-store.js';
 import { markerManager } from '../map/marker.js';
-import { handelSearchResultsClick } from './selfFind.js';
+import { initSearchResults, attachSearchEventToInput } from './selfFind.js';
 
 let placeCount = 2; // 초기 장소 개수
 const MAX_PLACES = 7; // 최대 장소 개수
@@ -14,7 +14,7 @@ export function getDynamicElements() {
         { id: 'addPlace', selector: '#addPlaceBtn', events: [{ event: 'click', callback: addPlace }] },
         { id: 'routeForm', selector: '#routeForm', events: [] },
         { id: 'placeContainer', selector: '#placeContainer', events: [] },
-        { id: 'searchResults', selector: '#searchResults', events: [{ event: 'click', callback: handelSearchResultsClick }] },
+        { id: 'searchResults', selector: '#searchResults', events: [{ event: 'click', callback: initSearchResults }] },
         { id: 'searchResultsContainer', selector: '#searchResultsContainer', events: [] },
         { id: 'collapseButton', selector: '#collapseButton', events: [] },
     ];
@@ -83,6 +83,47 @@ export function addPlace() {
         placeContainer.insertBefore(newPlaceDiv, placeEnd);
         placeCount++;
         console.log("placeCount:", placeCount);
+        // initializePlaceEvents();
+        const input = newPlaceDiv.querySelector('input[type="text"]');
+
+        attachSearchEventToInput(input);
+        // if (!input.dataset.eventAttached) {
+        //     input.addEventListener("keydown", async (event) => {
+        //         if (event.isComposing) return;
+        //         if (event.key === "Enter" && input.name.startsWith("placeNames")) {
+        //             event.preventDefault();
+        //             console.log("Enter 눌렀음");
+        //             console.log("장소 input:", input.value);
+
+        //             try {
+        //                 //일단 내 서버를 통해서 검색 시도
+        //                 const searchTerm = input.value.trim();
+        //                 if (!searchTerm) {
+        //                     alert("검색어를 입력해주세요.");
+        //                     return;
+        //                 }
+        //                 const response = await fetch(`/places/search?name=${encodeURIComponent(searchTerm)}`);
+        //                 if (response.ok) {
+        //                     const places = await response.json();
+        //                     if (places && places.length > 0) {
+        //                         displaySearchResults(places, input);
+        //                     }
+        //                 } else if (response.status === 404) {
+        //                     console.log("장소 검색 결과 없음, 더미 데이터로 대체");
+        //                     //  돈 내기 시렁 더미 데이터로 대체하겠다
+        //                     dumiSearch(input);
+        //                     // searchPlaceByInputId(input.id); 
+        //                 }
+        //             }
+        //             catch (error) {
+        //                 console.log("DB에 장소 데이터 없음 고로 구글 API요청 보냄", error);
+        //                 // searchPlaceByInputId(input.id);
+        //                 dumiSearch(input);
+        //             }
+        //             input.dataset.eventAttached = "true";
+        //         }
+        //     });
+        // }
     } else {
         placeCount++;
         placeCount = Math.min(placeCount, MAX_PLACES); // placeCount가 MAX_PLACES를 초과하지 않도록 제한
@@ -210,9 +251,11 @@ export function initRouteFormHandler() {
         setupValidationClearEvents();
 
         //selfForm 제출시 이벤트
-        bindEvent('routeForm', 'submit', async (event) => {
+        // bindEvent('routeForm', 'submit', async (event) => {
+        routeForm.addEventListener('submit', async (event) => {
             console.log("submit routeForm");
             event.preventDefault();
+            if (event.isComposing) return;
             // 경로 순서를 올바르게 조정하는 로직 추가
             adjustPlaceIndices();
             // 기존 오류 메시지 제거
