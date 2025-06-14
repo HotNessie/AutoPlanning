@@ -231,7 +231,7 @@ nav ul {
     top: 50%;
     left: 100%;
     transform: translateY(-50%);
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.4s ease-in-out;
     background-color: rgb(18, 18, 18);
     width: 23px;
     height: 46px;
@@ -243,8 +243,8 @@ nav ul {
 }
 
 #collapseButton.expanded {
-    /* left: 194% !important; */
-    transform: translateX(368px);
+    /* transform: translateX(368px); */
+    transform: translateY(-50%) translateX(367px);
 }
 
 #rightArrow,

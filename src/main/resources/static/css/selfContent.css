@@ -200,7 +200,7 @@
 }
 
 #searchResultsContainer {
-    display: none;
+    /* display: none; */
     z-index: -1;
     position: fixed;
     top: 24px;
