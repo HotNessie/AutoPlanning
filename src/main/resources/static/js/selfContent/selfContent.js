@@ -1,5 +1,4 @@
 import { cacheElement, elements } from '../ui/dom-elements.js';
-import { getMapInstance } from '../store/map-store.js';
 import { markerManager } from '../map/marker.js';
 import { initSearchResults, attachSearchEventToInput } from './selfFind.js';
 import {
@@ -12,7 +11,6 @@ let placeCount = 2; // 초기 장소 개수
 const MAX_PLACES = 7; // 최대 장소 개수
 const MIN_PLACES = 2; //최소 장소 개수
 let transportSelections = {};
-// let routePolylines = []; // 그려진 경로선들을 저장하는 배열
 
 export function getDynamicElements() {
     return [

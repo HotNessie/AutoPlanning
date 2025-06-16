@@ -11,7 +11,7 @@ import {
 } from '../selfContent/searchResult.js';
 import { toggleSearchResultsVisibility } from '../ui/state-manager.js';
 
-let routePolylines = []; // 그려진 경로선들을 저장하는 배열
+// let routePolylines = []; // 그려진 경로선들을 저장하는 배열
 
 // placeId로 검색
 // placeId로 검색
@@ -49,6 +49,7 @@ export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeN
 export async function dumiSearch(input) {
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
   // const placeInputs = document.querySelectorAll(".placeInput input[type='text']");
+  markerManager.clearMarkers();
   const dumiData = [
     { placeName: "수락산역", position: { lat: 37.678017, lng: 127.055218 }, placeId: "ChIJu5r4xti4fDURipdcST_0DmA" },
     { placeName: "노원역", position: { lat: 37.654688, lng: 127.060551 }, placeId: "ChIJv98ROkC5fDURcL4ufuuX1mk" },
@@ -81,9 +82,6 @@ export async function initSearchResults() {
     searchResults.dataset.listenerAdded = 'true';
   }
 }
-
-// 더 이상 사용하지 않는 함수들은 제거하고 새로운 모듈 함수 사용
-// export { displayServerSearchResults as displaySearchResults };
 
 // DB에 장소 검색 없으면 구글 API로 장소 검색
 // DB에 장소 검색 없으면 구글 API로 장소 검색
