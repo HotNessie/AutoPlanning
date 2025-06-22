@@ -139,9 +139,9 @@ export function selectTransport(placeId, transport) {
     if (transportInput) transportInput.value = transport;
 };
 
-// 컨트롤러 반환값 변경에 따른 DOM 구조 조정
-// 컨트롤러 반환값 변경에 따른 DOM 구조 조정
-// 컨트롤러 반환값 변경에 따른 DOM 구조 조정
+// about routeForm control
+// about routeForm control
+// about routeForm control
 export function initRouteFormHandler() {
     const routeForm = document.querySelector('#routeForm');
 
@@ -162,7 +162,6 @@ export function initRouteFormHandler() {
             const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
             placeIdInputs.forEach(input => {
                 // hidden input의 값이 변경되면 관련 텍스트 입력 필드의 오류 스타일 제거
-                // input.id.addEventListener('change', () => {
                 input.addEventListener('change', () => {
                     console.log("hidden input changed");
                     const textInput = input.previousElementSibling.querySelector('input[type="text"]');
@@ -172,7 +171,6 @@ export function initRouteFormHandler() {
                 // 관련 텍스트 입력 필드에도 검색 선택 후 이벤트 리스너 추가
                 const textInput = input.previousElementSibling.querySelector('input[type="text"]');
                 if (textInput && !textInput.dataset.validationListenerAdded) {
-                    // textInput.id.addEventListener('change', () => {
                     textInput.addEventListener('change', () => {
                         console.log("text input changed");
                         if (input.value) clearValidationError(textInput);
@@ -190,6 +188,7 @@ export function initRouteFormHandler() {
             console.log("submit routeForm");
             event.preventDefault();
             if (event.isComposing) return;
+
             // 경로 순서를 올바르게 조정하는 로직 추가
             adjustPlaceIndices();
             // 기존 오류 메시지 제거
@@ -224,11 +223,36 @@ export function initRouteFormHandler() {
                 routeForm.prepend(errorDiv);
                 return;
             }
+            // 경로 순서를 조정
+            adjustPlaceIndices();
+            // 경로 요청
             requestRoute(routeForm, true);
+            getPlanFragment();
         });
         routeForm.dataset.listenerAdded = "true"; // 중복 추가 방지
     }
 };
+
+//getPlanFragment
+//getPlanFragment
+//getPlanFragment
+async function getPlanFragment() {
+    const collapseBody = document.querySelector('#collapseBody');
+
+    const response = await fetch('/plan/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+    if (!response.ok) {
+        console.error("Failed to submit plan");
+        return;
+    }
+    collapseBody.innerHTML = await response.text();
+    console.log("added event listener to submitButton");
+};
+
 
 // selfContent에서 autoComplete 삭제 initSelfContent
 // selfContent에서 autoComplete 삭제 initSelfContent

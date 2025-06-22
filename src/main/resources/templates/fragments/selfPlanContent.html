@@ -1,0 +1,92 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="/css/selfPlanContent.css">
+<div class="selfPlanContent">
+
+  <!-- <form action="/create/plan">
+  </form> -->
+  <section id="day1" class="day">
+    <div>
+      <div class="dayTitleBox">
+        <span class="dayTitleText">first Day</span>
+        <button type="button" class="editDayPlan">
+          <!-- 편집 svg 찾아 넣기 -->
+          <svg>
+            <path />
+          </svg>
+        </button>
+      </div>
+
+      <!-- 계획 본문 -->
+      <div class="plan-details-box">
+        <ol class="plan-list-box">
+          <!-- 카드 단위 -->
+          <li class="plan-card">
+
+            <!-- 카드 내용 -->
+            <div class="day-card-body">
+              <span class="day-svg-box">
+                <div>
+                  O
+                  <!-- 여기에 1번 2번 행동마커?? svg -->
+                  <!-- <svg class="plan-svg">
+                    <path />
+                  </svg> -->
+                </div>
+                <!-- 순서마커 아래 방문 시간 -->
+                <div class="visiting-time">10시</div>
+              </span>
+              <div class="day-card-content">
+                <!-- 카드 맨 위에 키워드가 들어갈거 -->
+                <span class="keyword-badge">키워드</span>
+                <!-- 카드 메인 텍스트 ex) 수락산역 -->
+                <div class="main-content">수락산역</div>
+                <!-- 카드 서브 텍스트 ex)주소, 평점 등 -->
+                <div class="sub-content">sub-content</div>
+                <!-- 카드 수정버튼 -->
+                <button class="open-cardEdit-box"></button>
+                <!-- 버튼 누르면 펼쳐짐 -->
+                <dialog class="cardEdit-box">
+                  <div class="card-edit-set">
+                    <!-- 메모추가 -->
+                    <button type="button" class="addMemo">
+                      <span>메모</span>
+                      <svg>
+                        <path />
+                        <!-- 메모 추가 svg 찾아 넣기 -->
+                      </svg>
+                    </button>
+                    <!-- 카드 수정 -->
+                    <button type="button" class="edit-card">
+                      <span>편집</span>
+                      <svg>
+                        <path />
+                        <!-- 편집 svg 찾아 넣기 -->
+                      </svg>
+                    </button>
+                    <!-- 카드 삭제 -->
+                    <button type="button" class="delete-card">
+                      <span>삭제</span>
+                      <svg>
+                        <path />
+                        <!-- 삭제 svg 찾아 넣기 -->
+                      </svg>
+                    </button>
+                  </div>
+                </dialog>
+              </div>
+            </div>
+          </li>
+          <!-- 하루 일정 추가, TODO리스트를 카드로 추가 -->
+          <div class="add-content-box">
+            <button class="add-Place"></button>
+            <button class="add-TodoList"></button>
+            <button class="add"></button>
+            <button class="add"></button>
+          </div>
+        </ol>
+      </div>
+    </div>
+  </section>
+</div>
+
+</html>

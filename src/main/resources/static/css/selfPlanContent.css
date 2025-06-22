@@ -1,0 +1,136 @@
+.selfPlanContent {
+  width: inherit;
+}
+
+.day {
+  /* border-radius: ; */
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  /* padding: 10px; */
+}
+
+.dayTitleBox {
+  display: flex;
+  align-items: center;
+  height: 25px;
+  position: relative;
+  background-color: yellow;
+  color: black;
+}
+
+.dayTiyleText {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  left: 10%;
+}
+
+.editDayPlan {
+  position: absolute;
+  right: 10%;
+  height: 20px;
+  width: 20px;
+}
+
+/* svg넣고 설정 */
+.editDayPlan svg {
+  display: none;
+  fill: rgba(255, 255, 255, 0.2);
+}
+
+.plan-details-box {
+  background-color: green;
+}
+
+.plan-list-box {
+  padding: 10px;
+  background-color: blue;
+}
+
+.plan-card {
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.6);
+  /* color: rgba(255, 255, 255, 0.2);  */
+  /* display: flex; */
+  /* flex-direction: column; */
+
+}
+
+.day-svg-box {
+  background-color: tomato;
+  width: 8%;
+  height: 100%;
+  padding: 0 0 0 3%;
+}
+
+.visiting-time {
+  font-size: 9px;
+}
+
+.day-card-body {
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: space-between;
+  align-items: center;
+  /* padding: 10px; */
+  width: 100%;
+  background-color: purple;
+  border-radius: 12px;
+}
+
+.day-card-content {
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* justify-content: center; */
+  position: relative;
+  width: 92%;
+  height: 80%;
+  background-color: rosybrown;
+  border-radius: 12px;
+}
+
+.keyword-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 3px;
+  border-radius: 8px;
+  font-size: 9px;
+  position: relative;
+  left: 5%;
+}
+
+.main-content {
+  display: flex;
+  font-size: 16px;
+  position: relative;
+  left: 6%;
+}
+
+.sub-content {
+  display: flex;
+  font-size: 12px;
+  position: relative;
+  left: 6%;
+}
+
+.open-cardEdit-box {
+  position: absolute;
+  right: 5%;
+  top: 10%;
+  width: 20px;
+  height: 20px;
+}
+
+.add-content-box {
+  display: flex;
+  justify-content: space-between;
+  padding-top: inherit;
+}
+
+.add-content-box button {
+  width: 20%;
+  height: 30px;
+}
