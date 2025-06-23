@@ -1,136 +1,154 @@
 .selfPlanContent {
-  width: inherit;
+  width: 100%;
 }
 
 .day {
-  /* border-radius: ; */
-  background-color: transparent;
+  /* 구현 단계에서만 배경색 할당 */
   color: rgba(255, 255, 255, 0.8);
   border: none;
   font-size: 14px;
-  cursor: pointer;
-  /* padding: 10px; */
+  /* cursor: pointer; */
+  padding: 10px;
 }
 
 .dayTitleBox {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 25px;
-  position: relative;
-  background-color: yellow;
-  color: black;
+  margin: 10px 23px 10px 10px;
 }
 
-.dayTiyleText {
+.dayTitleText {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.2);
-  position: absolute;
+  color: #666;
+  font-weight: bold;
   left: 10%;
 }
 
-.editDayPlan {
+.plan-details-box {
+  box-sizing: border-box;
+  position: relative;
+}
+
+.plan-details-box::before {
   position: absolute;
-  right: 10%;
-  height: 20px;
-  width: 20px;
+  top: 0;
+  left: 28px;
+  bottom: 0;
+  width: 2px;
+  content: '';
+  margin-top: 48px;
+  background-color: #666;
+}
+
+.editDayPlan {
+  height: 24px;
+  width: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 /* svg넣고 설정 */
 .editDayPlan svg {
-  display: none;
-  fill: rgba(255, 255, 255, 0.2);
-}
-
-.plan-details-box {
-  background-color: green;
+  /* display: none; */
+  fill: #666;
 }
 
 .plan-list-box {
-  padding: 10px;
-  background-color: blue;
+  padding: 0px;
+  margin: 0;
 }
 
 .plan-card {
   border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.6);
-  /* color: rgba(255, 255, 255, 0.2);  */
-  /* display: flex; */
-  /* flex-direction: column; */
-
+  /* background-color: rgba(255, 255, 255, 0.6); */
+  margin-bottom: 10px;
 }
 
+.day-card-body {
+  display: flex;
+  /* justify-content: space-between; */
+  justify-content: end;
+  align-items: center;
+  position: relative;
+  border-radius: 12px;
+  padding: 10px 23px;
+}
+
+
 .day-svg-box {
-  background-color: tomato;
-  width: 8%;
-  height: 100%;
-  padding: 0 0 0 3%;
+  /* background-color: tomato; */
+  /* height: 100%; */
+  /* padding: 0 0 0 2%; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* margin-right: 10px; */
+  position: absolute;
+  left: 5%;
 }
 
 .visiting-time {
   font-size: 9px;
 }
 
-.day-card-body {
-  display: flex;
-  /* flex-direction: column; */
-  justify-content: space-between;
-  align-items: center;
-  /* padding: 10px; */
-  width: 100%;
-  background-color: purple;
-  border-radius: 12px;
-}
-
 .day-card-content {
-  /* display: flex; */
-  /* flex-direction: column; */
-  /* justify-content: center; */
+  /* flex: 1; */
   position: relative;
   width: 92%;
-  height: 80%;
-  background-color: rosybrown;
+  background-color: #2d2d2d;
   border-radius: 12px;
+  padding: 10px 20px;
 }
 
 .keyword-badge {
   background-color: rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.8);
-  padding: 3px;
+  padding: 3px 6px;
   border-radius: 8px;
   font-size: 9px;
   position: relative;
-  left: 5%;
+  /* left: 6%; */
 }
 
 .main-content {
-  display: flex;
   font-size: 16px;
   position: relative;
-  left: 6%;
+  /* left: 6%; */
 }
 
 .sub-content {
-  display: flex;
   font-size: 12px;
   position: relative;
-  left: 6%;
+  /* left: 6%; */
 }
 
 .open-cardEdit-box {
   position: absolute;
   right: 5%;
   top: 10%;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background-color: transparent;
+  fill: rgba(255, 255, 255, 0.8)
 }
 
 .add-content-box {
   display: flex;
-  justify-content: space-between;
-  padding-top: inherit;
+  justify-content: space-evenly;
+  padding: 0 16px;
+  /* padding-top: inherit; */
 }
 
 .add-content-box button {
-  width: 20%;
+  width: 22%;
   height: 30px;
+  border-radius: 8px;
+}
+
+.add-content-box button:hover {
+  background-color: #0056b3;
 }
