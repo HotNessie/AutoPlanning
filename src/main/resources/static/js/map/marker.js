@@ -47,6 +47,7 @@ class MarkerManager {
     this.markers = [];
     this.placeMarkers = {};
   }
+
   getMarkers() {
     return this.markers;
   }
@@ -61,7 +62,6 @@ export const markerManager = new MarkerManager();
 
 // 일반 검색 결과용 마커 생성
 //fields를 불러온 상태에서 사용하는 marker, displayname 지우는거 고려해보셈
-// export async function createMarker(map, place) {
 export async function createMarker(place, map = getMapInstance()) {
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
   const infoWindow = new google.maps.InfoWindow();
@@ -118,6 +118,9 @@ export async function createMarker(place, map = getMapInstance()) {
 }
 
 
+
+
+//TODO: 조정 필요
 // 모든 마커가 지도에 표시되도록 경계 설정
 export function fitAllMarkers() {
   // 현재 등록된 모든 placeId 수집
@@ -159,86 +162,89 @@ export function fitAllMarkers() {
   }
 }
 
-
-
-
-
-
-
-
-
-//여기 marker랑 완전히 같은 부분이 있는데 marker호출해서 사용하면 될 듯
-// placeId로 마커 생성 (경로 계획에 사용) 
-export async function createMarkerForPlace(placeId, map) {
-  // Geocoder 인스턴스 생성
-  const geocoder = new google.maps.Geocoder();
-
-  // // Geocoder로 placeId를 좌표로 변환
-  // const result = await new Promise((resolve, reject) => {
-  //   geocoder.geocode({ 'placeId': placeId }, (results, status) => {
-  //     if (status === google.maps.GeocoderStatus.OK) {
-  //       if (results[0]) {
-  //         resolve(results[0]);
-  //       } else {
-  //         reject(new Error('No results found'));
-  //       }
-  //     } else {
-  //       reject(new Error(`Geocoder failed: ${status}`));
-  //     }
-  //   });
-  // });
-
-  // Places API를 사용하여 장소에 대한 더 자세한 정보 가져오기
-  const placesService = new google.maps.places.Place({ id: placeId });
-  const placeDetails = await placesService.fetchFields(
-    {
-      fields: [
-        'displayName',
-        'formattedAddress',
-        'rating',
-        'userRatingCount',
-        'photos']
-    }
-  );
-
-  // 마커 생성
+// 단일 마커 생성 (서버 데이터용)
+// 단일 마커 생성 (서버 데이터용)
+// 단일 마커 생성 (서버 데이터용)
+export async function createServerMarker(place) {
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-
-  const markerElement = new AdvancedMarkerElement({
-    map: map,
-    position: result.geometry.location,
-    title: placeDetails.name || result.formatted_address
-  });
-
-  // 인포윈도우 생성
   const infoWindow = new google.maps.InfoWindow();
 
-  // 인포윈도우 내용 설정
-  let photoHtml = '';
-  if (placeDetails.photos && placeDetails.photos.length > 0) {
-    const photoUrl = placeDetails.photos[0].getUrl({ maxWidth: 150, maxHeight: 150 });
-    photoHtml = `<img src="${photoUrl}" alt="${placeDetails.name}" style="width:150px;height:auto;margin-bottom:8px;">`;
-  }
+  const location = { lat: place.latitude, lng: place.longitude };
+  const markerElement = new AdvancedMarkerElement({
+    map: getMapInstance(),
+    position: location
+  });
 
   const content = `
-      <div style="padding: 5px; max-width: 250px;">
-        ${photoHtml}
-        <div style="font-size:14px; line-height:1.5;">
-          <strong style="color:#c154ec;">${placeDetails.name}</strong>
-          ${placeDetails.formatted_address ? `<p style="margin: 5px 0; font-size: 12px;">${placeDetails.formatted_address}</p>` : ''}
-          ${placeDetails.rating ? `<div>★ ${placeDetails.rating.toFixed(1)} (${placeDetails.user_ratings_total || 0})</div>` : ''}
-        </div>
+    <div style="padding: 5px; max-width: 250px;">
+      <div style="font-size:14px; line-height:1.5;">
+        <strong style="color:#c154ec;">${place.name}</strong>
+        <p style="margin: 5px 0; font-size: 12px;">${place.address}</p>
       </div>
-    `;
+    </div>
+  `;
 
-  // 'gmp-click' 이벤트 리스너 추가
   markerElement.addListener('gmp-click', () => {
     infoWindow.setContent(content);
     infoWindow.open({
       anchor: markerElement,
-      map: map
+      map: getMapInstance(),
     });
   });
 
   return markerElement;
+}
+
+// 지도 경계 조정
+// 지도 경계 조정
+export function adjustMapBounds(places, isServerData = true) {
+  const bounds = new google.maps.LatLngBounds();
+
+  places.forEach(place => {
+    if (isServerData) {
+      bounds.extend({ lat: place.latitude, lng: place.longitude });
+    } else {
+      bounds.extend(place.location);
+    }
+  });
+
+  if (!bounds.isEmpty()) {
+    getMapInstance().fitBounds(bounds, {
+      top: 100,
+      right: 100,
+      bottom: 100,
+      left: 100
+    });
+
+    google.maps.event.addListenerOnce(getMapInstance(), "bounds_changed", () => {
+      if (getMapInstance().getZoom() > 17) {
+        getMapInstance().setZoom(17);
+      }
+    });
+  }
+}
+
+
+
+//여기 marker랑 완전히 같은 부분이 있는데 marker호출해서 사용하면 될 듯
+// placeId로 마커 생성 - 저장된 계획에 marker 생성용
+// placeId로 마커 생성 - 저장된 계획에 marker 생성용
+// placeId로 마커 생성 - 저장된 계획에 marker 생성용
+export async function createMarkerForPlaceId(placeId) {
+  // Geocoder 인스턴스 생성
+  const geocoder = new google.maps.Geocoder();
+
+
+  try {
+    const placesService = new google.maps.places.Place({ id: placeId });
+    const placeDetails = await placesService.fetchFields({
+      fields: ['geometry', 'displayName', 'formattedAddress', 'rating', 'userRatingCount', 'photos']
+    });
+    if (placeDetails.location) {
+      return await createMarker(placeDetails, getMapInstance());
+    }
+  } catch (errer) {
+    console.error("장소 세부 정보 가져오기 실패:", errer);
+    return null;
+  }
 }

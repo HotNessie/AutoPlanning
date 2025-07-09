@@ -5,7 +5,7 @@ import { findBySearch } from './search/findBySearch.js';
 import { initControls } from './ui/controls.js';
 import { initDomElements, cacheElement, elements, bindDynamicElements } from './ui/dom-elements.js';
 import { initSelfContent, initRouteFormHandler, removePlace, selectTransport, getDynamicElements } from './selfContent/selfContent.js';
-import { dumiSearch, initializePlaceEvents, initSearchResults, searchPlaceByInputId } from './selfContent/selfFind.js';
+import { dumiSearch, initializeSearchEvents, initSearchResults, searchPlaceByInputId } from './selfContent/selfFind.js';
 import { initUIState, resetUIState } from './ui/state-manager.js';
 
 export const cleanupFunctions = [];
@@ -19,9 +19,8 @@ async function bootstrap() {
   initControls();
   initSelfContent();//selfContent.js
   // initSearchResults();//selfFind.js
-  initializePlaceEvents();//selfFind.js
+  initializeSearchEvents();//selfFind.js
   elements.searchButton.addEventListener('click', () => {//autocomplete
-    if (event.isComposing) return;
     findBySearch(searchInput.id);
   });
 
@@ -50,8 +49,8 @@ async function bootstrap() {
         // resetConstentState();  아직 안함 아니 할 필요가 없지않냐
         bindDynamicElements(getDynamicElements());
         initSelfContent();
-        initializePlaceEvents();
-        initSearchResults();
+        initializeSearchEvents();
+        // initSearchResults(); 확인 요망 이벤트용 함수로 바꿈
         setTimeout(() => initRouteFormHandler(), 100);
       }
     } catch (error) {

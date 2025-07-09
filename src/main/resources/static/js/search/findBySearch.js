@@ -8,8 +8,6 @@ export async function findBySearch(inputElementId) {
     console.log("findBySearch 실행");
     const { Place } = await google.maps.importLibrary('places');
     const map = getMapInstance();
-    // const input = cacheElement('searchInput', '#searchInput');
-    // const input = cacheElement(inputElementId, `#${inputElementId}`);
     console.log("findBySearch inputElementId:", inputElementId);
     const input = document.querySelector(`#${inputElementId}`);
     const suggestion = cacheElement('suggestion', '#suggestion');
@@ -45,7 +43,9 @@ export async function findBySearch(inputElementId) {
 
     const { places } = await Place.searchByText(request);
     console.log("검색 결과:", places);
-
+    places.forEach(place => {
+        console.log("place.formattedAddress:", place.formattedAddress);
+    });
     // 기존 마커 지우기
     markerManager.clearMarkers();
 

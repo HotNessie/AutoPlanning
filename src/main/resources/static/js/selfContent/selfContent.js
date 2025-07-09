@@ -1,20 +1,25 @@
-import { cacheElement, bindEvent, elements } from '../ui/dom-elements.js';
-import { getMapInstance } from '../store/map-store.js';
+import { cacheElement, elements } from '../ui/dom-elements.js';
 import { markerManager } from '../map/marker.js';
-import { handelSearchResultsClick } from './selfFind.js';
+import { initSearchResults, attachSearchEventToInput } from './selfFind.js';
+import {
+    requestRoute,
+    adjustPlaceIndices,
+} from '../plan/bySelfContent/selfRoute.js';
+import { fetchRoute } from '../map/commonRoute.js';
+import { initPlanContent } from './selfPlan.js';
+
 
 let placeCount = 2; // 초기 장소 개수
 const MAX_PLACES = 7; // 최대 장소 개수
 const MIN_PLACES = 2; //최소 장소 개수
 let transportSelections = {};
-let routePolylines = []; // 그려진 경로선들을 저장하는 배열
 
 export function getDynamicElements() {
     return [
         { id: 'addPlace', selector: '#addPlaceBtn', events: [{ event: 'click', callback: addPlace }] },
         { id: 'routeForm', selector: '#routeForm', events: [] },
         { id: 'placeContainer', selector: '#placeContainer', events: [] },
-        { id: 'searchResults', selector: '#searchResults', events: [{ event: 'click', callback: handelSearchResultsClick }] },
+        { id: 'searchResults', selector: '#searchResults', events: [{ event: 'click', callback: initSearchResults }] },
         { id: 'searchResultsContainer', selector: '#searchResultsContainer', events: [] },
         { id: 'collapseButton', selector: '#collapseButton', events: [] },
     ];
@@ -83,6 +88,10 @@ export function addPlace() {
         placeContainer.insertBefore(newPlaceDiv, placeEnd);
         placeCount++;
         console.log("placeCount:", placeCount);
+        // initializePlaceEvents();
+        const input = newPlaceDiv.querySelector('input[type="text"]');
+
+        attachSearchEventToInput(input);//DB검색 -> 구글 API 검색
     } else {
         placeCount++;
         placeCount = Math.min(placeCount, MAX_PLACES); // placeCount가 MAX_PLACES를 초과하지 않도록 제한
@@ -132,44 +141,11 @@ export function selectTransport(placeId, transport) {
     if (transportInput) transportInput.value = transport;
 };
 
-// 경로만 지우기
-// 경로만 지우기
-// 경로만 지우기
-export function clearAllRoutes() {
-    // 모든 경로를 지도에서 제거
-    routePolylines.forEach(polyline => polyline.setMap(null));
-    routePolylines = [];
-}
-
-// 경로 순서 조정 함수
-// 경로 순서 조정 함수
-// 경로 순서 조정 함수
-export function adjustPlaceIndices() {
-    const placeContainer = cacheElement('placeContainer', '#placeContainer');
-    const allPlaceInputs = placeContainer.querySelectorAll('.placeInput');
-    const totalPlaces = allPlaceInputs.length;
-
-    // 모든 장소 input 태그에 대해 인덱스 재조정
-    allPlaceInputs.forEach((placeDiv, index) => {
-        const isEnd = placeDiv.id === "placeEnd";
-        const actualIndex = isEnd ? totalPlaces - 1 : index; // 도착지는 항상 마지막 인덱스
-
-        const updateName = (selector, suffix) => {
-            const input = placeDiv.querySelector(selector);
-            if (input) input.name = `placeNames[${actualIndex}].${suffix}`;
-        };
-        updateName('input[type="text"]', 'name');
-        updateName('input[type="hidden"][name$=".placeId"]', 'placeId');
-        updateName('input[type="hidden"][name$=".transport"]', 'transport');
-        updateName('input[type="number"][name$=".time"]', 'time');
-    });
-}
-
-// 컨트롤러 반환값 변경에 따른 DOM 구조 조정
-// 컨트롤러 반환값 변경에 따른 DOM 구조 조정
-// 컨트롤러 반환값 변경에 따른 DOM 구조 조정
+// about routeForm control
+// about routeForm control
+// about routeForm control
 export function initRouteFormHandler() {
-    const routeForm = cacheElement('routeForm', '#routeForm');
+    const routeForm = document.querySelector('#routeForm');
 
     if (routeForm && !routeForm.dataset.listenerAdded) {
         // 실시간 입력 필드 확인. validation 지우기
@@ -188,7 +164,7 @@ export function initRouteFormHandler() {
             const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
             placeIdInputs.forEach(input => {
                 // hidden input의 값이 변경되면 관련 텍스트 입력 필드의 오류 스타일 제거
-                bindEvent(input.id, 'change', () => {
+                input.addEventListener('change', () => {
                     console.log("hidden input changed");
                     const textInput = input.previousElementSibling.querySelector('input[type="text"]');
                     clearValidationError(textInput);
@@ -197,7 +173,7 @@ export function initRouteFormHandler() {
                 // 관련 텍스트 입력 필드에도 검색 선택 후 이벤트 리스너 추가
                 const textInput = input.previousElementSibling.querySelector('input[type="text"]');
                 if (textInput && !textInput.dataset.validationListenerAdded) {
-                    bindEvent(textInput.id, 'change', () => {
+                    textInput.addEventListener('change', () => {
                         console.log("text input changed");
                         if (input.value) clearValidationError(textInput);
                     });
@@ -210,9 +186,11 @@ export function initRouteFormHandler() {
         setupValidationClearEvents();
 
         //selfForm 제출시 이벤트
-        bindEvent('routeForm', 'submit', async (event) => {
+        routeForm.addEventListener('submit', async (event) => {
             console.log("submit routeForm");
             event.preventDefault();
+            if (event.isComposing) return;
+
             // 경로 순서를 올바르게 조정하는 로직 추가
             adjustPlaceIndices();
             // 기존 오류 메시지 제거
@@ -237,7 +215,6 @@ export function initRouteFormHandler() {
                 }
             });
 
-
             if (hasError) {
                 const errorDiv = document.createElement("div");
                 errorDiv.className = "error-message";
@@ -248,83 +225,45 @@ export function initRouteFormHandler() {
                 routeForm.prepend(errorDiv);
                 return;
             }
-
-            //그냥 여기서 controller를 호출. 페이지 리로드 하지마
-            const formData = new FormData(routeForm);
-            const response = await fetch("/route/compute", {
-                method: "POST",
-                body: formData,
+            // 경로 순서를 조정
+            adjustPlaceIndices();
+            // 경로 요청
+            requestRoute(routeForm, true).then(() => {
+                getPlanFragment();
             });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                let errorMessage = "입력 오류:\n";
-                for (let field in errorData) {
-                    errorMessage += `${field}: ${errorData[field]} \n`;
-                }
-                alert(errorMessage);
-                return;
-            }
-
-            // 기존 경로 및 마커 제거
-            clearAllRoutes();
-
-            // geometry 라이브러리 로드 확인 및 로드
-            const geometry = await google.maps.importLibrary("geometry");
-            const data = await response.json();
-            const legs = data.routes[0].legs;
-            const map = getMapInstance();
-
-            //routes 표시
-            legs.forEach((leg, index) => {
-                if (!leg.polyline || !leg.polyline.encodedPolyline) {
-                    console.warn("폴리라인 정보가 없습니다:", leg);
-                    return;
-                }
-
-                try {
-                    const strokeColor = index % 2 === 0 ? '#f0659b' : '#c154ec';
-                    const strokeWeight = index % 2 === 0 ? 5 : 3;
-                    const path = geometry.encoding.decodePath(leg.polyline.encodedPolyline);
-                    const polyline = new google.maps.Polyline({
-                        path: path,
-                        strokeColor: strokeColor,
-                        strokeWeight: strokeWeight,
-                        map: map // initMap.js의 전역 map
-                    });
-                    // 생성된 폴리라인을 배열에 저장
-                    routePolylines.push(polyline);
-                } catch (e) {
-                    console.error("폴리라인 디코딩 오류:", e);
-                }
-            });
-
-            // 지도 경계 조정
-            try {
-                const bounds = new google.maps.LatLngBounds();
-                legs.forEach(leg => {
-                    if (leg.polyline?.encodedPolyline) {
-                        geometry.encoding.decodePath(leg.polyline.encodedPolyline)
-                            .forEach(coord => bounds.extend(coord));
-                    }
-                });
-                if (!bounds.isEmpty()) {
-                    map.fitBounds(bounds); //전역으로 끌고 오는데 import하셈
-                }
-            } catch (e) {
-                console.error("지도 경계 조정 오류:", e);
-            }
         });
         routeForm.dataset.listenerAdded = "true"; // 중복 추가 방지
     }
 };
 
-// initSelfContent
-// initSelfContent
-// initSelfContent
+//getPlanFragment
+//getPlanFragment
+//getPlanFragment
+async function getPlanFragment() {
+    const collapseBody = document.querySelector('#collapseBody');
+
+    const response = await fetch('/plan/submit', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'Text/HTML',
+        },
+    });
+    if (!response.ok) {
+        console.error("Failed to submit plan");
+        return;
+    }
+    collapseBody.innerHTML = await response.text();
+    console.log("added event listener to submitButton");
+    initPlanContent();
+};
+
+
+// selfContent에서 autoComplete 삭제 initSelfContent
+// selfContent에서 autoComplete 삭제 initSelfContent
+// selfContent에서 autoComplete 삭제 initSelfContent 
 export function initSelfContent() {
-    cacheElement('selfButton', '#selfButton');
-    elements.selfButton.addEventListener('click', () => {
+    const selfButton = document.querySelector('#selfButton');
+    selfButton.addEventListener('click', () => {
         console.log("selfButton clicked");
         const autoComplete = document.getElementById("autocomplete");
         autoComplete.classList.add("autoComplete_displayNone");

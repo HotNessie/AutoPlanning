@@ -85,13 +85,23 @@ nav ul {
     height: auto;
 }
 
+#hot_menuSvg,
+#auto_menuSvg,
+#self_menuSvg,
+#bookmark_menuSvg,
+#history_menuSvg {
+    width: 16px;
+    height: 21px;
+    fill: rgba(255, 255, 255, 0.8);
+}
+
 .content_list:not(.selected):hover {
     background-color: rgb(25, 25, 25);
 }
 
 .content_list:not(.selected):hover .hover_li {
     color: #c154ec;
-    fill: #c154ec;
+    fill: #c154ec !important;
 }
 
 /*메뉴 버튼*/
@@ -149,16 +159,6 @@ nav ul {
     height: 100%;
 }
 
-#hot_menuSvg,
-#auto_menuSvg,
-#self_menuSvg,
-#bookmark_menuSvg,
-#history_menuSvg {
-    width: 16px;
-    height: 21px;
-    fill: rgba(255, 255, 255, 0.8);
-}
-
 .svg_home {
     width: 21px;
     height: 21px;
@@ -182,10 +182,11 @@ nav ul {
     z-index: 8;
     position: absolute;
     /* left: 63px; */
-    left: 50px;
+    /* left: 50px; */
+    left: 24px;
     width: 390px;
     min-height: 100vh;
-    padding: 24px 0;
+    /* padding: 24px 0; */
     background-color: transparent;
     /* box-shadow: 1px 2px 10px 0 rgba(193, 84, 236, 0.5); */
     border-radius: 0 48px 48px 0px;
@@ -195,7 +196,7 @@ nav ul {
 
 /*메뉴바 숨기기*/
 #content.hide {
-    transform: translateX(-97%);
+    transform: translateX(-90%);
 }
 
 #collapseBody,
@@ -206,7 +207,7 @@ nav ul {
 #collapseHistoryBody {
     border: none;
     background-color: rgb(18, 18, 18);
-    border-radius: 24px;
+    /* border-radius: 24px; */
     color: rgba(255, 255, 255, 0.8);
     width: 90%;
 }
@@ -231,7 +232,7 @@ nav ul {
     top: 50%;
     left: 100%;
     transform: translateY(-50%);
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.4s ease-in-out;
     background-color: rgb(18, 18, 18);
     width: 23px;
     height: 46px;
@@ -243,8 +244,8 @@ nav ul {
 }
 
 #collapseButton.expanded {
-    /* left: 194% !important; */
-    transform: translateX(368px);
+    /* transform: translateX(368px); */
+    transform: translateY(-50%) translateX(367px);
 }
 
 #rightArrow,
@@ -296,7 +297,7 @@ nav ul {
     opacity: 0;
     filter: blur(9px) brightness(1.9);
     animation: stopGradient 0s forwards;
-    /* 마우스를 얹었을 때 애니메이션 정지 */
+    /* 마우스를 치우면 애니메이션 정지 */
 }
 
 /*마우스 얹었을 때, 활성화*/
@@ -466,7 +467,7 @@ nav ul {
     position: fixed;
     right: 1vw;
     bottom: 200px;
-    z-index: 9;
+    /* z-index: 9; */
     display: flex;
     flex-direction: column;
     gap: 10px;
