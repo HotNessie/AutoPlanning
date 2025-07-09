@@ -21,7 +21,6 @@ async function bootstrap() {
   // initSearchResults();//selfFind.js
   initializeSearchEvents();//selfFind.js
   elements.searchButton.addEventListener('click', () => {//autocomplete
-    // if (event.isComposing) return;
     findBySearch(searchInput.id);
   });
 

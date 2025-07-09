@@ -85,13 +85,23 @@ nav ul {
     height: auto;
 }
 
+#hot_menuSvg,
+#auto_menuSvg,
+#self_menuSvg,
+#bookmark_menuSvg,
+#history_menuSvg {
+    width: 16px;
+    height: 21px;
+    fill: rgba(255, 255, 255, 0.8);
+}
+
 .content_list:not(.selected):hover {
     background-color: rgb(25, 25, 25);
 }
 
 .content_list:not(.selected):hover .hover_li {
     color: #c154ec;
-    fill: #c154ec;
+    fill: #c154ec !important;
 }
 
 /*메뉴 버튼*/
@@ -147,16 +157,6 @@ nav ul {
     justify-content: center;
     width: 100%;
     height: 100%;
-}
-
-#hot_menuSvg,
-#auto_menuSvg,
-#self_menuSvg,
-#bookmark_menuSvg,
-#history_menuSvg {
-    width: 16px;
-    height: 21px;
-    fill: rgba(255, 255, 255, 0.8);
 }
 
 .svg_home {
@@ -297,7 +297,7 @@ nav ul {
     opacity: 0;
     filter: blur(9px) brightness(1.9);
     animation: stopGradient 0s forwards;
-    /* 마우스를 얹었을 때 애니메이션 정지 */
+    /* 마우스를 치우면 애니메이션 정지 */
 }
 
 /*마우스 얹었을 때, 활성화*/

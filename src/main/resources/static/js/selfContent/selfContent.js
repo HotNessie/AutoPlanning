@@ -5,6 +5,8 @@ import {
     requestRoute,
     adjustPlaceIndices,
 } from '../plan/bySelfContent/selfRoute.js';
+import { fetchRoute } from '../map/commonRoute.js';
+import { initPlanContent } from './selfPlan.js';
 
 
 let placeCount = 2; // 초기 장소 개수
@@ -226,8 +228,9 @@ export function initRouteFormHandler() {
             // 경로 순서를 조정
             adjustPlaceIndices();
             // 경로 요청
-            requestRoute(routeForm, true);
-            getPlanFragment();
+            requestRoute(routeForm, true).then(() => {
+                getPlanFragment();
+            });
         });
         routeForm.dataset.listenerAdded = "true"; // 중복 추가 방지
     }
@@ -240,9 +243,9 @@ async function getPlanFragment() {
     const collapseBody = document.querySelector('#collapseBody');
 
     const response = await fetch('/plan/submit', {
-        method: 'POST',
+        method: 'GET',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'Text/HTML',
         },
     });
     if (!response.ok) {
@@ -251,6 +254,7 @@ async function getPlanFragment() {
     }
     collapseBody.innerHTML = await response.text();
     console.log("added event listener to submitButton");
+    initPlanContent();
 };
 
 

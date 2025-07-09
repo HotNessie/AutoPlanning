@@ -6,6 +6,8 @@ import { toggleSearchResultsVisibility } from '../ui/state-manager.js';
 let currentPlaceInput = null;
 
 // 검색 결과 아이템 HTML 생성 (서버 결과용)
+// 검색 결과 아이템 HTML 생성 (서버 결과용)
+// 검색 결과 아이템 HTML 생성 (서버 결과용)
 function createServerResultItemHTML(place) {
   return `
     <button class="place-name">${place.name}</button>
@@ -30,6 +32,8 @@ function createServerResultItemHTML(place) {
 }
 
 // 검색 결과 아이템 HTML 생성 (구글 API 결과용)
+// 검색 결과 아이템 HTML 생성 (구글 API 결과용)
+// 검색 결과 아이템 HTML 생성 (구글 API 결과용)
 function createGoogleResultItemHTML(place) {
   const photoURIs = place.photos
     ? place.photos.slice(0, 3).map(photo => photo.getURI({ maxWidth: 100, maxHeight: 100 }))
@@ -47,6 +51,8 @@ function createGoogleResultItemHTML(place) {
 }
 
 // 서버에서 검색된 장소 결과 표시
+// 서버에서 검색된 장소 결과 표시
+// 서버에서 검색된 장소 결과 표시
 export async function displayServerSearchResults(places, inputId) {
   console.log("서버에서 검색된 장소 표시:", places);
 
@@ -57,6 +63,8 @@ export async function displayServerSearchResults(places, inputId) {
   searchResults.innerHTML = '';
   markerManager.clearMarkers();
 
+  // 결과 아이템 생성
+  // 결과 아이템 생성
   // 결과 아이템 생성
   const markerPromises = places.map(async (place) => {
     const resultItem = document.createElement('div');
@@ -82,6 +90,8 @@ export async function displayServerSearchResults(places, inputId) {
   console.log("검색 결과 표시 완료");
 }
 
+// 구글 API 검색 결과 표시
+// 구글 API 검색 결과 표시
 // 구글 API 검색 결과 표시
 export async function displayGoogleSearchResults(places, inputId) {
   console.log("구글 API 검색 결과 표시:", places);
@@ -113,6 +123,8 @@ export async function displayGoogleSearchResults(places, inputId) {
   console.log("구글 검색 결과 표시 완료");
 }
 
+// 검색 결과 클릭 처리
+// 검색 결과 클릭 처리
 // 검색 결과 클릭 처리
 export async function handleSearchResultClick(event) {
   console.log("검색 결과 클릭 처리");

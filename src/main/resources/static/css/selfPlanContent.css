@@ -1,15 +1,35 @@
 .selfPlanContent {
   width: 100%;
+  height: 100vh;
+  overflow: auto;
 }
 
 .day {
-  /* 구현 단계에서만 배경색 할당 */
   color: rgba(255, 255, 255, 0.8);
   border: none;
   font-size: 14px;
-  /* cursor: pointer; */
   padding: 10px;
 }
+
+.day-content {
+  position: relative;
+  height: 90vh;
+  overflow: auto;
+}
+
+/* .day-content::before {
+  background-image:
+    linear-gradient(to bottom,
+      transparent 87%,
+      #f0659b30 99%);
+  position: absolute;
+  content: '';
+  width: 80%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  left: 29px;
+} */
 
 .dayTitleBox {
   display: flex;
@@ -21,26 +41,43 @@
 
 .dayTitleText {
   font-size: 14px;
-  color: #666;
+  color: #c154ec;
   font-weight: bold;
   left: 10%;
+  position: relative;
+  top: 12%;
 }
 
 .plan-details-box {
   box-sizing: border-box;
   position: relative;
+  margin-bottom: 20px;
+  /* height: 60vh; */
+  width: 95%;
+  /* overflow: auto; */
 }
 
-.plan-details-box::before {
+/* .plan-details-box::-webkit-scrollbar { */
+.day-content::-webkit-scrollbar {
+  width: 2px;
+}
+
+.day-content::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border-radius: 4px;
+}
+
+/* .plan-details-box::before {
   position: absolute;
   top: 0;
-  left: 28px;
+  left: 27px;
   bottom: 0;
   width: 2px;
   content: '';
-  margin-top: 48px;
+  margin-top: 52px;
+  margin-bottom: 52px;
   background-color: #666;
-}
+} */
 
 .editDayPlan {
   height: 24px;
@@ -50,44 +87,96 @@
   cursor: pointer;
 }
 
-/* svg넣고 설정 */
 .editDayPlan svg {
-  /* display: none; */
-  fill: #666;
+  fill: #c154ec;
+  pointer-events: none;
 }
 
 .plan-list-box {
   padding: 0px;
   margin: 0;
+  list-style: none;
 }
 
 .plan-card {
   border-radius: 12px;
-  /* background-color: rgba(255, 255, 255, 0.6); */
-  margin-bottom: 10px;
+  margin-bottom: 4px;
+  position: relative;
 }
 
 .day-card-body {
   display: flex;
-  /* justify-content: space-between; */
   justify-content: end;
   align-items: center;
   position: relative;
   border-radius: 12px;
-  padding: 10px 23px;
+  padding: 10px 10px 10px 42px;
 }
 
+.day-card-body::before {
+  position: absolute;
+  left: 26px;
+  width: 2px;
+  height: 110%;
+  content: '';
+  background-color: #666;
+}
 
 .day-svg-box {
-  /* background-color: tomato; */
-  /* height: 100%; */
-  /* padding: 0 0 0 2%; */
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* margin-right: 10px; */
   position: absolute;
-  left: 5%;
+  left: 4%;
+  z-index: 1;
+}
+
+.first-svg-box,
+.last-svg-box,
+.single-svg-box {
+  position: absolute;
+}
+
+.first-svg-box::before {
+  height: 62px;
+  width: 4px;
+  background-color: #121212;
+  position: absolute;
+  bottom: 62%;
+  content: '';
+  z-index: -1;
+}
+
+.last-svg-box::before {
+  height: 68px;
+  width: 4px;
+  background-color: #121212;
+  position: absolute;
+  top: 62%;
+  content: '';
+  z-index: -1;
+}
+
+.single-svg-box::before {
+  height: 140px;
+  width: 4px;
+  background-color: #121212;
+  position: absolute;
+  top: -50px;
+  content: '';
+  z-index: -1;
+}
+
+.day-svg-box svg {
+  z-index: 1;
+}
+
+.day-svg-box svg :nth-of-type(1) {
+  fill: #f0659b;
+}
+
+.day-svg-box svg :nth-of-type(2) {
+  fill: #c154ec;
 }
 
 .visiting-time {
@@ -95,11 +184,10 @@
 }
 
 .day-card-content {
-  /* flex: 1; */
   position: relative;
   width: 92%;
   background-color: #2d2d2d;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 10px 20px;
 }
 
@@ -110,19 +198,21 @@
   border-radius: 8px;
   font-size: 9px;
   position: relative;
-  /* left: 6%; */
 }
 
 .main-content {
   font-size: 16px;
   position: relative;
-  /* left: 6%; */
+  padding-top: 4px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: bold;
 }
 
 .sub-content {
   font-size: 12px;
   position: relative;
-  /* left: 6%; */
+  color: rgba(255, 255, 255, 0.7);
+  padding-bottom: 5px;
 }
 
 .open-cardEdit-box {
@@ -133,22 +223,368 @@
   height: 24px;
   border: none;
   background-color: transparent;
-  fill: rgba(255, 255, 255, 0.8)
+  fill: #f0659b;
+  cursor: pointer;
 }
 
-.add-content-box {
+.open-cardEdit-box svg {
+  pointer-events: none;
+}
+
+.card-edit-box {
+  background-color: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0px;
+  margin: 0px;
+  fill: #f0659b;
+}
+
+.card-edit-set {
   display: flex;
-  justify-content: space-evenly;
-  padding: 0 16px;
-  /* padding-top: inherit; */
+  flex-direction: column;
+  /* gap: 12px; */
 }
 
-.add-content-box button {
-  width: 22%;
-  height: 30px;
+.card-edit-set button {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  background-color: transparent;
+  /* border: 1px solid rgba(255, 255, 255, 0.2); */
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  justify-content: space-between;
+  width: 162px;
   border-radius: 8px;
 }
 
-.add-content-box button:hover {
-  background-color: #0056b3;
+.card-edit-set button:hover {
+  background-color: rgba(76, 76, 76, 0.9);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.modal-base {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.delete-modal-content,
+.memo-modal-content,
+.edit-modal-content {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(45, 45, 45, 0.95);
+  border-radius: 8px;
+  width: 324px;
+  /* max-width: 600px; */
+  font-size: 14px;
+}
+
+.edit-modal-content {
+  width: 280px;
+}
+
+.edit-place {
+  display: flex;
+  justify-content: space-between;
+  padding: 24px 24px 10px 24px;
+}
+
+.edit-stayTime {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px 10px 24px;
+}
+
+.memo-modal-content {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  max-width: 600px;
+}
+
+.memo-modal-content>p {
+  padding: 24px 22px 0 22px;
+}
+
+.memo-modal-content>textarea {
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  width: 90%;
+  margin-left: 5%;
+  margin-bottom: 10px;
+}
+
+.delete-modal-content>button {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  border: none;
+  fill: white;
+  right: 12px;
+  top: 8px;
+}
+
+.delete-modal-content>button>svg {
+  pointer-events: none;
+}
+
+.delete-modal-content p {
+  text-align: center;
+  padding: 30px 20px 0px 20px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 22px 22px 22px;
+}
+
+.modal-btn {
+  width: 48%;
+  border-radius: 6px;
+  padding: 6px;
+  border: none;
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(193, 84, 236, 0.4);
+}
+
+.modal-buttons :nth-child(1):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(193, 84, 236, 0.6);
+}
+
+/* #cancelDeleteBtn { */
+.modal-buttons :nth-child(2) {
+  background-color: rgba(51, 51, 51, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-image: none;
+  box-shadow: none;
+}
+
+/* #cancelDeleteBtn:hover { */
+.modal-buttons :nth-child(2):hover {
+  background-color: rgba(76, 76, 76, 0.9);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+/* 교통수단 카드 스타일 */
+.transport-card .day-svg-box svg {
+  fill: #c154ec;
+}
+
+.transport-card .visiting-time {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.transport-mode {
+  font-size: 12px;
+  color: #c154ec;
+  font-weight: bold;
+}
+
+.transport-route {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 2px 0;
+}
+
+.transport-time {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 키워드 선택 영역 */
+.keyword-selection-area {
+  margin-top: 56px;
+  /* padding: 15px; */
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.keyword-box {
+  width: 100%;
+  /* background-color: rgba(45, 45, 45, 0.5); */
+  border-radius: 12px;
+  /* padding: 13px; */
+  display: flex;
+  gap: 10px;
+  justify-content: space-evenly;
+  position: relative;
+}
+
+.keyword-section {
+  margin-bottom: 20px;
+  /* 이건 지워도 될 것 같기도 */
+  width: 128px;
+}
+
+.keyword-section h4 {
+  font-size: 12px;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.keyword-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.keyword-buttons .buttons {
+  position: relative;
+}
+
+.keyword-btn {
+  padding: 6px 12px;
+  background-color: rgba(51, 51, 51, 0.8);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  overflow: hidden;
+  position: relative;
+  background-image:
+    linear-gradient(rgba(51, 51, 51, 1), rgba(51, 51, 51, 1)),
+    linear-gradient(to right, #ffa50062 0%, #f0659b62 100%);
+  background-clip: padding-box, border-box;
+  background-origin: border-box;
+}
+
+.keyword-btn:hover {
+  background-color: rgba(76, 76, 76, 0.9);
+  /* border-color: rgba(255, 255, 255, 0.4); */
+  transform: translateY(-1px);
+  background-image:
+    linear-gradient(to right bottom, rgba(55, 55, 55, 1) 0%, rgba(90, 90, 90, 1) 100%),
+    linear-gradient(to right, #ffb939 0%, #eca0be 100%);
+}
+
+.keyword-btn.selected {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(193, 84, 236, 0.3);
+}
+
+.plan-action-box {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 2%;
+  width: 90%;
+}
+
+.plan-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 10px;
+  width: 90%;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.save-btn {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(193, 84, 236, 0.4);
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(193, 84, 236, 0.6);
+}
+
+.edit-btn {
+  background-color: rgba(51, 51, 51, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.edit-btn:hover {
+  background-color: rgba(76, 76, 76, 0.9);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+/* 메모 스타일 */
+.place-memo {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: rgba(51, 51, 51, 0.5);
+  border-radius: 6px;
+  border-left: 3px solid #c154ec;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 경로 요약 정보 스타일 */
+.route-summary {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: rgba(45, 45, 45, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.summary-item:last-child {
+  margin-bottom: 0;
+}
+
+.summary-item span:first-child {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.summary-item span:last-child {
+  color: #c154ec;
+  font-weight: bold;
+}
+
+/* 오류 메시지 스타일 */
+.error-message {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: 8px;
+  color: #ff6b6b;
+  text-align: center;
 }

@@ -125,6 +125,8 @@ export async function createPolylinsFromLegs(legs, options = {}) {
 //서버 응답
 //서버 응답
 export async function processRouteResponse(response) {
+  console.log("응답 상태:", response);
+  console.log("응답 상태:", response.status);
   if (!response.ok) {
     const errorData = await response.json();
     let errorMessage = "입력 오류:\n";
@@ -134,9 +136,12 @@ export async function processRouteResponse(response) {
     throw new Error(errorMessage);
   }
   const data = await response.json();
-  if (!data.routes || !data.routes[0] || !data.routes[0].legs) {
+  if (!data.routeResponse || !data.routeResponse.routes || !data.routeResponse.routes[0] || !data.routeResponse.routes[0].legs) {
     throw new Error("유효한 경로 데이터가 없습니다.");
   }
+  // if (!data.routes || !data.routes[0] || !data.routes[0].legs) {
+  //   throw new Error("유효한 경로 데이터가 없습니다.");
+  // }
   return data;
 }
 
@@ -179,6 +184,7 @@ export async function fetchRoute(formData) {
       method: "POST",
       body: formData
     });
+    console.log("경로 요청 응답:", response);
     return await processRouteResponse(response);
   } catch (error) {
     console.error("경로 요청 처리 중 오류 발생:", error);
