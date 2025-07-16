@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.preplan.autoplan.domain.planPlace.Plan;
+import com.preplan.autoplan.dto.plan.PlanCreateRequestDto;
 import com.preplan.autoplan.googleApi.ComputeRoutesRequest;
 import com.preplan.autoplan.googleApi.ComputeRoutesResponse;
 import com.preplan.autoplan.googleApi.RouteService;
@@ -13,13 +14,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Slf4j
 @RestController
@@ -85,16 +89,15 @@ public class PlanApiController {
       @JsonProperty("departureTime") @JsonSerialize(using = ToStringSerializer.class) LocalDateTime departureTime) {
   }
 
-  // @GetMapping("/plan/submit")
-  // public String renderPlanFragment() {
-  // return "fragments/selfPlanContent";
-  // }
-
   @PostMapping("/create/plan")
-  public void savePlanString(@RequestBody Plan entity) {
-    log.info("계획 저장 요청: {}", entity);
-    planService.savePlan(entity);
-
+  public ResponseEntity<Plan> savePlanString(@RequestBody PlanCreateRequestDto dto) {
+    log.info("계획 저장 요청: {}", dto);
+    Long planId = planService.createPlan(dto);
+    URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+        .path("/{id}")
+        .buildAndExpand(planId)
+        .toUri();
+    return ResponseEntity.created(location).build();
   }
 
 }

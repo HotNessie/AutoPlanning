@@ -4,6 +4,9 @@ import static com.preplan.autoplan.domain.planPlace.Place.toEntity;
 
 import com.preplan.autoplan.dto.place.PlaceResponseDto;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
@@ -18,10 +21,11 @@ import com.preplan.autoplan.domain.planPlace.Plan;
 import com.preplan.autoplan.domain.planPlace.Region;
 import com.preplan.autoplan.domain.planPlace.Route;
 import com.preplan.autoplan.dto.plan.PlanCreateRequestDto;
+import com.preplan.autoplan.dto.route.RouteCreateRequestDto;
 import com.preplan.autoplan.exception.MemberNotFoundException;
-import com.preplan.autoplan.exception.PlaceNotFoundException;
 import com.preplan.autoplan.repository.MemberRepository;
 import com.preplan.autoplan.repository.PlanRepository;
+import com.preplan.autoplan.repository.RouteRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,12 +37,12 @@ public class PlanService {
     private final PlanRepository planRepository;
     private final PlaceService placeService;
     private final MemberRepository memberRepository;
-    private final RegionService regionService;
+    private final RouteRepository routeRepository;
 
     @Transactional(readOnly = true)
     public Plan findById(Long id) { // Plan 역시 id로 찾으면 안될거같은데?? pk를 search의 기준으로 사용하는게 힘들듯
         return planRepository.findById(id)
-            .orElseThrow(() -> new MemberNotFoundException("그런 사람은 없습니다?: " + id));
+                .orElseThrow(() -> new MemberNotFoundException("그런 사람은 없습니다?: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -57,57 +61,89 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
+    // TODO: Member 구현 후 맴버 추가해야됨
     @Transactional
-    public Plan createPlan(PlanCreateRequestDto dto, Member memberDto) { // 계획 생성
-        Member member = memberRepository.findByName(memberDto.getName()) // Member Entity로 쓰고 있음 DTO로 바꿔라
-            .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" + memberDto.getName()));
+    // public Plan createPlan(PlanCreateRequestDto dto, Member memberDto) { // 계획 생성
+    public Long createPlan(PlanCreateRequestDto dto) { // 계획 생성
+        // Member member = memberRepository.findByName(memberDto.getName()) // Member
+        // .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" +
+        // memberDto.getName()));
 
-        // 계획 생성
-        // Region region = regionService.findOrCreateRegion(dto.regionName(),
-        // dto.regionType());
-        Region region = regionService.findOrCreateRegion(dto.regionName(), "CITY"); // 지역 생성
         Plan plan = Plan.builder()
-            .member(member)
-            .region(region)
-            .startTime(dto.startTime())
-            .endTime(dto.endTime())
-            .purposeKeywords(dto.purposeKeywords().stream()
-                .map(PurposeField::valueOf).collect(Collectors.toList()))
-            .moodKeywords(dto.moodKeywords().stream()
-                .map(MoodField::valueOf).collect(Collectors.toList()))
-            .build();
+                // .member(member)
+                .region(null) // 지역은 나중에 설정
+                .startTime(dto.startTime())
+                .endTime(dto.endTime())
+                .purposeKeywords(dto.purposeKeywords().stream()
+                        .map(PurposeField::valueOf).collect(Collectors.toList()))
+                .moodKeywords(dto.moodKeywords().stream()
+                        .map(MoodField::valueOf).collect(Collectors.toList()))
+                .build();
+        Plan savePlan = planRepository.save(plan);
 
         // 경로 생성 및 추가
-        List<Route> routes = dto.routes().stream().map(routeDto -> {
+        List<RouteCreateRequestDto> routeDtos = dto.routes();
+        List<Route> routes = routeDtos.stream().map(routeDto -> {
             PlaceResponseDto place = placeService.findByPlaceId(routeDto.placeId());
-
-            if (place == null) {
-                throw new PlaceNotFoundException("그런 장소는 없어용~" + routeDto.placeId());
-            }
             Place placeEntity = toEntity(place);
-            Route route = Route.builder()
-                .plan(plan)
-                .place(placeEntity)
-                .sequence(routeDto.sequence())
-                .transportMode(routeDto.transportMode())
-                .stayTime(routeDto.stayTime())
-                .memo(routeDto.memo())
-                .build();
+            return Route.builder()
+                    .plan(plan)
+                    .place(placeEntity)
+                    .sequence(routeDto.sequence())
+                    .transportMode(routeDto.transportMode())
+                    .stayTime(routeDto.stayTime())
+                    .memo(routeDto.memo())
+                    .travelTime(routeDto.travelTime())
+                    .travelDistance(routeDto.travelDistance())
+                    .build();
 
             // 체류시간 업데이트
-            placeEntity.updateAverageStayTime(routeDto.stayTime());
-            return route;
-        }).toList();
+            // placeEntity.updateAverageStayTime(routeDto.stayTime());
+            // return route;
+        }).collect(Collectors.toList());
+        routeRepository.saveAll(routes);
 
-        // 계획에 포함된 장소에 키워드 반영
-        plan.getRoutes().addAll(routes); // 계획에 경로 추가
-        plan.applyKeywordsToPlaces(
-            dto.purposeKeywords().stream().map(PurposeField::valueOf).collect(Collectors.toList()),
-            // dto.purposeKeywords(),
-            dto.moodKeywords().stream().map(MoodField::valueOf).collect(Collectors.toList()));
-        // dto.moodKeywords());
+        Map<Region, Long> regionCounts = routes.stream()
+                .map(route -> route.getPlace().getRegion())
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-        return savePlan(plan);
+        Region repersentativeRegion = regionCounts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElseGet(() -> routes.isEmpty() ? null : routes.get(0).getPlace().getRegion());
+
+        if (repersentativeRegion != null) {
+            savePlan.updateRegion(repersentativeRegion);
+        }
+
+        applyKeywordsAndStayTime(routes, dto.purposeKeywords(), dto.moodKeywords());
+
+        // // 계획에 포함된 장소에 키워드 반영
+        // plan.getRoutes().addAll(routes); // 계획에 경로 추가
+        // plan.applyKeywordsToPlaces(
+        // dto.purposeKeywords().stream().map(PurposeField::valueOf).collect(Collectors.toList()),
+        // // dto.purposeKeywords(),
+        // dto.moodKeywords().stream().map(MoodField::valueOf).collect(Collectors.toList()));
+        // // dto.moodKeywords());
+
+        return savePlan.getId(); // 생성된 계획의 ID 반환
+    }
+
+    private void applyKeywordsAndStayTime(List<Route> routes, List<String> purposeKeywords,
+            List<String> moodKeywords) {
+        List<PurposeField> purposeFields = purposeKeywords.stream()
+                .map(PurposeField::valueOf)
+                .collect(Collectors.toList());
+        List<MoodField> moodFields = moodKeywords.stream()
+                .map(MoodField::valueOf)
+                .collect(Collectors.toList());
+        for (Route route : routes) {
+            Place place = route.getPlace();
+            purposeFields.forEach(place::addPurposeKeyword);
+            moodFields.forEach(place::addMoodKeyword);
+            place.updateAverageStayTime(route.getStayTime());
+        }
     }
 
     // 좋아요 증가

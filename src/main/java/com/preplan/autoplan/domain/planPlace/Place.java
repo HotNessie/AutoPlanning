@@ -18,8 +18,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Place {
 
-    // Place는 여행지 정보를 담고 있는 엔티티로, 장소의 ID, 이름, 주소, 좌표, 검색 횟수 등을 포함합니다.
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,6 +44,14 @@ public class Place {
     @JoinColumn(name = "region_id", nullable = false)
     private Region region;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_region_id")
+    private Region cityRegion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_region_id")
+    private Region countryRegion;
+
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaceKeyword> purposeKeywords = new ArrayList<>();
 
@@ -68,13 +74,15 @@ public class Place {
     private Long averageStayTime = 0L;
 
     @Builder
-    public Place(String placeId, String name, String address, Double latitude, Double longitude, Region region) {
+    public Place(String placeId, String name, String address, Double latitude, Double longitude, Region region,
+            Region cityRegion) {
         this.placeId = placeId;
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.region = region; // 지역은 나중에 설정
+        this.region = region;
+        this.cityRegion = cityRegion;
     }
 
     // 검색 횟수 증가

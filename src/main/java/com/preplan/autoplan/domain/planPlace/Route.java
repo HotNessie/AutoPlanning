@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Route {
-    // Route는 Plan과 Place를 연결하는 엔티티로, 여행 계획에서 특정 장소에 대한 정보를 담고 있습니다.
+    // Route는 Plan과 Place를 연결하는 엔티티
+    // 여행 계획에서 특정 장소에 대한 정보를 담고 있음
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,15 +35,20 @@ public class Route {
 
     private String memo;
 
+    private Integer travelTime;
+
+    private Integer travelDistance;
+
     @Builder
     public Route(Plan plan, Place place, int sequence, String transportMode, Long stayTime,
-        String memo) {
+            String memo, Integer travelTime, Integer travelDistance) {
         this.plan = plan;
         this.place = place;
         this.sequence = sequence;
         this.transportMode = transportMode;
         this.stayTime = stayTime;
         this.memo = memo;
+        this.travelTime = travelTime;
+        this.travelDistance = travelDistance;
     }
 }
-
