@@ -39,9 +39,11 @@ public class Route {
 
     private Integer travelDistance;
 
+    private String polyline;
+
     @Builder
     public Route(Plan plan, Place place, int sequence, String transportMode, Long stayTime,
-            String memo, Integer travelTime, Integer travelDistance) {
+            String memo, Integer travelTime, Integer travelDistance, String polyline) {
         this.plan = plan;
         this.place = place;
         this.sequence = sequence;
@@ -50,5 +52,6 @@ public class Route {
         this.memo = memo;
         this.travelTime = travelTime;
         this.travelDistance = travelDistance;
+        this.polyline = polyline;
     }
 }

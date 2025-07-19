@@ -1,8 +1,6 @@
 package com.preplan.autoplan.service;
 
-import static com.preplan.autoplan.domain.planPlace.Place.toEntity;
-
-import com.preplan.autoplan.dto.place.PlaceResponseDto;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,8 +26,10 @@ import com.preplan.autoplan.repository.PlanRepository;
 import com.preplan.autoplan.repository.RouteRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class PlanService {
@@ -69,11 +69,38 @@ public class PlanService {
         // .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" +
         // memberDto.getName()));
 
+        List<Place> places = dto.routes().stream()
+                .map(routeDto -> placeService.findByPlaceIdWithRegion(routeDto.placeId()))
+                .collect(Collectors.toList());
+
+        // 대표 지역 설정
+        Map<Region, Long> regionCounts = places.stream()
+                .map(Place::getRegion)
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        Region representativeRegion = regionCounts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(places.isEmpty() ? null : places.get(0).getRegion());
+        // .orElseGet(() -> routes.isEmpty() ? null :
+        // routes.get(0).getPlace().getRegion());
+
+        if (representativeRegion == null) {
+            throw new IllegalStateException("대표 지역을 찾을 수 없습니다. 경로가 비어있을 수 있습니다.");
+        }
+
+        long totalDuration = dto.routes().stream()
+                .mapToLong(
+                        routeDto -> routeDto.stayTime() + (routeDto.travelTime() != null ? routeDto.travelTime() : 0))
+                .sum();
+        LocalDateTime endTime = dto.startTime().plusMinutes(totalDuration);
+
         Plan plan = Plan.builder()
                 // .member(member)
-                .region(null) // 지역은 나중에 설정
+                .region(representativeRegion) // 지역 설정
                 .startTime(dto.startTime())
-                .endTime(dto.endTime())
+                .endTime(endTime)
                 .purposeKeywords(dto.purposeKeywords().stream()
                         .map(PurposeField::valueOf).collect(Collectors.toList()))
                 .moodKeywords(dto.moodKeywords().stream()
@@ -84,8 +111,7 @@ public class PlanService {
         // 경로 생성 및 추가
         List<RouteCreateRequestDto> routeDtos = dto.routes();
         List<Route> routes = routeDtos.stream().map(routeDto -> {
-            PlaceResponseDto place = placeService.findByPlaceId(routeDto.placeId());
-            Place placeEntity = toEntity(place);
+            Place placeEntity = placeService.findByPlaceId(routeDto.placeId());
             return Route.builder()
                     .plan(plan)
                     .place(placeEntity)
@@ -102,20 +128,6 @@ public class PlanService {
             // return route;
         }).collect(Collectors.toList());
         routeRepository.saveAll(routes);
-
-        Map<Region, Long> regionCounts = routes.stream()
-                .map(route -> route.getPlace().getRegion())
-                .filter(Objects::nonNull)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-        Region repersentativeRegion = regionCounts.entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElseGet(() -> routes.isEmpty() ? null : routes.get(0).getPlace().getRegion());
-
-        if (repersentativeRegion != null) {
-            savePlan.updateRegion(repersentativeRegion);
-        }
 
         applyKeywordsAndStayTime(routes, dto.purposeKeywords(), dto.moodKeywords());
 

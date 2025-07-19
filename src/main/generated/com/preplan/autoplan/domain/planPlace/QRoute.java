@@ -30,6 +30,8 @@ public class QRoute extends EntityPathBase<Route> {
 
     public final QPlan plan;
 
+    public final StringPath polyline = createString("polyline");
+
     public final NumberPath<Integer> sequence = createNumber("sequence", Integer.class);
 
     public final NumberPath<Long> stayTime = createNumber("stayTime", Long.class);

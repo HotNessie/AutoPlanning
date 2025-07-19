@@ -37,11 +37,17 @@ public class PlaceService {
 
     // 장소 찾기 By placeId
     @Transactional(readOnly = true)
-    public PlaceResponseDto findByPlaceId(String placeId) {
+    public Place findByPlaceId(String placeId) {
         Place place = placeRepository.findByPlaceId(placeId)
                 .orElseThrow(() -> new PlaceNotFoundException("해당 장소가 없습니다: " + placeId));
         place.increaseSearchCount(); // 검색 횟수 증가
-        return convertToDto(place);
+        return place;
+    }
+
+    @Transactional(readOnly = true)
+    public Place findByPlaceIdWithRegion(String placeId) {
+        return placeRepository.findByPlaceIdWithRegion(placeId)
+                .orElseThrow(() -> new PlaceNotFoundException("해당 장소가 없습니다: " + placeId));
     }
 
     // 찾찾 By placeName
@@ -132,7 +138,8 @@ public class PlaceService {
                 place.getSearchCount(),
                 place.getTopPurposeKeywords().stream().map(Enum::name).collect(Collectors.toList()),
                 place.getTopMoodKeywords().stream().map(Enum::name).collect(Collectors.toList()),
-                place.getAverageStayTime());
+                place.getAverageStayTime(),
+                place.getRegion().getId());
     }
 
     // 찾은 장소들을 DTO로 변환
