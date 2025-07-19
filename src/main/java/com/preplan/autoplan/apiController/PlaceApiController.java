@@ -3,6 +3,7 @@ package com.preplan.autoplan.apiController;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import com.preplan.autoplan.domain.planPlace.Place;
+import com.preplan.autoplan.dto.place.ComplexSearchDto;
 import com.preplan.autoplan.dto.place.PlaceCreateRequestDto;
 import com.preplan.autoplan.dto.place.PlaceResponseDto;
 import com.preplan.autoplan.exception.PlaceNotFoundException;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -72,11 +74,13 @@ public class PlaceApiController {
     // 키워드로 장소 검색
     @GetMapping("/places/keywords")
     public ResponseEntity<List<PlaceResponseDto>> searchKeywordPlaces(
-        @RequestParam(required = false) List<PurposeField> purposeKeywords,
-        @RequestParam(required = false) List<MoodField> moodKeywords) {
+            @RequestParam(required = false) List<PurposeField> purposeKeywords,
+            @RequestParam(required = false) List<MoodField> moodKeywords) {
         log.info("키워드로 장소 검색 요청: 목적={}, 기분={}", purposeKeywords, moodKeywords);
+        ComplexSearchDto complexSearchDto = new ComplexSearchDto(
+                null, null, null, null, null, null, null, purposeKeywords, moodKeywords);
         try {
-            List<PlaceResponseDto> places = placeService.searchKeywordPlaces(purposeKeywords, moodKeywords);
+            List<PlaceResponseDto> places = placeService.searchPlaces(complexSearchDto);
             if (places.isEmpty()) {
                 log.warn("키워드 장소 검색 결과가 없습니다: 목적={}, 기분={}", purposeKeywords, moodKeywords);
                 return ResponseEntity.notFound().build();
@@ -88,13 +92,15 @@ public class PlaceApiController {
         }
     }
 
-    //지역으로 검색
+    // 지역으로 검색
     @GetMapping("/places/region")
     public ResponseEntity<List<PlaceResponseDto>> searchPlacesByRegion(
-        @RequestParam String regionName) {
+            @RequestParam String regionName) {
         log.info("지역으로 장소 검색 요청: {}", regionName);
         try {
-            List<PlaceResponseDto> places = placeService.searchPlacesByRegion(regionName);
+            ComplexSearchDto complexDto = new ComplexSearchDto(
+                    null, regionName, null, null, null, null, null, null, null);
+            List<PlaceResponseDto> places = placeService.searchPlaces(complexDto);
             if (places.isEmpty()) {
                 log.warn("region 장소 검색 결과가 없습니다: {}", regionName);
                 return ResponseEntity.notFound().build();
@@ -106,20 +112,14 @@ public class PlaceApiController {
         }
     }
 
-    //복합 검색
-    @GetMapping("/places/search/complex")
+    @PostMapping("/places/search/complex")
     public ResponseEntity<List<PlaceResponseDto>> searchPlaces(
-        @RequestParam(required = false) String name,
-        @RequestParam(required = false) List<PurposeField> purposeKeywords,
-        @RequestParam(required = false) List<MoodField> moodKeywords,
-        @RequestParam(required = false) String regionName) {
-        log.info("복합 검색 요청: 이름={}, 목적={}, 기분={}, 지역={}",
-            name, purposeKeywords, moodKeywords, regionName);
+            @RequestBody ComplexSearchDto complexSearchDto) {
+        log.info("복합 검색 요청: {}", complexSearchDto);
         try {
-            List<PlaceResponseDto> places = placeService.searchPlaces(name, purposeKeywords, moodKeywords, regionName);
+            List<PlaceResponseDto> places = placeService.searchPlaces(complexSearchDto);
             if (places.isEmpty()) {
-                log.warn("복합 검색 결과가 없습니다: 이름={}, 목적={}, 기분={}, 지역={}",
-                    name, purposeKeywords, moodKeywords, regionName);
+                log.warn("복합 검색 결과가 없습니다: ", complexSearchDto);
                 return ResponseEntity.notFound().build();
             }
             return ResponseEntity.ok(places);

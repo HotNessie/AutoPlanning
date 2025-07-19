@@ -1,6 +1,4 @@
 // selfPlan.js - selfPlanContent 동적 생성 및 관리
-import { extractRouteInfo } from '../map/commonRoute.js';
-
 let currentPlanData = null;
 let currentRouteData = null;
 
@@ -18,8 +16,9 @@ export function initPlanContent() {
       transport: place.transport || 'TRANSIT', // 기본 교통수단
       isLast: index === planResponseDto.places.length - 1,
       memo: '',
+      // visitTime: 계산 필요
     })),
-    departureTime: planResponseDto.departureTime,
+    departureTime: planResponseDto.departureTime || new Date().toISOString(),
     // arrivalTime: planResponseDto.arrivalTime,
     totalPlaces: planResponseDto.places.length,
     routeResponse: planResponseDto.routeResponse
@@ -486,6 +485,7 @@ function handleEditCard(placeIndex) {
       place.name = placeNameInput.value;
 
       //TODO: 서버에 route요청 다시 보내기
+      //문제가 좀 있다면... 장소명 수정은 장소 검색 기능을 추가해야 하는게 아닐까?
     }
     if (place.stayTime !== stayTimeInput.value) {
       place.stayTime = parseInt(stayTimeInput.value, 10);
@@ -570,15 +570,40 @@ function handleSavePlan() {
   const selectedMoodKeywords = Array.from(document.querySelectorAll('#moodKeywords .keyword-btn.selected'))
     .map(btn => btn.dataset.keyword);
 
+  const initialPlanResponse = JSON.parse(sessionStorage.getItem('planResponseDto'));
+  const placeIdMap = new Map(initialPlanResponse.places
+    .map(place => [place.name, place.placeId]));
+
+  const routeLegs = currentPlanData.routeResponse.route &&
+    currentPlanData.routeResponse.routes[0].length > 0 ?
+    currentPlanData.routeResponse.routes[0].legs : [];
+
+  const routes = currentPlanData.places.map((place, index) => {
+    const previousLeg = index > 0 ? routeLegs[index - 1] : null;
+
+    return {
+      placeId: placeIdMap.get(place.name) || null, // 장소명으로 placeId 매핑
+      sequence: index + 1,
+      transport: place.transport || 'TRANSIT', // 기본 교통수단
+      stayTime: place.stayTime || 60, // 기본 체류시간 60분
+      memo: place.memo || '',
+      travelTime: previousLeg ? Math.floor(parseInt(previousLeg.duration, 10) / 60) : 0, // 이전 leg의 duration을 분 단위로 변환
+      travelDistance: previousLeg ? previousLeg.distanceMeters || 0 : 0, // 거리 정보가 없으면 0
+      polyline: previousLeg && previousLeg.polyline ? previousLeg.polyline.encodedPolyline : '', // 폴리라인 정보
+    }
+  });
+
+
   const planData = {
-    places: currentPlanData.places,
+    regionName: null,
+    startTime: currentPlanData.departureTime,
+    endTime: null, // TODO: 도착 시간 계산 필요
     purposeKeywords: selectedPurposeKeywords,
     moodKeywords: selectedMoodKeywords,
-    departureTime: currentPlanData.departureTime,
-    arrivalTime: currentPlanData.arrivalTime
+    routes: routes,
   };
 
-  console.log("저장할 계획 데이터:", planData);
+  console.log("저장할 계획 데이터:", JSON.stringify(planData, null, 2));
 
   // 서버로 전송 
   //TODO: 확인 요망
