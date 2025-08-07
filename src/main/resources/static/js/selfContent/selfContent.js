@@ -262,7 +262,8 @@ async function getPlanFragment() {
 // selfContent에서 autoComplete 삭제 initSelfContent
 // selfContent에서 autoComplete 삭제 initSelfContent 
 export function initSelfContent() {
-    const selfButton = document.querySelector('#selfButton');
+    // const selfButton = document.querySelector('#selfButton');
+    const selfButton = document.querySelector('#myPlanListButton');
     selfButton.addEventListener('click', () => {
         console.log("selfButton clicked");
         const autoComplete = document.getElementById("autocomplete");

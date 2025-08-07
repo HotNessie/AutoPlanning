@@ -2,7 +2,10 @@
 let currentPlanData = null;
 let currentRouteData = null;
 
-// 계획 완성 페이지 초기화
+/** 
+* 계획 완성 페이지 초기화
+* ㄴsessionStorage에서 planResponseDto를 가져와서 내용 초기화.
+*/
 export function initPlanContent() {
   console.log("initPlanContent 시작");
 
@@ -13,7 +16,7 @@ export function initPlanContent() {
     places: planResponseDto.places.map((place, index) => ({
       name: place.name,
       stayTime: place.time || 60, // 기본 체류시간 60분
-      transport: place.transport || 'TRANSIT', // 기본 교통수단
+      transport: place.transportMode || 'TRANSIT', // 기본 교통수단
       isLast: index === planResponseDto.places.length - 1,
       memo: '',
       // visitTime: 계산 필요
@@ -31,7 +34,10 @@ export function initPlanContent() {
   bindPlanEvents();
 }
 
-// 계획 내용 생성
+/*
+* 계획 내용 생성 
+* 장소, 교통수단 카드 생성
+*/
 function generatePlanContent() {
   if (!currentPlanData) {
     console.error("계획 데이터가 없습니다");
@@ -69,7 +75,11 @@ function generatePlanContent() {
   }, 0);
 }
 
-//svg 수정
+/* 
+* svg 수정
+* 그건데, 첫번째 카드랑 마지막 카드 왼쪽에 바 세워둔거 가리기
+* 즉, 다시 볼 필요 없다는 뜻
+*/
 function updateSvgBoxes() {
   // 기존 스타일 시트가 있다면 제거
   const existingStyle = document.getElementById('dynamic-svg-styles');
@@ -108,7 +118,7 @@ function updateSvgBoxes() {
       sheet.insertRule(`
         .first-svg-box::before {
           height: ${halfHeight * 1.1}px !important;
-          bottom: 15px !important; /* 오프셋 미세조정 */
+          bottom: 15px !important;
         }
       `, sheet.cssRules.length);
     }
@@ -123,7 +133,7 @@ function updateSvgBoxes() {
       sheet.insertRule(`
         .last-svg-box::before {
           height: ${halfHeight * 1.1}px !important;
-          top: 15px !important; /* 오프셋 미세조정 */
+          top: 15px !important;
         }
       `, sheet.cssRules.length);
     }
@@ -143,7 +153,13 @@ function updateSvgBoxes() {
   }
 }
 
-// 장소 카드 생성
+
+/* 
+* 장소 카드 생성 
+* generatePlanContent에서 사용
+* html 생성임
+* TODO: 한 장소에서의 체류시간 계산하고(서버에서 받아오기) element 추가
+ */
 function createPlaceCard(place, index) {
   const li = document.createElement('li');
   li.className = 'plan-card place-card';
@@ -215,7 +231,16 @@ function createPlaceCard(place, index) {
   return li;
 }
 
-// 교통수단 카드 생성
+/*
+* 교통수단 카드 생성
+* element 생성
+* TODO: 교통수단마다 예상 소요시간이 구성된 방식이 다름.
+* Transit는 단순히 route[0].leg[0](맞나? 구조는 봐야됨)처럼 순서대로 가져오면 되지만,
+* Drive는 경유지라는 개념이 있어서 한 route안에 여러 leg를 가지기 때문에 각 leg마다 이동시간을 뽑아야 함.
+* 만약 Transit과 Drive가 혼합된 경우
+* ex) Transit(1개) : Drive(2개 장소) : Transit(1개) = route[0] -> route[1].leg[0] -> route[1].leg[1] -> route[2]
+* 위와 같이 route의 index가 장소의 수와 일치하지 않음. (위에서 장소는 4개 but route는 3개)
+*/
 function createTransportCard(fromPlace, toPlace, index) {
   const li = document.createElement('li');
   li.className = 'plan-card transport-card';
@@ -263,7 +288,10 @@ function createTransportCard(fromPlace, toPlace, index) {
   return li;
 }
 
-// 장소 키워드 추정
+/* 
+* 장소 키워드 추정
+* TODO: 이건 나중에 서버에서 키워드를 리스트를 받아오도록 함
+*/
 function getPlaceKeyword(placeName) {  //다 서버 값으로 할거임 키워드 추정 안함
   const keywords = {
     '역': '교통',
@@ -283,7 +311,10 @@ function getPlaceKeyword(placeName) {  //다 서버 값으로 할거임 키워�
   return '관광';
 }
 
-// 교통수단 아이콘 가져오기
+/* 
+* 교통수단 아이콘 가져오기 
+* svg 모음집
+*/
 function getTransportIcon(transport) {
   const icons = {
     DRIVE: `< svg width = "20" height = "20" viewBox = "0 0 24 24" fill = "#c154ec" >
@@ -299,7 +330,11 @@ function getTransportIcon(transport) {
   return icons[transport] || icons.TRANSIT;
 }
 
-// 이벤트 바인딩( dialog, modal 등 )
+/* 
+* 이벤트 바인딩( dialog, modal 등 )
+* addMemo, editCard, deleteCard 버튼에 이벤트 바인딩
+* TODO: editCard는 경로 계산, 장소 검색과 같은 추가 요청이 너무 쓸데없이 많이 필요해서 삭제 고려대상
+*/
 function bindPlanEvents() {
   // 카드 편집 버튼 이벤트
   document.addEventListener('click', (event) => {
@@ -373,12 +408,9 @@ function bindPlanEvents() {
 }
 
 
-//여기부터
-//여기부터
-//여기부터
-//여기부터
-
-// 메모 추가 처리
+/*
+* 메모 추가 처리 
+*/
 function handleAddMemo(placeIndex) {
   const memo = currentPlanData.places[placeIndex].memo || '';
   const modalBase = document.querySelector('.modal-base');
@@ -442,7 +474,10 @@ function handleAddMemo(placeIndex) {
   memoInput.addEventListener('keydown', handleKeyDown);
 }
 
-// 카드 편집 처리
+/* 
+* 카드 편집 처리 
+* TODO: 기능 삭제 고려 대상
+*/
 function handleEditCard(placeIndex) {
   // const place = currentPlanData.places[placeIndex];
   // const newName = prompt('장소명을 수정하세요:', place.name);
@@ -514,7 +549,11 @@ function handleEditCard(placeIndex) {
   modalBsse.addEventListener('click', handleModalClick);
 }
 
-// 카드 삭제 처리
+/* 
+* 카드 삭제 처리 
+* TODO: 카드 편집과 동일하게 경로 계산이 다시 필요함.
+* 체크박스 형식으로 다중 삭제가 가능하게 해서 경로 계산을 줄이는 방식으로 기능을 유지하는게 어떨까?
+*/
 function handleDeleteCard(placeIndex) {
   const modalBase = document.querySelector('.modal-base');
 
@@ -562,42 +601,67 @@ function handleDeleteCard(placeIndex) {
   modalBase.addEventListener('click', handleModalClick);
 }
 
-// 계획 저장 처리
-function handleSavePlan() {
+/* 
+* 계획 저장 처리 
+* TODO: 문제가 있음 시발 왜 저장이 안됨?????
+* SpringSecurity 설정하고 난 뒤로 저장이 안되는데, 에러가 나서 저장이 안되는것도 아닌것 같음 뭐야 ㅅㅂ
+*/
+async function handleSavePlan() {
+  // 1. 서버에 현재 로그인 상태 확인
+  const authStatusResponse = await fetch('/api/auth/status');
+  const authStatus = await authStatusResponse.json();
+
+  // 2. 로그인 상태에 따라 분기
+  if (authStatus.loggedIn) {
+    // 로그인 상태이면, 바로 저장 진행
+    proceedToSavePlan();
+  } else {
+    // 비로그인 상태이면, 로그인 유도 모달 표시
+    showLoginModal();
+  }
+}
+
+/* 
+* 실제 계획 저장을 진행하는 함수 
+*/
+function proceedToSavePlan() {
+  // CSRF 토큰 가져오기
+  const token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+  const header = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+  if (!token || !header) {
+    alert('보안 토큰을 찾을 수 없습니다. 페이지를 새로고침 해주세요.');
+    return;
+  }
+
+  //계획 데이터 생성
   const selectedPurposeKeywords = Array.from(document.querySelectorAll('#purposeKeywords .keyword-btn.selected'))
     .map(btn => btn.dataset.keyword);
-
   const selectedMoodKeywords = Array.from(document.querySelectorAll('#moodKeywords .keyword-btn.selected'))
     .map(btn => btn.dataset.keyword);
-
   const initialPlanResponse = JSON.parse(sessionStorage.getItem('planResponseDto'));
-  const placeIdMap = new Map(initialPlanResponse.places
-    .map(place => [place.name, place.placeId]));
-
-  const routeLegs = currentPlanData.routeResponse.route &&
-    currentPlanData.routeResponse.routes[0].length > 0 ?
+  const placeIdMap = new Map(initialPlanResponse.places.map(place => [place.name, place.placeId]));
+  const routeLegs = currentPlanData.routeResponse.routes && currentPlanData.routeResponse.routes.length > 0 ?
     currentPlanData.routeResponse.routes[0].legs : [];
 
   const routes = currentPlanData.places.map((place, index) => {
     const previousLeg = index > 0 ? routeLegs[index - 1] : null;
-
     return {
-      placeId: placeIdMap.get(place.name) || null, // 장소명으로 placeId 매핑
+      placeId: placeIdMap.get(place.name) || null,
       sequence: index + 1,
-      transport: place.transport || 'TRANSIT', // 기본 교통수단
-      stayTime: place.stayTime || 60, // 기본 체류시간 60분
+      transportMode: place.transport || 'TRANSIT',
+      stayTime: place.stayTime || 60,
       memo: place.memo || '',
-      travelTime: previousLeg ? Math.floor(parseInt(previousLeg.duration, 10) / 60) : 0, // 이전 leg의 duration을 분 단위로 변환
-      travelDistance: previousLeg ? previousLeg.distanceMeters || 0 : 0, // 거리 정보가 없으면 0
-      polyline: previousLeg && previousLeg.polyline ? previousLeg.polyline.encodedPolyline : '', // 폴리라인 정보
+      travelTime: previousLeg ? Math.floor(parseInt(previousLeg.duration, 10) / 60) : 0,
+      travelDistance: previousLeg ? previousLeg.distanceMeters || 0 : 0,
+      polyline: previousLeg && previousLeg.polyline ? previousLeg.polyline.encodedPolyline : '',
     }
   });
-
 
   const planData = {
     regionName: null,
     startTime: currentPlanData.departureTime,
-    endTime: null, // TODO: 도착 시간 계산 필요
+    endTime: null, //TODO: 도착 시간 계산 필요
     purposeKeywords: selectedPurposeKeywords,
     moodKeywords: selectedMoodKeywords,
     routes: routes,
@@ -605,12 +669,12 @@ function handleSavePlan() {
 
   console.log("저장할 계획 데이터:", JSON.stringify(planData, null, 2));
 
-  // 서버로 전송 
-  //TODO: 확인 요망
-  fetch('/create/plan', {
+  // 서버로 전송 (CSRF 토큰 포함)
+  fetch('/api/private/plans', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      [header]: token // CSRF 토큰 헤더 추가
     },
     body: JSON.stringify(planData)
   })
@@ -627,14 +691,62 @@ function handleSavePlan() {
     });
 }
 
+/* 
+* 로그인 유도 모달 
+* 이새끼도 안나타남. 로그인 안했는데 왜 response.ok냐고 ㅅㅂㅅㅂㅅㅂㅅㅂ
+*/
+function showLoginModal() {
+  const modalBase = document.querySelector('.modal-base');
+  if (!modalBase) {
+    console.error('.modal-base 요소를 찾을 수 없습니다.');
+    return;
+  }
+
+  modalBase.innerHTML = ''; // 기존 내용 초기화
+  modalBase.style.display = 'flex';
+
+  const modalContent = document.createElement('div');
+  modalContent.className = 'login-prompt-modal';
+  modalContent.innerHTML = `
+        <h3>로그인이 필요한 기능입니다</h3>
+        <p>소중한 여행 계획을 저장하고 관리하려면 로그인을 해주세요.</p>
+        <div class="modal-buttons">
+            <button id="goToLoginBtn" class="modal-btn primary">로그인 하러 가기</button>
+            <button id="closeModalBtn" class="modal-btn">나중에 할래요</button>
+        </div>
+    `;
+  modalBase.appendChild(modalContent);
+
+  document.getElementById('goToLoginBtn').addEventListener('click', () => {
+    // 현재 페이지 URL을 저장하고 로그인 페이지로 이동
+    sessionStorage.setItem('returnUrl', window.location.href);
+    window.location.href = '/login';
+  });
+
+  document.getElementById('closeModalBtn').addEventListener('click', () => {
+    closeModal(modalBase);
+  });
+
+  modalBase.addEventListener('click', (event) => {
+    if (event.target === modalBase) {
+      closeModal(modalBase);
+    }
+  });
+}
+
+/*
+모달 닫기
+ */
 function closeModal(modalBase) {
   if (!modalBase) return;
   modalBase.style.display = 'none';
   modalBase.innerHTML = ''; // 모달 내용 초기화
 };
 
-// 편집 모드로 돌아가기
-// TODO: 돌아가지 말고 처리할까
+/* 
+* 편집 모드로 돌아가기 
+* TODO: 돌아가지 말고 처리할까
+*/
 function handleEditPlan() {
   const loadContent = async (url) => {
     try {

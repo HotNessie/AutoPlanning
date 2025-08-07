@@ -41,3 +41,4 @@ out/
 /src/main/resources/application-*.yml
 src/main/resources/.DS_Store
 GEMINI.md
+.DS_Store

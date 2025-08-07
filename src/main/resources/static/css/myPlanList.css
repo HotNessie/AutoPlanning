@@ -1,0 +1,54 @@
+.myPlanList {
+  width: 100%;
+  position: relative;
+}
+
+.myPlanList>h2 {
+  padding-top: 12px;
+  padding-left: 18px;
+  margin: 18px;
+}
+
+.myPlanList>.plan-actions {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.empty-plan-list {
+  display: flex;
+  justify-content: center;
+}
+
+.plan-list {
+  height: 80%;
+}
+
+.empty-plan-list {
+  display: flex;
+  justify-content: center;
+  height: 12%;
+}
+
+.empty-plan-list>p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  width: 80%;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  margin: 0;
+  cursor: pointer;
+}
+
+.empty-plan-list>p:hover {
+  color: #f0659b62;
+  border: 1px solid transparent;
+  background-image: linear-gradient(#121212), linear-gradient(to right, #8dacac62 0%, #f0659b62 100%);
+  background-clip: padding-box, border-box;
+  background-origin: border-box;
+}

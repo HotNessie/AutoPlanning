@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,12 +27,14 @@ public class PlaceApiController {
     private final PlaceService placeService;
 
     // 장소Id로 검색
-    @GetMapping("/place")
-    public ResponseEntity<PlaceResponseDto> getPlace(@RequestParam String placeId) {
+    @GetMapping("/api/public/places/id/{placeId}")
+    // public ResponseEntity<PlaceResponseDto> getPlace(@RequestParam String
+    // placeId) {
+    public ResponseEntity<Place> getPlace(@PathVariable String placeId) {
         log.info("Place API 호출됨");
         try {
-            PlaceResponseDto place = placeService.findByPlaceId(placeId);
-            return ResponseEntity.ok(place);
+            Place place = placeService.findByPlaceId(placeId);
+            return ResponseEntity.ok(place);// TODO: Entity직접 반환임 수정필요
         } catch (PlaceNotFoundException e) {
             log.error("장소 검색 실패: {}", e.getMessage());
             return ResponseEntity.notFound().build();
@@ -42,7 +45,7 @@ public class PlaceApiController {
     }
 
     // 장소명으로 검색
-    @GetMapping("/places/search")
+    @GetMapping("/api/public/places/search")
     public ResponseEntity<List<PlaceResponseDto>> searchPlacesByName(@RequestParam String name) {
         log.info("장소 검색 요청: {}", name);
         try {
@@ -59,7 +62,7 @@ public class PlaceApiController {
     }
 
     // 장소 생성 또는 업데이트
-    @PostMapping("/places")
+    @PostMapping("/api/private/places")
     public ResponseEntity<Place> createOrUpdatePlace(PlaceCreateRequestDto place) {
         log.info("장소 생성/업데이트 요청: {}", place);
         try {
@@ -72,7 +75,7 @@ public class PlaceApiController {
     }
 
     // 키워드로 장소 검색
-    @GetMapping("/places/keywords")
+    @GetMapping("/api/public/places/keywords")
     public ResponseEntity<List<PlaceResponseDto>> searchKeywordPlaces(
             @RequestParam(required = false) List<PurposeField> purposeKeywords,
             @RequestParam(required = false) List<MoodField> moodKeywords) {
@@ -93,7 +96,7 @@ public class PlaceApiController {
     }
 
     // 지역으로 검색
-    @GetMapping("/places/region")
+    @GetMapping("/api/public/places/region")
     public ResponseEntity<List<PlaceResponseDto>> searchPlacesByRegion(
             @RequestParam String regionName) {
         log.info("지역으로 장소 검색 요청: {}", regionName);
@@ -112,7 +115,7 @@ public class PlaceApiController {
         }
     }
 
-    @PostMapping("/places/search/complex")
+    @PostMapping("/api/public/places/search/complex")
     public ResponseEntity<List<PlaceResponseDto>> searchPlaces(
             @RequestBody ComplexSearchDto complexSearchDto) {
         log.info("복합 검색 요청: {}", complexSearchDto);

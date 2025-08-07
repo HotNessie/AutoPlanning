@@ -42,7 +42,6 @@ public class Region {
 
     @Builder
     public Region(String name, String type, Region parent) {
-//    public Region(String name, String type) {
         this.name = name;
         this.type = type;
         this.parent = parent;

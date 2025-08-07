@@ -96,7 +96,7 @@ export async function handlePlaceSearch(inputElemnet) {
 
   try {
     // 서버 검색 시도
-    const response = await fetch(`/places/search?name=${encodeURIComponent(searchTerm)}`);
+    const response = await fetch(`/api/public/places/search?name=${encodeURIComponent(searchTerm)}`);
 
     if (response.ok) {
       const places = await response.json();
@@ -105,15 +105,16 @@ export async function handlePlaceSearch(inputElemnet) {
         return;
       }
     } else if (response.status === 404) {
-      console.log("장소 검색 결과 없음, 더미 데이터로 대체");
+      console.log("장소 검색 결과 없음, GOOGLE API로 대체");
+      searchPlaceByInputId(inputElemnet.id);
     }
   } catch (error) {
     console.log("DB에 장소 데이터 없음 고로 구글 API요청 보냄", error);
   }
 
   // 서버 검색 실패 시 더미 데이터 사용
-  //searchPlaceByInputId(inputElemnet.id);
-  dumiSearch(inputElemnet);
+  searchPlaceByInputId(inputElemnet.id);
+  // dumiSearch(inputElemnet);
 }
 
 // 단일 input에 검색 이벤트 리스너 추가
@@ -134,7 +135,6 @@ export function attachSearchEventToInput(inputElement) {
   inputElement.dataset.eventAttached = "true";
 }
 
-// 리팩토링된 initializeSearchEvents
 export async function initializeSearchEvents() {
   console.log("initializeSearchEvents");
   const placeInputs = document.querySelectorAll(".placeInput input[type='text']");

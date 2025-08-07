@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -32,7 +31,6 @@ public class PlanApiController {
 
   private final RouteService routeService;
   private final PlanService planService;
-  // private static
 
   /*
    * 경로 찾기 - computeRoute
@@ -40,10 +38,10 @@ public class PlanApiController {
    * 
    */
 
-  // 경로 요청 selfContent submit에서 사용중
-  @PostMapping("/route/compute")
+  // 경로 요청 selfContent.js submit에서 사용중. 근데 이게 왜 Plan에 있지???? Route만들기 전인가?ㄴ
+  @PostMapping("/api/public/route/compute")
   public ResponseEntity<?> computeRoute(
-      @Valid @ModelAttribute ComputeRoutesRequest request) {
+      @Valid @RequestBody ComputeRoutesRequest request) {
 
     log.info("경로 계산 요청: 출발지={}, 도착지={}, 총 장소 수={}",
         request.placeNames().get(0).placeId(),
@@ -67,11 +65,11 @@ public class PlanApiController {
           response.routes().get(0).duration(),
           response.routes().get(0).polyline());
 
-      // 데이터 저장
+      // 데이터 저장. --을 나중에 계획 저장 이후에 해야되겠죠ㅕㅇ?
+      // Aug 7, 2025 at 07:16 이걸 왜 나중에 하기로 했지?(route에 회원 정보가 필요한가? 왜? 왜그랬지?)
       // routeService.saveRoute(request, response);
 
       // 응답 반환
-      // return ResponseEntity.ok(response);
       return ResponseEntity.ok(planResponseDto);
 
     } catch (Exception e) {
@@ -89,7 +87,8 @@ public class PlanApiController {
       @JsonProperty("departureTime") @JsonSerialize(using = ToStringSerializer.class) LocalDateTime departureTime) {
   }
 
-  @PostMapping("/create/plan")
+  // 계획 저장
+  @PostMapping("/api/private/plans")
   public ResponseEntity<Plan> savePlanString(@RequestBody PlanCreateRequestDto dto) {
     log.info("계획 저장 요청: {}", dto);
     Long planId = planService.createPlan(dto);
@@ -98,6 +97,13 @@ public class PlanApiController {
         .buildAndExpand(planId)
         .toUri();
     return ResponseEntity.created(location).build();
+  }
+
+  // TODO: Member 구현 후 마무리
+  @GetMapping("/api/private/my-plans")
+  public ResponseEntity<List<Plan>> getMyPlans(@RequestParam Long memberId) {
+    List<Plan> myPlans = planService.findByMemberId(memberId);
+    return ResponseEntity.ok(myPlans);
   }
 
 }

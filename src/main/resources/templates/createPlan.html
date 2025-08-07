@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="/css/createPlan.css">
 <link rel="stylesheet" href="/css/selfContent.css">
 <link rel="stylesheet" href="/css/selfPlanContent.css">
+<link rel="stylesheet" href="/css/myPlanList.css">
 
 
 
@@ -41,6 +42,8 @@
             <span id="hot_content_span" class="navbar_text menu_color hover_li">Hot</span>
           </button>
         </li>
+
+
         <li id="auto_content_list" class="content_list">
           <button id="autoButton" class="contentButton">
             <div class="icon">
@@ -55,8 +58,12 @@
             <span id="auto_content_span" class="navbar_text hover_li">Auto</span>
           </button>
         </li>
+
+
         <li id="self_content_list" class="content_list">
+          <!-- <li id="myPlanList_content_list" class="content_list"> -->
           <button id="selfButton" class="contentButton">
+            <!-- <button id="myPlanListButton" class="contentButton"> -->
             <div class="icon">
               <span class="icon_inner" aria-hidden="true">
                 <svg id="self_menuSvg" class="menu_svg hover_li" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
@@ -67,10 +74,14 @@
               </span>
             </div>
             <span id="self_content_span" class="navbar_text hover_li">Self</span>
+            <!-- <span id="myPlanList_content_span" class="navbar_text hover_li">Self</span> -->
           </button>
         </li>
+
+
         <li id="bookmark_content_list" class="content_list">
-          <button id="bookmarkButton" class="contentButton">
+          <!-- <button id="bookmarkButton" class="contentButton"> -->
+          <button id="myPlanListButton" class="contentButton">
             <div class="icon">
               <span class="icon_inner" aria-hidden="true">
                 <svg id="bookmark_menuSvg" class="menu_svg hover_li" viewBox="0 0 24 24"
@@ -83,6 +94,8 @@
             <span id="bookmark_content_span" class="navbar_text hover_li">My</span>
           </button>
         </li>
+
+
         <li id="history_content_list" class="content_list">
           <button id="historyButton" class="contentButton">
             <div class="icon">
@@ -98,6 +111,34 @@
             <span id="history_content_span" class="navbar_text hover_li">Past</span>
           </button>
         </li>
+
+        <li sec:authorize="!isAuthenticated()" class="content_list">
+          <button class="contentButton" onclick="location.href='/login'">
+            <div class="icon">
+              <span class="icon_inner" aria-hidden="true">
+                <!-- SVG for Login Icon (example: person icon) -->
+                <svg class="menu_svg hover_li" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                  <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                </svg>
+              </span>
+            </div>
+            <span class="navbar_text hover_li">로그인</span>
+          </button>
+        </li>
+        <li sec:authorize="isAuthenticated()" class="content_list">
+          <button class="contentButton" onclick="location.href='/logout'">
+            <div class="icon">
+              <span class="icon_inner" aria-hidden="true">
+                <!-- SVG for Logout Icon (example: exit icon) -->
+                <svg class="menu_svg hover_li" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                  <path d="M17,17.25V14H10V10H17V6.75L22.25,12L17,17.25M10,2A2,2 0 0,1 12,4V8H10V4H4V20H10V16H12V20A2,2 0 0,1 10,22H4A2,2 0 0,1 2,20V4A2,2 0 0,1 4,2H10Z" />
+                </svg>
+              </span>
+            </div>
+            <span class="navbar_text hover_li">로그아웃</span>
+          </button>
+        </li>
+
       </ul>
     </nav>
   </header>
