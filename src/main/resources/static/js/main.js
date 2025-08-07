@@ -4,6 +4,7 @@ import { initAutocomplete } from './search/autocomplete.js';
 import { findBySearch } from './search/findBySearch.js';
 import { initControls } from './ui/controls.js';
 import { initDomElements, cacheElement, elements, bindDynamicElements } from './ui/dom-elements.js';
+import { loadMyPlanList } from './selfContent/myPlanList.js';
 import { initSelfContent, initRouteFormHandler, removePlace, selectTransport, getDynamicElements } from './selfContent/selfContent.js';
 import { dumiSearch, initializeSearchEvents, initSearchResults, searchPlaceByInputId } from './selfContent/selfFind.js';
 import { initUIState, resetUIState } from './ui/state-manager.js';
@@ -17,8 +18,8 @@ async function bootstrap() {
   initUIState();
   // initAutocomplete(); // 요청 너무 많아서 임시 주석
   initControls();
-  initSelfContent();//selfContent.js
-  // initSearchResults();//selfFind.js
+  // initSelfContent();//selfContent.js
+  initSearchResults();//selfFind.js
   initializeSearchEvents();//selfFind.js
   elements.searchButton.addEventListener('click', () => {//autocomplete
     findBySearch(searchInput.id);
@@ -50,8 +51,11 @@ async function bootstrap() {
         bindDynamicElements(getDynamicElements());
         initSelfContent();
         initializeSearchEvents();
-        // initSearchResults(); 확인 요망 이벤트용 함수로 바꿈
+        initSearchResults(); //확인 요망 이벤트용 함수로 바꿈
         setTimeout(() => initRouteFormHandler(), 100);
+      } else if (url === '/myPlanList') {
+        resetUIState(url === '/myPlanList');
+        loadMyPlanList();
       }
     } catch (error) {
       console.error('Error fetching content:', error);
@@ -74,7 +78,9 @@ async function bootstrap() {
     { id: 'hotButton', url: '/hotContent', list: 'hot_content_list', svg: 'hot_menuSvg', span: 'hot_content_span' },
     { id: 'autoButton', url: '/autoContent', list: 'auto_content_list', svg: 'auto_menuSvg', span: 'auto_content_span' },
     { id: 'selfButton', url: '/selfContent', list: 'self_content_list', svg: 'self_menuSvg', span: 'self_content_span' },
-    { id: 'bookmarkButton', url: '/bookmarkContent', list: 'bookmark_content_list', svg: 'bookmark_menuSvg', span: 'bookmark_content_span' },
+    // { id: 'myPlanListButton', url: '/myPlanList', list: 'self_content_list', svg: 'self_menuSvg', span: 'self_content_span' },
+    // { id: 'bookmarkButton', url: '/bookmarkContent', list: 'bookmark_content_list', svg: 'bookmark_menuSvg', span: 'bookmark_content_span' },
+    { id: 'myPlanListButton', url: '/myPlanList', list: 'bookmark_content_list', svg: 'bookmark_menuSvg', span: 'bookmark_content_span' },
     { id: 'historyButton', url: '/historyContent', list: 'history_content_list', svg: 'history_menuSvg', span: 'history_content_span' },
   ];
 
@@ -115,8 +121,8 @@ async function bootstrap() {
     if (action === 'removePlace') { removePlace(placeId); console.log('click removeButton', action); }
     else if (action === 'selectTransport') { selectTransport(placeId, transport); console.log('click transportBtn', action); }
     else if (action === 'selectTransport') { selectTransport(placeId, transport); console.log('click transportBtn', action); }
-    // else if (action === 'searchPlaceBtn') { searchPlaceByInputId(inputId); console.log('click searchBtn', action); }
-    else if (action === 'searchPlaceBtn') { dumiSearch(); console.log('click searchBtn', action); }
+    else if (action === 'searchPlaceBtn') { searchPlaceByInputId(inputId); console.log('click searchBtn', action); }
+    // else if (action === 'searchPlaceBtn') { dumiSearch(); console.log('click searchBtn', action); }
   });
 
   function cleanupEvents() {

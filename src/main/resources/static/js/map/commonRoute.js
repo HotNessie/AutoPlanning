@@ -178,14 +178,47 @@ export async function displayRoute(routeData, options = {}) {
 //경로 요청
 //경로 요청
 //경로 요청
-export async function fetchRoute(formData) {
+export async function fetchRoute(formElement) { // formElement를 직접 사용
   try {
-    const response = await fetch("/route/compute", {
+    // 1. 폼에서 장소(place) 정보를 배열로 추출
+    const placeInputs = Array.from(formElement.querySelectorAll('.placeInput'));
+    const placeNames = placeInputs.map(div => ({
+      name: div.querySelector('input[type="text"]').value,
+      placeId: div.querySelector('input[type="hidden"][name$=".placeId"]').value,
+      transport: div.querySelector('input[type="hidden"][name$=".transport"]')?.value || 'TRANSIT',
+      time: parseInt(div.querySelector('input[type="number"][name$=".time"]')?.value || '0', 10)
+    }));
+
+    // 2. 폼에서 출발 시간 등 다른 정보 추출
+    const departureTimeInput = formElement.querySelector('#departureTime');
+    const departureTime = departureTimeInput ? departureTimeInput.value : new Date().toISOString();
+    const routingPreference = formElement.querySelector('input[name="routingPreference"]:checked')?.value || 'TRAFFIC_AWARE';
+
+    // 3. 서버에 보낼 최종 JSON 객체 생성
+    const payload = {
+      placeNames: placeNames,
+      departureTime: departureTime,
+      units: "METRIC"
+    };
+
+    // 사용자가 선택한 교통수단이 모두 DRIVE일 때만 routingPreference를 추가
+    const isDriveOnly = placeNames.every(place => place.transport === 'DRIVE');
+    if (isDriveOnly) {
+      payload.routingPreference = routingPreference;
+    }
+
+    // 4. fetch 요청
+    const response = await fetch("/api/public/route/compute", {
       method: "POST",
-      body: formData
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload) // JSON 객체를 문자열로 변환하여 전송
     });
+
     console.log("경로 요청 응답:", response);
     return await processRouteResponse(response);
+
   } catch (error) {
     console.error("경로 요청 처리 중 오류 발생:", error);
     throw error;

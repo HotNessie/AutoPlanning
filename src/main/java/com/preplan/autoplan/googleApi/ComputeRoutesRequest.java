@@ -11,12 +11,13 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 
 //google api와의 통신용 DTO
 //placeId저장, Place searchCount 증가, 체류시간 저장
 public record ComputeRoutesRequest(
     @Valid @NotNull(message = "장소 정보는 필수입니다") @Size(min = 2, max = 7, message = "장소는 최소 2개, 최대 7개까지 입력 가능합니다") List<PlaceInfo> placeNames,
-    @FutureOrPresent(message = "출발 시간은 현재 또는 미래 시간이어야 합니다") LocalDateTime departureTime,
+    @FutureOrPresent(message = "출발 시간은 현재 또는 미래 시간이어야 합니다") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureTime,
     String routingPreference,
     @Pattern(regexp = "METRIC|IMPERIAL", message = "단위는 METRIC 또는 IMPERIAL이어야 합니다") String units) {
 

@@ -43,6 +43,7 @@ header {
     border-bottom: 1px solid rgba(193, 84, 236, 0.7);
     box-sizing: border-box;
     overflow: hidden;
+    margin: 0;
 }
 
 .logo .link_logo {

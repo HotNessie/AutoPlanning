@@ -42,6 +42,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final ListPath<com.preplan.autoplan.domain.planPlace.Plan, com.preplan.autoplan.domain.planPlace.QPlan> plans = this.<com.preplan.autoplan.domain.planPlace.Plan, com.preplan.autoplan.domain.planPlace.QPlan>createList("plans", com.preplan.autoplan.domain.planPlace.Plan.class, com.preplan.autoplan.domain.planPlace.QPlan.class, PathInits.DIRECT2);
 
+    public final EnumPath<Role> role = createEnum("role", Role.class);
+
     public final EnumPath<Sex> sex = createEnum("sex", Sex.class);
 
     public final EnumPath<Status> status = createEnum("status", Status.class);

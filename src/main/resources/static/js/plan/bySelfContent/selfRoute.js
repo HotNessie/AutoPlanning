@@ -36,11 +36,11 @@ export function adjustPlaceIndices() { // 만약 단일경로 추가같은 기�
 // 경로 요청
 export async function requestRoute(formElement, clear = false) {
   try {
-    const formData = new FormData(formElement);
+    // const formData = new FormData(formElement);
 
-    console.log("formData:", formData);
+    // console.log("formData:", formData);
 
-    const planResponseDto = await fetchRoute(formData); // /compute/route로 요청됨
+    const planResponseDto = await fetchRoute(formElement); // formData 대신 formElement 자체를 전달
 
     const routeData = planResponseDto.routeResponse;
 

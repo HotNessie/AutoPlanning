@@ -46,18 +46,24 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private Status status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role; // Role 필드 추가
+
     // 양방향 관계
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Plan> plans = new ArrayList<>();
 
     @Builder
-    public Member(String password, String name, String email, int birthYear, Sex sex) {
+    public Member(String password, String name, String email, int birthYear, String phoneNumber, Sex sex, Role role) {
         this.password = password;
         this.name = name;
         this.email = email;
         this.birthYear = birthYear;
+        this.phoneNumber = phoneNumber;
         this.sex = sex;
         this.status = Status.ACTIVE;
+        this.role = role; // Role 초기화
     }
 
     // 나이대를 10년 단위로 계산하는 메서드
@@ -65,5 +71,10 @@ public class Member extends BaseTimeEntity {
         int currentYear = LocalDateTime.now().getYear();
         int age = currentYear - this.birthYear;
         return (age / 10) * 10;
+    }
+
+    // 비밀번호 업데이트 메서드 (필요 시)
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
     }
 }
