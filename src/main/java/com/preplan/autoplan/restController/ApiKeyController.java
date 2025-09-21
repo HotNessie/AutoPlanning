@@ -1,4 +1,4 @@
-package com.preplan.autoplan.apiController;
+package com.preplan.autoplan.restController;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;

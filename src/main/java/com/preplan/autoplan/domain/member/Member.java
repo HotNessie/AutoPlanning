@@ -19,7 +19,7 @@ public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "member_id")
+    // @Column(name = "member_id")
     @Column
     private Long id;
 
@@ -50,7 +50,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role; // Role 필드 추가
 
-    // 양방향 관계
+    // 양방향 관계 << // ? 왜 양방향이라고 적어놨냐
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Plan> plans = new ArrayList<>();
 
@@ -60,7 +60,7 @@ public class Member extends BaseTimeEntity {
         this.name = name;
         this.email = email;
         this.birthYear = birthYear;
-        this.phoneNumber = phoneNumber;
+        // this.phoneNumber = phoneNumber; // ? 이건 왜 넣어놨냐?
         this.sex = sex;
         this.status = Status.ACTIVE;
         this.role = role; // Role 초기화
@@ -73,7 +73,7 @@ public class Member extends BaseTimeEntity {
         return (age / 10) * 10;
     }
 
-    // 비밀번호 업데이트 메서드 (필요 시)
+    // 비밀번호 업데이트용
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
