@@ -1,18 +1,18 @@
 package com.preplan.autoplan.controller.member;
 
-import com.preplan.autoplan.domain.member.Member;
-import com.preplan.autoplan.domain.member.Role;
 import com.preplan.autoplan.dto.MemberFormDto;
 import com.preplan.autoplan.service.MemberService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-// @RequestMapping("/members")
 @Controller
 @RequiredArgsConstructor
 public class MemberController {
@@ -25,29 +25,21 @@ public class MemberController {
         return "addMember"; // 회원가입 폼 템플릿 이름
     }
 
-    @PostMapping(value = "/members/new")
+    @PostMapping("/members/new")
     public String newMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model) {
+
         if (bindingResult.hasErrors()) {
-            return "addMember"; // 에러 발생 시 회원가입 폼으로 다시 이동
+            return "addMember"; // 에러가 있을 경우 회원가입 폼으로 돌아감
         }
 
         try {
-            Member member = Member.builder()
-                    .name(memberFormDto.getName())
-                    .email(memberFormDto.getEmail())
-                    .password(memberFormDto.getPassword())
-                    .phoneNumber(memberFormDto.getPhoneNumber())
-                    .birthYear(memberFormDto.getBirthYear())
-                    .sex(memberFormDto.getSex())
-                    .role(Role.USER) // 기본적으로 USER 권한 부여
-                    .build();
-            memberService.join(member);
-        } catch (IllegalStateException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "addMember"; // 중복 이메일 등 에러 발생 시 메시지 전달 후 폼으로 이동
+            memberService.join(memberFormDto);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "회원가입 중 오류가 발생했습니다: " + e.getMessage());
+            return "addMember";
         }
 
-        return "redirect:/plan"; // 회원가입 성공 시 메인 페이지로 리다이렉트
+        return "redirect:/plan"; // 회원가입 후 리다이렉트할 경로
     }
 
     @GetMapping("/login")

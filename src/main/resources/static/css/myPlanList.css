@@ -39,7 +39,7 @@
   width: 80%;
   color: rgba(255, 255, 255, 0.7);
   border: 1px solid transparent;
-  transition: all 0.3s ease;
+  transition: all 0.5s ease-in-out;
   border: 1px solid rgba(255, 255, 255, 0.5);
   margin: 0;
   cursor: pointer;

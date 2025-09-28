@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,19 +63,21 @@ public class PlanService {
     return planRepository.save(plan);
   }
 
-  // TODO: Member 구현 후 맴버 추가해야됨
+  // ? TODO: Member 구현 후 맴버 추가해야됨
+  // TITLE - createPlan
   @Transactional
-  // public Plan createPlan(PlanCreateRequestDto dto, Member memberDto) { // 계획 생성
-  public Long createPlan(PlanCreateRequestDto dto) { // 계획 생성
+  public Long createPlan(PlanCreateRequestDto dto, String email) { // 계획 생성
+    // public Long createPlan(PlanCreateRequestDto dto) { // 계획 생성
     log.info("createPlan 시작. 요청 데이터: {}", dto);
 
-    // Member member = memberRepository.findByName(memberDto.getName()) // Member
-    // .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" +
-    // memberDto.getName()));
+    Member member = memberRepository.findByEmail(email) // Member
+        .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" +
+            email));
 
     List<Place> places = dto.routes().stream()
         .map(routeDto -> placeService.findByPlaceIdWithRegion(routeDto.placeId()))
         .collect(Collectors.toList());
+
     log.info("장소 목록 조회 완료. {}개의 장소를 찾음.", places.size());
 
     // 대표 지역 설정
@@ -104,7 +107,7 @@ public class PlanService {
     log.info("총 여행 시간 계산 완료. 종료 시간: {}", endTime);
 
     Plan plan = Plan.builder()
-        // .member(member)
+        .member(member)
         .region(representativeRegion) // 지역 설정
         .startTime(dto.startTime())
         .endTime(endTime)
@@ -169,6 +172,9 @@ public class PlanService {
     return savePlan.getId(); // 생성된 계획의 ID 반환
   }
 
+  /**
+   * TITLE -키워드 및 체류시간 적용
+   */
   private void applyKeywordsAndStayTime(List<Route> routes, List<String> purposeKeywords,
       List<String> moodKeywords) {
     List<PurposeField> purposeFields = purposeKeywords.stream()

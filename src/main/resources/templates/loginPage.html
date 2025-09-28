@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <th:block th:replace="fragments/header :: header" />
+  <link rel="stylesheet" href="/css/loginPage.css">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="loginContainer">
+      <h1>AutoPlan</h1>
+
+      <!-- <form class="loginForm" action="@{/api/auth/login}" method="post"> -->
+      <form class="loginForm" action="/login" method="post">
+        <input type="text" id="username" name="email" placeholder="User id or email" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+          <p>아이디 또는 비밀번호가 일치하지 않습니다.</p>
+        </div>
+        <button type="submit">Login</button>
+        <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+        <p>or</p>
+      </form>
+
+      <form class="socialLogin" action="#" method="post">
+        <span>Google</span>
+        <span>Apple</span>
+      </form>
+
+      <form class="findId" action="#" method="post">
+        <span>Find Id</span>
+      </form>
+
+      <form class="findPassword" action="#" method="post">
+        <span>Find password</span>
+      </form>
+    </div>
+
+    <div class="createContainer">
+      <form class="createAccount" action="/members/new" method="get">
+        <button type="submit">Create account</button>
+      </form>
+    </div>
+
+  </div>
+
+
+  <div th:replace="fragments/footer :: footer" />
+
+</body>
+
+</html>

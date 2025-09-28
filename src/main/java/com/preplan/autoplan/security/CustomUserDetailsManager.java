@@ -16,8 +16,10 @@ import com.preplan.autoplan.domain.member.Role;
 import com.preplan.autoplan.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class CustomUserDetailsManager implements UserDetailsManager {
 
@@ -32,14 +34,21 @@ public class CustomUserDetailsManager implements UserDetailsManager {
   @Override
   @Transactional(readOnly = true)
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+    log.info("Loading user by email: {}", email);
+
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email));
 
-    return User.builder() // UserDetails의 User임 인증시에만 사용하는 객체
-        .username(member.getEmail())
-        .password(member.getPassword())
-        .authorities(AuthorityUtils.createAuthorityList("ROLE_" + member.getRole().name()))
-        .build();
+    log.info("User found: {}", member.getEmail());
+
+    // return User.builder() // UserDetails의 User임 인증시에만 사용하는 객체
+    // .username(member.getEmail())
+    // .password(member.getPassword())
+    // .authorities(AuthorityUtils.createAuthorityList("ROLE_" +
+    // member.getRole().name()))
+    // .build();
+    return new CustomUserDetails(member);
   }
 
   // TITLE - createUser

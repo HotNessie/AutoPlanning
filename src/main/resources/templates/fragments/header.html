@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="header">
-  <meta th:name="_csrf" th:content="${_csrf.token}"/>
-  <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-  <!--    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.min.css" crossorigin="anonymous">
-  <!-- Bootstrap JS -->
-  <script src="/js/bootstrap/bootstrap.min.js"></script>
+<body>
 
-  <title>이성수수수</title>
+  <th:block th:fragment="header">
+    <!-- <meta th:name="_csrf" th:content="${_csrf.token}" /> -->
+    <!-- <meta th:name="_csrf_header" th:content="${_csrf.headerName}" /> -->
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <!--    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
 
-</head>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" crossorigin="anonymous">
+    <!-- Bootstrap JS -->
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+
+    <title>이성수수수</title>
+
+  </th:block>
+
+</body>
+
 </html>

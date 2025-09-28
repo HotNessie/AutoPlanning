@@ -60,7 +60,7 @@ public class Member extends BaseTimeEntity {
         this.name = name;
         this.email = email;
         this.birthYear = birthYear;
-        // this.phoneNumber = phoneNumber; // ? 이건 왜 넣어놨냐?
+        this.phoneNumber = phoneNumber;
         this.sex = sex;
         this.status = Status.ACTIVE;
         this.role = role; // Role 초기화
