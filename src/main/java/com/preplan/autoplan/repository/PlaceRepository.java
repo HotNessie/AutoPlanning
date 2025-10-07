@@ -17,7 +17,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, PlaceReposi
 
     Optional<Place> findByPlaceId(String placeId);// PlaceId로 찾는거임
 
-    List<Place> findByName(String name);// 이름으로 찾기
+    List<Place> findByName(String name);// 장소 이름으로 찾기
 
     // 평균 체류 시간으로 찾기(이건 의미 있을 듯? 자동 계획 생성시에)
     List<Place> findByAverageStayTime(Long averageStayTime);

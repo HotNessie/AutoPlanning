@@ -54,6 +54,8 @@ public class JwtFilter extends OncePerRequestFilter {
           Collections.singletonList(new SimpleGrantedAuthority(role)));
 
       SecurityContextHolder.getContext().setAuthentication(authentication);
+      // log.info("Jwt token processed successfully for user: {}",
+      // SecurityContextHolder.getContext().getAuthentication().getName());
 
     } catch (Exception e) {
       log.warn("Jwt token processing failed: {}", e.getMessage());

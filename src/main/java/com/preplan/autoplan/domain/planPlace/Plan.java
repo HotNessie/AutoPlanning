@@ -27,6 +27,9 @@ public class Plan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // TODO: 계획 제목이 있으면 좋을 것 같음.
+    private String title;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -69,9 +72,10 @@ public class Plan {
     private LocalDateTime lastModifiedDate;
 
     @Builder
-    public Plan(Member member, Region region, LocalDateTime startTime, LocalDateTime endTime,
+    public Plan(Member member, String title, Region region, LocalDateTime startTime, LocalDateTime endTime,
             List<PurposeField> purposeKeywords, List<MoodField> moodKeywords) {
         this.member = member;
+        this.title = title;
         this.region = region;
         this.startTime = startTime;
         this.endTime = endTime;

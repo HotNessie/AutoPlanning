@@ -1,6 +1,8 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
+</html>
+
 <head>
   <th:block th:replace="fragments/header :: header" />
 
@@ -115,7 +117,7 @@
           </button>
         </li>
         <!-- Title - Login / Logout -->
-        <li sec:authorize="!isAuthenticated()" class="content_list">
+        <li sec:authorize-expr="isAnonymous()" class="content_list">
           <button class="contentButton" onclick="location.href='/login'">
             <div class="icon">
               <span class="icon_inner" aria-hidden="true">

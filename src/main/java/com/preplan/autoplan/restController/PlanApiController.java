@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.preplan.autoplan.domain.planPlace.Plan;
 import com.preplan.autoplan.dto.plan.PlanCreateRequestDto;
+import com.preplan.autoplan.dto.plan.PlanResponseDto;
 import com.preplan.autoplan.googleApi.ComputeRoutesRequest;
 import com.preplan.autoplan.googleApi.ComputeRoutesResponse;
 import com.preplan.autoplan.googleApi.RouteService;
@@ -102,11 +103,24 @@ public class PlanApiController {
     return ResponseEntity.created(location).build();
   }
 
+  // Title - 내 계획 ID list 조회
   // TODO: Member 구현 후 마무리
   @GetMapping("/api/private/my-plans")
-  public ResponseEntity<List<Plan>> getMyPlans(@RequestParam Long memberId) {
-    List<Plan> myPlans = planService.findByMemberId(memberId);
-    return ResponseEntity.ok(myPlans);
+  public ResponseEntity<List<GetPlansId>> getMyPlans(Authentication authentication) {
+    String email = authentication.getName();
+    List<Plan> myPlans = planService.findByEmail(email);
+    log.info("Found {} plans for email: {}", myPlans.size(), email);
+    List<GetPlansId> responseDtos = myPlans.stream()
+        .map(GetPlansId::fromEntity)
+        .toList();
+    // 여기서 plan관련 모든 정보를 불러왔어야 했나
+    return ResponseEntity.ok(responseDtos);
+  }
+
+  public record GetPlansId(Long id) {
+    public static GetPlansId fromEntity(Plan plan) {
+      return new GetPlansId(plan.getId());
+    }
   }
 
 }

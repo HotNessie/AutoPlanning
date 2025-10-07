@@ -634,6 +634,9 @@ function proceedToSavePlan() {
   const routeLegs = currentPlanData.routeResponse.routes && currentPlanData.routeResponse.routes.length > 0 ?
     currentPlanData.routeResponse.routes[0].legs : [];
 
+  // const title = document.querySelector('.plan-title').textContent;
+  const title = null;
+
   const routes = currentPlanData.places.map((place, index) => {
     const previousLeg = index > 0 ? routeLegs[index - 1] : null;
     return {
@@ -650,6 +653,7 @@ function proceedToSavePlan() {
 
   const planData = {
     regionName: null,
+    title: '제목 없음',
     startTime: currentPlanData.departureTime,
     endTime: null, //TODO: 도착 시간 계산 필요
     purposeKeywords: selectedPurposeKeywords,

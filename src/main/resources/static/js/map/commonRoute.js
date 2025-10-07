@@ -36,9 +36,7 @@ class RouteManager {
 }
 export const routeManager = new RouteManager();
 
-//bound조정
-//bound조정
-//bound조정
+//Title - bound조정
 export function adjustMapBounds(legs, encoding, map) {
   try {
     const bounds = new google.maps.LatLngBounds();
@@ -58,9 +56,7 @@ export function adjustMapBounds(legs, encoding, map) {
   }
 }
 
-//Polyline 생성
-//Polyline 생성
-//Polyline 생성
+//Title - Polyline 생성
 export function createPolyline(path, options = {}) {
   const defaultOptions = {
     strokeColor: '#c154ec',
@@ -75,9 +71,7 @@ export function createPolyline(path, options = {}) {
   });
 }
 
-// legs로부터 Polyline 생성
-// legs로부터 Polyline 생성
-// legs로부터 Polyline 생성
+//Title - legs로부터 Polyline 생성
 export async function createPolylinsFromLegs(legs, options = {}) {
   try {
     // if (!window.goolge || !window.google.maps) {
@@ -121,9 +115,7 @@ export async function createPolylinsFromLegs(legs, options = {}) {
   }
 }
 
-//서버 응답
-//서버 응답
-//서버 응답
+//Title - 서버 응답
 export async function processRouteResponse(response) {
   console.log("응답 상태:", response);
   console.log("응답 상태:", response.status);
@@ -145,9 +137,7 @@ export async function processRouteResponse(response) {
   return data;
 }
 
-//Route 표시
-//Route 표시
-//Route 표시
+//Title - Route 표시
 export async function displayRoute(routeData, options = {}) {
   const {
     clearExisting = true,
@@ -175,9 +165,7 @@ export async function displayRoute(routeData, options = {}) {
   }
 }
 
-//경로 요청
-//경로 요청
-//경로 요청
+//Title - 경로 요청
 export async function fetchRoute(formElement) { // formElement를 직접 사용
   try {
     // 1. 폼에서 장소(place) 정보를 배열로 추출
@@ -225,9 +213,7 @@ export async function fetchRoute(formElement) { // formElement를 직접 사용
   }
 }
 
-//경로 정보 추출
-//경로 정보 추출
-//경로 정보 추출
+//Title - 경로 정보 추출
 export function extractRouteInfo(routeData) {
   const route = routeData.routes[0];
   const legs = route.legs;

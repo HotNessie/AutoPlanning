@@ -41,23 +41,29 @@ public class PlanService {
   private final MemberRepository memberRepository;
   private final RouteRepository routeRepository;
 
+  // TITLE - findById
   @Transactional(readOnly = true)
   public Plan findById(Long id) { // Plan 역시 id로 찾으면 안될거같은데?? pk를 search의 기준으로 사용하는게 힘들듯
     return planRepository.findById(id)
         .orElseThrow(() -> new MemberNotFoundException("그런 사람은 없습니다?: " + id));
   }
 
+  // TITLE - findByEmail
   @Transactional(readOnly = true)
-  public List<Plan> findByMemberId(Long memberId) { // 찾찾 By memberId
-    return planRepository.findByMemberId(memberId);
+  public List<Plan> findByEmail(String email) { // 찾찾 By email
+    Member member = memberRepository.findByEmail(email)
+        .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" + email));
+    return planRepository.findByMemberId(member.getId());
   }
 
+  // TITLE - findSharedPlans
   @Transactional(readOnly = true)
   // 걍 다 공유된 계획으로 두는게..?
   public List<Plan> findSharedPlans(Sort sort) { // 니들 계획은 항상 open이야 적어는 두는데 못숨겨
     return planRepository.findByIsSharedTrue(sort);
   }
 
+  // TITLE - savePlan
   @Transactional
   public Plan savePlan(Plan plan) { // 계획을 저장하세용~~ (개인용 bookstand)
     return planRepository.save(plan);
@@ -108,6 +114,7 @@ public class PlanService {
 
     Plan plan = Plan.builder()
         .member(member)
+        .title(dto.title())
         .region(representativeRegion) // 지역 설정
         .startTime(dto.startTime())
         .endTime(endTime)
@@ -191,14 +198,14 @@ public class PlanService {
     }
   }
 
-  // 좋아요 증가
+  // TITLE - 좋아요 증가
   @Transactional
   public void likePlan(Long planId) {
     Plan plan = findById(planId);
     plan.increaseLikes();
   }
 
-  // 북마크 증가
+  // TITLE - 북마크 증가
   @Transactional
   public void bookmarkPlan(Long planId) {
     Plan plan = findById(planId);

@@ -4,10 +4,33 @@ import { markerManager, createServerMarker, adjustMapBounds } from '../map/marke
 import { toggleSearchResultsVisibility } from '../ui/state-manager.js';
 
 let currentPlaceInput = null;
+// 최근 구글 검색 결과 저장
+class GoogleSearchResultsManager {
+  constructor() {
+    this.currentGoogleResults = [];
+  }
 
-// 검색 결과 아이템 HTML 생성 (서버 결과용)
-// 검색 결과 아이템 HTML 생성 (서버 결과용)
-// 검색 결과 아이템 HTML 생성 (서버 결과용)
+  setResults(places) {
+    this.currentGoogleResults = places;
+  }
+  getResults(index) {
+    return this.currentGoogleResults[index];
+  }
+  clearResults() {
+    this.currentGoogleResults = [];
+  }
+  getAllResults() {
+    return this.currentGoogleResults;
+  }
+}
+export const googleSearchResultsManager = new GoogleSearchResultsManager();
+
+/* 
+* 검색 결과 반환하는 item 생성로직
+* @result item =  검색결과 리스트를 담는 div
+*/
+
+//Title - 검색 결과 아이템 HTML (서버 결과용)
 function createServerResultItemHTML(place) {
   return `
     <button class="place-name">${place.name}</button>
@@ -31,9 +54,7 @@ function createServerResultItemHTML(place) {
   `;
 }
 
-// 검색 결과 아이템 HTML 생성 (구글 API 결과용)
-// 검색 결과 아이템 HTML 생성 (구글 API 결과용)
-// 검색 결과 아이템 HTML 생성 (구글 API 결과용)
+//Title - 검색 결과 아이템 HTML (구글 API 결과용)
 function createGoogleResultItemHTML(place) {
   const photoURIs = place.photos
     ? place.photos.slice(0, 3).map(photo => photo.getURI({ maxWidth: 100, maxHeight: 100 }))
@@ -50,11 +71,11 @@ function createGoogleResultItemHTML(place) {
   `;
 }
 
-// 서버에서 검색된 장소 결과 표시
-// 서버에서 검색된 장소 결과 표시
-// 서버에서 검색된 장소 결과 표시
+//Title -  서버에서 검색된 장소 결과 표시
 export async function displayServerSearchResults(places, inputId) {
   console.log("서버에서 검색된 장소 표시:", places);
+
+  searchResultsManager.setResults(places);//최근 검색 결과 저장
 
   currentPlaceInput = document.getElementById(inputId);
   const searchResults = document.querySelector("#searchResults");
@@ -63,8 +84,6 @@ export async function displayServerSearchResults(places, inputId) {
   searchResults.innerHTML = '';
   markerManager.clearMarkers();
 
-  // 결과 아이템 생성
-  // 결과 아이템 생성
   // 결과 아이템 생성
   const markerPromises = places.map(async (place) => {
     const resultItem = document.createElement('div');
@@ -90,11 +109,13 @@ export async function displayServerSearchResults(places, inputId) {
   console.log("검색 결과 표시 완료");
 }
 
-// 구글 API 검색 결과 표시
-// 구글 API 검색 결과 표시
-// 구글 API 검색 결과 표시
+//Title -  구글 API 검색 결과 표시
 export async function displayGoogleSearchResults(places, inputId) {
   console.log("구글 API 검색 결과 표시:", places);
+
+  googleSearchResultsManager.setResults(places);//최근 검색 결과 저장
+  console.log("googleSearchResultsManager:", googleSearchResultsManager.getAllResults());
+  console.log("count of googleSearchResultsManager:", googleSearchResultsManager.getAllResults().length);
 
   currentPlaceInput = document.getElementById(inputId);
   const searchResults = document.querySelector("#searchResults");
@@ -103,11 +124,15 @@ export async function displayGoogleSearchResults(places, inputId) {
   searchResults.innerHTML = '';
 
   if (places.length) {
-    places.forEach(place => {
+    places.forEach((place, index) => {
       const resultItem = document.createElement('div');
       resultItem.className = 'result-item';
-      resultItem.dataset.placeId = place.id;
-      resultItem.innerHTML = createGoogleResultItemHTML(place);
+
+      /* resultItem.dataset.placeId = place.id;
+      resultItem.innerHTML = createGoogleResultItemHTML(place); // 구글 API 결과용 HTML 생성 함수 사용 */
+
+      resultItem.dataset.index = index; //dataset에 index 저장
+      resultItem.innerHTML = createGoogleResultItemHTML(place); // 구글 API 결과용 HTML 생성 함수 사용
       searchResults.appendChild(resultItem);
     });
 
@@ -123,33 +148,79 @@ export async function displayGoogleSearchResults(places, inputId) {
   console.log("구글 검색 결과 표시 완료");
 }
 
-// 검색 결과 클릭 처리
-// 검색 결과 클릭 처리
-// 검색 결과 클릭 처리
+//Title - 검색 결과 클릭하면..
 export async function handleSearchResultClick(event) {
   console.log("검색 결과 클릭 처리");
 
-  const resultItem = event.target.closest(".result-item");
+  const resultItem = event.target.closest(".result-item"); //반환된 결과 iteam
   if (!resultItem || !currentPlaceInput) return;
-  // if (resultItem && currentPlaceInput) {
-  const placeId = resultItem.dataset.placeId;
-  const displayName = resultItem.querySelector(".place-name").textContent;
+  //?선택 아이템 index가져오기.
+  const index = parseInt(resultItem.dataset.index, 10); //클릭한 아이템의 dataset
+  //?index를 통해서 googleSearchResults에서 장소 데이터 가져오기
+  const placeData = googleSearchResultsManager.getResults(index);
+  // const displayName = resultItem.querySelector(".place-name").textContent;
+  //클릭한 아이템의 장소명
+  if (!placeData) {
+    console.warn("선택한 장소 데이터가 없습니다.", index);
+    return;
+  }
+  console.log("선택한 장소 데이터:", placeData);
+
+  const placeId = placeData.id || placeData.place_id; // Google Place_ID
+  const displayName = placeData.displayName || placeData.name; // 장소명
+  const address = placeData.formattedAddress || placeData.address; // 주소
+  const latitude = placeData.location.lat();
+  const longitude = placeData.location.lng();
 
   // 장소명 입력
-  currentPlaceInput.value = displayName;
+  currentPlaceInput.value = displayName; //js변수에 value저장
+  console.log("currentPlaceInput:", currentPlaceInput);
 
-  // placeId input 찾기 및 업데이트
+  console.log("to save data:", {
+    placeId: placeId,
+    displayName: displayName,
+    address: address,
+    latitude: latitude,
+    longitude: longitude
+  });
+
+  try {
+    const response = await fetch('/api/public/places', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        placeId: placeId,
+        name: displayName,
+        address: address,
+        latitude: latitude,
+        longitude: longitude
+      })
+    });
+    if (response.ok) {
+      const savedPlace = await response.json();
+      console.log("장소 저장 성공:", savedPlace);
+    } else {
+      console.warn("장소 저장 실패:", response.statusText);
+    }
+  } catch (error) {
+    console.error("장소 저장 중 오류 발생:", error);
+  }
+
+
+  // placeId input 찾기 및 업데이트 //? hidden input 지정
   let placeIdInput;
   if (currentPlaceInput.id === "placeNameEnd") {
     placeIdInput = cacheElement("placeIdEnd", "#placeIdEnd");
   } else {
     const placeNum = currentPlaceInput.id.replace('placeName', '');
-    placeIdInput = cacheElement(`placeId${placeNum}`, `#placeId${placeNum}`);//이게 hidden input임
+    placeIdInput = cacheElement(`placeId${placeNum}`, `#placeId${placeNum}`);
+    //placeIdInput == hidden input
   }
 
   if (placeIdInput) {
     const prevValue = placeIdInput.value;
     placeIdInput.value = placeId;// hidden input에 placeId를 할당
+    //TODO: hidden에 넣지말고 이것도 변수로 저장하거나 dataset으로 하는게 좋을 듯. 시간 나면 수정
 
     // 이벤트 발생
     const changeEvent = new Event('change', { bubbles: true });
@@ -184,12 +255,12 @@ export async function handleSearchResultClick(event) {
   }
 }
 
-// 현재 입력 필드 설정
+//Title - 현재 입력 필드 설정
 export function setCurrentPlaceInput(input) {
   currentPlaceInput = input;
 }
 
-// 현재 입력 필드 가져오기
+//Title - 현재 입력 필드 가져오기
 export function getCurrentPlaceInput() {
   return currentPlaceInput;
 }

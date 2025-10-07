@@ -40,6 +40,7 @@ public class Place {
     @Column
     private int searchCount = 0;
 
+    // 최소단위 지역(google search address반환값에 따라 기준이 다름)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id", nullable = false)
     private Region region;
@@ -75,7 +76,7 @@ public class Place {
 
     @Builder
     public Place(String placeId, String name, String address, Double latitude, Double longitude, Region region,
-            Region cityRegion) {
+            Region cityRegion, Region countryRegion) {
         this.placeId = placeId;
         this.name = name;
         this.address = address;
@@ -83,6 +84,7 @@ public class Place {
         this.longitude = longitude;
         this.region = region;
         this.cityRegion = cityRegion;
+        this.countryRegion = countryRegion;
     }
 
     // 검색 횟수 증가

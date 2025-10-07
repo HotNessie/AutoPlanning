@@ -7,9 +7,7 @@ import {
   extractRouteInfo,
 } from "../../map/commonRoute.js";
 
-// 경로 순서 조정 함수
-// 경로 순서 조정 함수
-// 경로 순서 조정 함수
+//Title -  경로 순서 조정 함수
 export function adjustPlaceIndices() { // 만약 단일경로 추가같은 기능이 필요하다면 개선 필요
   const placeContainer = document.querySelector('#placeContainer');
   const allPlaceInputs = placeContainer.querySelectorAll('.placeInput');
@@ -31,9 +29,7 @@ export function adjustPlaceIndices() { // 만약 단일경로 추가같은 기�
   });
 }
 
-// 경로 요청
-// 경로 요청
-// 경로 요청
+//Title - 경로 요청
 export async function requestRoute(formElement, clear = false) {
   try {
     // const formData = new FormData(formElement);
@@ -46,6 +42,8 @@ export async function requestRoute(formElement, clear = false) {
 
     console.log("routeData:", routeData);
 
+    //?sessionStorage에 경로 데이터 저장
+    //?sessionStorage에 경로 데이터 저장
     sessionStorage.setItem("routePlanData", JSON.stringify(routeData));
     sessionStorage.setItem("planResponseDto", JSON.stringify(planResponseDto));
 

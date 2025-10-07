@@ -46,6 +46,8 @@ public class QPlan extends EntityPathBase<Plan> {
 
     public final DateTimePath<java.time.LocalDateTime> startTime = createDateTime("startTime", java.time.LocalDateTime.class);
 
+    public final StringPath title = createString("title");
+
     public QPlan(String variable) {
         this(Plan.class, forVariable(variable), INITS);
     }
