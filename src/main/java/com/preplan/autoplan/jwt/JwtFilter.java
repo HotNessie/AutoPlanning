@@ -11,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +27,25 @@ public class JwtFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
+    String token = null;
     String authorization = request.getHeader("Authorization");
 
-    if (authorization == null || !authorization.startsWith("Bearer ")) {
+    if (authorization != null && authorization.startsWith("Bearer ")) {
+      token = authorization.substring(7);
+    } else if (request.getCookies() != null) {
+      // TITLE - 쿠키에서 토큰 추출
+      for (Cookie cookie : request.getCookies()) {
+        if (cookie.getName().equals("jwt_token")) {
+          token = cookie.getValue();
+          break;
+        }
+      }
+    }
+    if (token == null) {
       filterChain.doFilter(request, response);
       return;
     }
-
     try {
-      String token = authorization.substring(7);
 
       String username = jwtTokenProvider.extractUsername(token);
       String role = jwtTokenProvider.extractRole(token);
@@ -43,6 +54,8 @@ public class JwtFilter extends OncePerRequestFilter {
           Collections.singletonList(new SimpleGrantedAuthority(role)));
 
       SecurityContextHolder.getContext().setAuthentication(authentication);
+      // log.info("Jwt token processed successfully for user: {}",
+      // SecurityContextHolder.getContext().getAuthentication().getName());
 
     } catch (Exception e) {
       log.warn("Jwt token processing failed: {}", e.getMessage());

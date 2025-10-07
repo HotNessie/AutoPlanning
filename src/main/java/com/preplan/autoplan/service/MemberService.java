@@ -1,9 +1,12 @@
 package com.preplan.autoplan.service;
 
 import com.preplan.autoplan.domain.member.Member;
+import com.preplan.autoplan.domain.member.Role;
+import com.preplan.autoplan.dto.MemberFormDto;
 import com.preplan.autoplan.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +18,25 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
 
     /**
-     * 회원가입
+     * TODO: crud같은 기능은 UserDetailsMa2ager에서 처리,
+     * 여기서는 인증과 무관한 사용자 프로필 업데이트같은 비지니스 로직 처리
+     * TITLE - 회원가입
      */
     @Transactional
-    public Long join(Member member) {
+    public Long join(MemberFormDto memberFormDto) {
+        Member member = Member.builder()
+                .name(memberFormDto.getName())
+                .email(memberFormDto.getEmail())
+                .password(new BCryptPasswordEncoder().encode(memberFormDto.getPassword())) // 서비스 계층에서 비밀번호 암호화
+                .birthYear(memberFormDto.getBirthYear())
+                .phoneNumber(memberFormDto.getPhoneNumber())
+                .sex(memberFormDto.getSex())
+                .role(Role.USER)
+                .build();
+
         validateDuplicateMember(member); // 중복 회원 검증
-        member.updatePassword(passwordEncoder.encode(member.getPassword())); // 비밀번호 암호화
         memberRepository.save(member);
         return member.getId();
     }

@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,41 +41,49 @@ public class PlanService {
   private final MemberRepository memberRepository;
   private final RouteRepository routeRepository;
 
+  // TITLE - findById
   @Transactional(readOnly = true)
   public Plan findById(Long id) { // Plan 역시 id로 찾으면 안될거같은데?? pk를 search의 기준으로 사용하는게 힘들듯
     return planRepository.findById(id)
         .orElseThrow(() -> new MemberNotFoundException("그런 사람은 없습니다?: " + id));
   }
 
+  // TITLE - findByEmail
   @Transactional(readOnly = true)
-  public List<Plan> findByMemberId(Long memberId) { // 찾찾 By memberId
-    return planRepository.findByMemberId(memberId);
+  public List<Plan> findByEmail(String email) { // 찾찾 By email
+    Member member = memberRepository.findByEmail(email)
+        .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" + email));
+    return planRepository.findByMemberId(member.getId());
   }
 
+  // TITLE - findSharedPlans
   @Transactional(readOnly = true)
   // 걍 다 공유된 계획으로 두는게..?
   public List<Plan> findSharedPlans(Sort sort) { // 니들 계획은 항상 open이야 적어는 두는데 못숨겨
     return planRepository.findByIsSharedTrue(sort);
   }
 
+  // TITLE - savePlan
   @Transactional
   public Plan savePlan(Plan plan) { // 계획을 저장하세용~~ (개인용 bookstand)
     return planRepository.save(plan);
   }
 
-  // TODO: Member 구현 후 맴버 추가해야됨
+  // ? TODO: Member 구현 후 맴버 추가해야됨
+  // TITLE - createPlan
   @Transactional
-  // public Plan createPlan(PlanCreateRequestDto dto, Member memberDto) { // 계획 생성
-  public Long createPlan(PlanCreateRequestDto dto) { // 계획 생성
+  public Long createPlan(PlanCreateRequestDto dto, String email) { // 계획 생성
+    // public Long createPlan(PlanCreateRequestDto dto) { // 계획 생성
     log.info("createPlan 시작. 요청 데이터: {}", dto);
 
-    // Member member = memberRepository.findByName(memberDto.getName()) // Member
-    // .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" +
-    // memberDto.getName()));
+    Member member = memberRepository.findByEmail(email) // Member
+        .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" +
+            email));
 
     List<Place> places = dto.routes().stream()
         .map(routeDto -> placeService.findByPlaceIdWithRegion(routeDto.placeId()))
         .collect(Collectors.toList());
+
     log.info("장소 목록 조회 완료. {}개의 장소를 찾음.", places.size());
 
     // 대표 지역 설정
@@ -104,7 +113,8 @@ public class PlanService {
     log.info("총 여행 시간 계산 완료. 종료 시간: {}", endTime);
 
     Plan plan = Plan.builder()
-        // .member(member)
+        .member(member)
+        .title(dto.title())
         .region(representativeRegion) // 지역 설정
         .startTime(dto.startTime())
         .endTime(endTime)
@@ -169,6 +179,9 @@ public class PlanService {
     return savePlan.getId(); // 생성된 계획의 ID 반환
   }
 
+  /**
+   * TITLE -키워드 및 체류시간 적용
+   */
   private void applyKeywordsAndStayTime(List<Route> routes, List<String> purposeKeywords,
       List<String> moodKeywords) {
     List<PurposeField> purposeFields = purposeKeywords.stream()
@@ -185,14 +198,14 @@ public class PlanService {
     }
   }
 
-  // 좋아요 증가
+  // TITLE - 좋아요 증가
   @Transactional
   public void likePlan(Long planId) {
     Plan plan = findById(planId);
     plan.increaseLikes();
   }
 
-  // 북마크 증가
+  // TITLE - 북마크 증가
   @Transactional
   public void bookmarkPlan(Long planId) {
     Plan plan = findById(planId);

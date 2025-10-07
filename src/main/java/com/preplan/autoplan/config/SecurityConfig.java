@@ -50,36 +50,32 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             // 모든 사용자가 접근 가능한 경로들
             .requestMatchers(
-                "/", "/home", "/login", "/members/new", // 기본 페이지
+                "/", "/home", "/login", "/logout", "/members/new", "/error", "status", // 기본 페이지
                 "/css/**", "/js/**", "/icon/**", "/img/**", "/fragments/**", // 정적 리소스
                 "/api/google-maps-key", "/api/public/**", // 공개 API
-                "/api/auth/login", "/api/auth/status", // 로그인 및 상태 확인 API
-                "/plan/**", "/hotContent/**", "/autoContent/**", "/selfContent/**" // 공개 컨텐츠 페이지
+                "/api/auth/**", // 로그인 및 상태 확인 API
+                "/plan/**", "/hotContent/**", "/autoContent/**", "/selfContent/**", "/myPlanList/**" // 공개 컨텐츠 페이지
             ).permitAll()
             .requestMatchers("/admin").hasRole("ADMIN")// TODO: 관리자용 추가하기
             .anyRequest().authenticated())
         // TODO: formLogin -> jwt로 변경 확인 필요
-        .csrf(csrf -> csrf
-            // API 경로에 대해서는 CSRF 보호 비활성화
-            // 요청 허용했다고 검증을 거치지 않는게 아니라, CSRF 보안 로직을 거치는데, 보호 토큰이 발행되지 않음.
-            // 즉, CSRF 보호를 비활성화 해야 함
-            // TODO: StateLess로 변경하면서 csrf 보호가 동작하지 않을 것 -> 비활성화 하거나,
-            // .ignoringRequestMatchers("/api/public/**", "/api/google-maps-key",
-            // "/api/auth/**"))
-            .disable())
+        .csrf(csrf -> csrf.disable())
         .httpBasic(httpBasic -> httpBasic.disable())
         .formLogin(form -> form.disable())
+        .logout(logout -> logout.disable())
         .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         // .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
         )
         .userDetailsService(userDetailsManager)
-        // ? 이건 모임?
         .exceptionHandling(exceptions -> exceptions
             .authenticationEntryPoint(jwtAuthenticationEntryPoint))
-        .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-        .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider),
-            UsernamePasswordAuthenticationFilter.class);
+
+        .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
+    LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider);
+    loginFilter.setUsernameParameter("email");
+    http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
     // TODO: JwtAuthenticationFilter 구현해서 토큰 기반 인증으로 수정하기 (formLogin이랑 logout)
     // .formLogin(form -> form

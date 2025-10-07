@@ -2,9 +2,9 @@
 let currentPlanData = null;
 let currentRouteData = null;
 
-/** 
-* 계획 완성 페이지 초기화
-* ㄴsessionStorage에서 planResponseDto를 가져와서 내용 초기화.
+/*
+TITLE - 계획 완성 페이지 초기화
+* sessionStorage에서 planResponseDto를 가져와서 내용 초기화.
 */
 export function initPlanContent() {
   console.log("initPlanContent 시작");
@@ -35,7 +35,7 @@ export function initPlanContent() {
 }
 
 /*
-* 계획 내용 생성 
+Title - 계획 내용 생성 
 * 장소, 교통수단 카드 생성
 */
 function generatePlanContent() {
@@ -76,9 +76,9 @@ function generatePlanContent() {
 }
 
 /* 
-* svg 수정
+Title - svg 수정
 * 그건데, 첫번째 카드랑 마지막 카드 왼쪽에 바 세워둔거 가리기
-* 즉, 다시 볼 필요 없다는 뜻
+! 즉, 다시 볼 필요 없다는 뜻
 */
 function updateSvgBoxes() {
   // 기존 스타일 시트가 있다면 제거
@@ -155,10 +155,10 @@ function updateSvgBoxes() {
 
 
 /* 
-* 장소 카드 생성 
+Title - 장소 카드 생성 
 * generatePlanContent에서 사용
 * html 생성임
-* TODO: 한 장소에서의 체류시간 계산하고(서버에서 받아오기) element 추가
+TODO: 한 장소에서의 체류시간 계산하고(서버에서 받아오기) element 추가
  */
 function createPlaceCard(place, index) {
   const li = document.createElement('li');
@@ -232,9 +232,9 @@ function createPlaceCard(place, index) {
 }
 
 /*
-* 교통수단 카드 생성
+Title - 교통수단 카드 생성
 * element 생성
-* TODO: 교통수단마다 예상 소요시간이 구성된 방식이 다름.
+TODO: 교통수단마다 예상 소요시간이 구성된 방식이 다름.
 * Transit는 단순히 route[0].leg[0](맞나? 구조는 봐야됨)처럼 순서대로 가져오면 되지만,
 * Drive는 경유지라는 개념이 있어서 한 route안에 여러 leg를 가지기 때문에 각 leg마다 이동시간을 뽑아야 함.
 * 만약 Transit과 Drive가 혼합된 경우
@@ -288,9 +288,9 @@ function createTransportCard(fromPlace, toPlace, index) {
   return li;
 }
 
-/* 
-* 장소 키워드 추정
-* TODO: 이건 나중에 서버에서 키워드를 리스트를 받아오도록 함
+/*
+Title - 장소 키워드 추정
+TODO: 이건 나중에 서버에서 키워드를 리스트를 받아오도록 함
 */
 function getPlaceKeyword(placeName) {  //다 서버 값으로 할거임 키워드 추정 안함
   const keywords = {
@@ -312,7 +312,7 @@ function getPlaceKeyword(placeName) {  //다 서버 값으로 할거임 키워�
 }
 
 /* 
-* 교통수단 아이콘 가져오기 
+Title - 교통수단 아이콘 가져오기 
 * svg 모음집
 */
 function getTransportIcon(transport) {
@@ -331,7 +331,7 @@ function getTransportIcon(transport) {
 }
 
 /* 
-* 이벤트 바인딩( dialog, modal 등 )
+Title - 이벤트 바인딩( dialog, modal 등 )
 * addMemo, editCard, deleteCard 버튼에 이벤트 바인딩
 * TODO: editCard는 경로 계산, 장소 검색과 같은 추가 요청이 너무 쓸데없이 많이 필요해서 삭제 고려대상
 */
@@ -409,7 +409,7 @@ function bindPlanEvents() {
 
 
 /*
-* 메모 추가 처리 
+Title - 메모 추가 처리
 */
 function handleAddMemo(placeIndex) {
   const memo = currentPlanData.places[placeIndex].memo || '';
@@ -475,8 +475,8 @@ function handleAddMemo(placeIndex) {
 }
 
 /* 
-* 카드 편집 처리 
-* TODO: 기능 삭제 고려 대상
+Title - 카드 편집 처리 
+TODO: 기능 삭제 고려 대상
 */
 function handleEditCard(placeIndex) {
   // const place = currentPlanData.places[placeIndex];
@@ -550,8 +550,8 @@ function handleEditCard(placeIndex) {
 }
 
 /* 
-* 카드 삭제 처리 
-* TODO: 카드 편집과 동일하게 경로 계산이 다시 필요함.
+Title - 카드 삭제 처리 
+TODO: 카드 편집과 동일하게 경로 계산이 다시 필요함.
 * 체크박스 형식으로 다중 삭제가 가능하게 해서 경로 계산을 줄이는 방식으로 기능을 유지하는게 어떨까?
 */
 function handleDeleteCard(placeIndex) {
@@ -563,7 +563,7 @@ function handleDeleteCard(placeIndex) {
   const modalContent = document.createElement('div');
   modalContent.className = 'delete-modal-content';
   modalContent.innerHTML = `
-    < p > 선택 항목이 삭제됩니다.삭제하시겠습니까 ?</ >
+    <p> 선택 항목이 삭제됩니다.삭제하시겠습니까 ?</p>
       <button data-action="close" class="close-btn">
         <svg viewBox="0 0 24 24" width="16" height="16"">
         <polygon xmlns="http://www.w3.org/2000/svg" points="24.061 2.061 21.939 -0.061 12 9.879 2.061 -0.061 -0.061 2.061 9.879 12 -0.061 21.939 2.061 24.061 12 14.121 21.939 24.061 24.061 21.939 14.121 12 24.061 2.061"></polygon>
@@ -602,13 +602,11 @@ function handleDeleteCard(placeIndex) {
 }
 
 /* 
-* 계획 저장 처리 
-* TODO: 문제가 있음 시발 왜 저장이 안됨?????
-* SpringSecurity 설정하고 난 뒤로 저장이 안되는데, 에러가 나서 저장이 안되는것도 아닌것 같음 뭐야 ㅅㅂ
+Title - 계획 저장 처리 
 */
 async function handleSavePlan() {
   // 1. 서버에 현재 로그인 상태 확인
-  const authStatusResponse = await fetch('/api/auth/status');
+  const authStatusResponse = await fetch('/status');
   const authStatus = await authStatusResponse.json();
 
   // 2. 로그인 상태에 따라 분기
@@ -622,17 +620,9 @@ async function handleSavePlan() {
 }
 
 /* 
-* 실제 계획 저장을 진행하는 함수 
+Title - 실제 계획 저장을 진행하는 함수 
 */
 function proceedToSavePlan() {
-  // CSRF 토큰 가져오기
-  const token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-  const header = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-
-  if (!token || !header) {
-    alert('보안 토큰을 찾을 수 없습니다. 페이지를 새로고침 해주세요.');
-    return;
-  }
 
   //계획 데이터 생성
   const selectedPurposeKeywords = Array.from(document.querySelectorAll('#purposeKeywords .keyword-btn.selected'))
@@ -643,6 +633,9 @@ function proceedToSavePlan() {
   const placeIdMap = new Map(initialPlanResponse.places.map(place => [place.name, place.placeId]));
   const routeLegs = currentPlanData.routeResponse.routes && currentPlanData.routeResponse.routes.length > 0 ?
     currentPlanData.routeResponse.routes[0].legs : [];
+
+  // const title = document.querySelector('.plan-title').textContent;
+  const title = null;
 
   const routes = currentPlanData.places.map((place, index) => {
     const previousLeg = index > 0 ? routeLegs[index - 1] : null;
@@ -660,6 +653,7 @@ function proceedToSavePlan() {
 
   const planData = {
     regionName: null,
+    title: '제목 없음',
     startTime: currentPlanData.departureTime,
     endTime: null, //TODO: 도착 시간 계산 필요
     purposeKeywords: selectedPurposeKeywords,
@@ -674,7 +668,7 @@ function proceedToSavePlan() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      [header]: token // CSRF 토큰 헤더 추가
+      // [header]: token // CSRF 토큰 헤더 추가
     },
     body: JSON.stringify(planData)
   })
@@ -692,8 +686,8 @@ function proceedToSavePlan() {
 }
 
 /* 
-* 로그인 유도 모달 
-* 이새끼도 안나타남. 로그인 안했는데 왜 response.ok냐고 ㅅㅂㅅㅂㅅㅂㅅㅂ
+Title - 로그인 유도 모달 
+* 갑자기 됨;;;
 */
 function showLoginModal() {
   const modalBase = document.querySelector('.modal-base');
@@ -703,28 +697,68 @@ function showLoginModal() {
   }
 
   modalBase.innerHTML = ''; // 기존 내용 초기화
-  modalBase.style.display = 'flex';
+  modalBase.style.display = 'block';
 
   const modalContent = document.createElement('div');
   modalContent.className = 'login-prompt-modal';
   modalContent.innerHTML = `
-        <h3>로그인이 필요한 기능입니다</h3>
-        <p>소중한 여행 계획을 저장하고 관리하려면 로그인을 해주세요.</p>
+        <h3>Auto Plan</h3>
+        <div id="login-error-message" style="color: red; margin-bottom: 10px;"></div>
+        <input type="text" id="loginEmail" placeholder="이메일" />
+        <input type="password" id="loginPassword" placeholder="비밀번호" />
         <div class="modal-buttons">
-            <button id="goToLoginBtn" class="modal-btn primary">로그인 하러 가기</button>
-            <button id="closeModalBtn" class="modal-btn">나중에 할래요</button>
+            <button id="loginSubmitBtn" class="modal-btn">로그인</button>
         </div>
+        <a href="/members/new" class="create-account">회원가입</a>
     `;
   modalBase.appendChild(modalContent);
 
-  document.getElementById('goToLoginBtn').addEventListener('click', () => {
-    // 현재 페이지 URL을 저장하고 로그인 페이지로 이동
-    sessionStorage.setItem('returnUrl', window.location.href);
-    window.location.href = '/login';
-  });
+  const emailInput = document.getElementById('loginEmail');
+  const passwordInput = document.getElementById('loginPassword');
+  const loginBtn = document.getElementById('loginSubmitBtn');
+  const errorMessageDiv = document.getElementById('login-error-message');
 
-  document.getElementById('closeModalBtn').addEventListener('click', () => {
-    closeModal(modalBase);
+  const attemptLogin = () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+      errorMessageDiv.textContent = '이메일과 비밀번호를 모두 입력해주세요.';
+      return;
+    }
+
+    loginBtn.disabled = true;
+    errorMessageDiv.textContent = '';
+
+    fetch('/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password })
+    })
+      .then(response => {
+        if (response.ok) {
+          closeModal(modalBase);
+          proceedToSavePlan(); // 로그인 성공 시, 원래 하려던 계획 저장 실행
+        } else {
+          errorMessageDiv.textContent = '아이디 또는 비밀번호가 잘못되었습니다.';
+        }
+      })
+      .catch(error => {
+        console.error('Login error:', error);
+        errorMessageDiv.textContent = '로그인 중 오류가 발생했습니다.';
+      })
+      .finally(() => {
+        loginBtn.disabled = false;
+      });
+  };
+
+  loginBtn.addEventListener('click', attemptLogin);
+  passwordInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      attemptLogin();
+    }
   });
 
   modalBase.addEventListener('click', (event) => {
@@ -735,7 +769,7 @@ function showLoginModal() {
 }
 
 /*
-모달 닫기
+Title - 모달 닫기
  */
 function closeModal(modalBase) {
   if (!modalBase) return;
@@ -743,9 +777,9 @@ function closeModal(modalBase) {
   modalBase.innerHTML = ''; // 모달 내용 초기화
 };
 
-/* 
-* 편집 모드로 돌아가기 
-* TODO: 돌아가지 말고 처리할까
+/*
+Title - 편집 모드로 돌아가기
+TODO: 돌아가지 말고 처리할까
 */
 function handleEditPlan() {
   const loadContent = async (url) => {

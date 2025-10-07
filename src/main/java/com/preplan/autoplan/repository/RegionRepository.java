@@ -17,5 +17,5 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
 
     List<Region> findByType(String type); // 타입으로 지역 찾기
 
-//  List<Region> findByParentId(Long parentId);
+    // List<Region> findByParentId(Long parentId);
 }

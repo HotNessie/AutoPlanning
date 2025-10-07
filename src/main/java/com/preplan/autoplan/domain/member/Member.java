@@ -51,8 +51,8 @@ public class Member extends BaseTimeEntity {
     private Role role; // Role 필드 추가
 
     // 양방향 관계 << // ? 왜 양방향이라고 적어놨냐
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Plan> plans = new ArrayList<>();
+    // @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    // private List<Plan> plans = new ArrayList<>();
 
     @Builder
     public Member(String password, String name, String email, int birthYear, String phoneNumber, Sex sex, Role role) {
@@ -60,7 +60,7 @@ public class Member extends BaseTimeEntity {
         this.name = name;
         this.email = email;
         this.birthYear = birthYear;
-        // this.phoneNumber = phoneNumber; // ? 이건 왜 넣어놨냐?
+        this.phoneNumber = phoneNumber;
         this.sex = sex;
         this.status = Status.ACTIVE;
         this.role = role; // Role 초기화

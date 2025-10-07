@@ -1,4 +1,6 @@
-// selfContent에서 검색
+/* 
+selfContent에서 검색 
+*/
 import { cacheElement, bindEvent, elements } from '../ui/dom-elements.js';
 import { getMapInstance } from '../store/map-store.js';
 import { createMarker, markerManager } from '../map/marker.js';
@@ -13,11 +15,12 @@ import { toggleSearchResultsVisibility } from '../ui/state-manager.js';
 
 // let routePolylines = []; // 그려진 경로선들을 저장하는 배열
 
-// placeId로 검색
-// placeId로 검색
-// placeId로 검색
+//Title - placeId로 검색 (Google API로 장소 검색)
+/*
+* findBySearch, displayGoogleSearchResults가 메인 
+*/
 // searchPlaceByText 합쳐도 될 듯
-export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeName2, placeName3 등
+export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeName2, placeName3 등 N번째 검색란 class명임
   console.log("searchPlaceByInputId 실행:", inputId);
   const input = cacheElement(inputId, `#${inputId}`);
   console.log("self x번째 검색란:", inputId.replace("placeName", ""));
@@ -43,6 +46,7 @@ export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeN
     displayGoogleSearchResults(places, inputId);
   });
 }
+
 //더미데이터
 //더미데이터
 //더미데이터
@@ -75,6 +79,7 @@ export async function dumiSearch(input) {
   }
 }
 
+//Title - 검색 결과 클릭 이벤트 총괄하는 이벤트 리스너 설정(클릭 이벤트 통합용)
 export async function initSearchResults() {
   const searchResults = document.querySelector("#searchResults");
   if (searchResults && !searchResults.dataset.listenerAdded) {
@@ -83,9 +88,10 @@ export async function initSearchResults() {
   }
 }
 
-// DB에 장소 검색 없으면 구글 API로 장소 검색
-// DB에 장소 검색 없으면 구글 API로 장소 검색
-// DB에 장소 검색 없으면 구글 API로 장소 검색
+
+//Title - DB에 장소 검색 없으면 구글 API로 장소 검색
+//! 항상 Google API로 검색하도록 변경. 
+// !searchPlaceByInputId랑 동일한 생태
 export async function handlePlaceSearch(inputElemnet) {
   if (!inputElemnet.value.trim()) {
     alert("검색어를 입력해주세요.");
@@ -93,31 +99,32 @@ export async function handlePlaceSearch(inputElemnet) {
   }
 
   const searchTerm = inputElemnet.value.trim();
-
-  try {
-    // 서버 검색 시도
-    const response = await fetch(`/api/public/places/search?name=${encodeURIComponent(searchTerm)}`);
-
-    if (response.ok) {
-      const places = await response.json();
-      if (places && places.length > 0) {
-        displayServerSearchResults(places, inputElemnet.id);
-        return;
+  /* 
+!항상 장소 검색 반환은 항상 구글 API에 위임으로 변경
+    try {
+      // 서버 검색 시도
+      const response = await fetch(`/api/public/places/search?name=${encodeURIComponent(searchTerm)}`);
+  
+      if (response.ok) {
+        const places = await response.json();
+        if (places && places.length > 0) {
+          displayServerSearchResults(places, inputElemnet.id);
+          return;
+        }
+      } else if (response.status === 404) {
+        console.log("장소 검색 결과 없음, GOOGLE API로 대체");
+        searchPlaceByInputId(inputElemnet.id);
       }
-    } else if (response.status === 404) {
-      console.log("장소 검색 결과 없음, GOOGLE API로 대체");
-      searchPlaceByInputId(inputElemnet.id);
-    }
-  } catch (error) {
-    console.log("DB에 장소 데이터 없음 고로 구글 API요청 보냄", error);
-  }
+    } catch (error) {
+      console.log("DB에 장소 데이터 없음 고로 구글 API요청 보냄", error);
+    } */
 
   // 서버 검색 실패 시 더미 데이터 사용
   searchPlaceByInputId(inputElemnet.id);
   // dumiSearch(inputElemnet);
 }
 
-// 단일 input에 검색 이벤트 리스너 추가
+//Title - 단일 input에 검색 이벤트 리스너 추가
 export function attachSearchEventToInput(inputElement) {
   if (inputElement.dataset.eventAttached) return;
 

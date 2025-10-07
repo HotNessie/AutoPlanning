@@ -25,9 +25,7 @@ export function getDynamicElements() {
     ];
 }
 
-// 장소 입력란 추가
-// 장소 입력란 추가
-// 장소 입력란 추가
+//Title - 장소 입력란 추가
 export function addPlace() {
     console.log("addPlace");
     const placeContainer = document.querySelector('#placeContainer');
@@ -100,9 +98,7 @@ export function addPlace() {
     }
 }
 
-//경유지 삭제
-//경유지 삭제
-//경유지 삭제
+//Title -경유지 삭제
 export function removePlace(placeId) {
     // console.log("removePlace placeId:", placeId);
     const placeDiv = document.querySelector(`#place${placeId}`);
@@ -119,9 +115,7 @@ export function removePlace(placeId) {
     }
 }
 
-// 교통 수단 선택
-// 교통 수단 선택
-// 교통 수단 선택
+//Title - 교통 수단 선택
 export function selectTransport(placeId, transport) {
     // 선택된 교통 수단 저장
     transportSelections[placeId] = transport;
@@ -141,10 +135,10 @@ export function selectTransport(placeId, transport) {
     if (transportInput) transportInput.value = transport;
 };
 
-// about routeForm control
-// about routeForm control
-// about routeForm control
+// Title - routeForm control
+/* selfContent form설정 */
 export function initRouteFormHandler() {
+    //계획 구성 form
     const routeForm = document.querySelector('#routeForm');
 
     if (routeForm && !routeForm.dataset.listenerAdded) {
@@ -236,9 +230,7 @@ export function initRouteFormHandler() {
     }
 };
 
-//getPlanFragment
-//getPlanFragment
-//getPlanFragment
+//Title - getPlanFragment
 async function getPlanFragment() {
     const collapseBody = document.querySelector('#collapseBody');
 
