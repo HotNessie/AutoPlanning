@@ -207,13 +207,13 @@ export async function handleSearchResultClick(event) {
   }
 
 
-  // placeId input 찾기 및 업데이트 //? hidden input 지정
+  // placeId input 찾기 및 업데이트 //? hidden input 선택
   let placeIdInput;
   if (currentPlaceInput.id === "placeNameEnd") {
-    placeIdInput = cacheElement("placeIdEnd", "#placeIdEnd");
+    placeIdInput = document.querySelector("#placeIdEnd");
   } else {
     const placeNum = currentPlaceInput.id.replace('placeName', '');
-    placeIdInput = cacheElement(`placeId${placeNum}`, `#placeId${placeNum}`);
+    placeIdInput = document.querySelector(`#placeId${placeNum}`);
     //placeIdInput == hidden input
   }
 

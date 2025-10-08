@@ -12,22 +12,6 @@ import { initializeSearchEvents, initSearchResults } from "./selfFind.js";
 export async function loadMyPlanList() {
   //TODO:계획 리스트 불러와서 HTML구성
   console.log('loadMyPlanList');
-  // const response = await fetch('/myPlanList',
-  //   {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     }
-  //   });
-  // if (!response.ok) {
-  //   throw new Error('Network response was not ok');
-  // }
-  // const data = await response.json();
-  // const planList = document.querySelector('planList');
-
-  // if (data.length === 0) {
-  //   emptyMyPlanList();
-  // } else {
   //   //TODO:title이전에 image추가해주기
   //   //description에 몇박인지 만들기. 우선 Plan Entitiy에 몇박도 카운트 가능하도록 수정해야 함.
   //   planList.innerHTML = data.map(plan => `
@@ -42,7 +26,7 @@ export async function loadMyPlanList() {
   //       </div>
   //     </div>
   //     `);
-  // }
+
 
   const response = await fetch('/api/private/my-plans'
     , {
@@ -57,9 +41,17 @@ export async function loadMyPlanList() {
     return;
   }
   console.log('Fetched plans:', data);
-  // initMyPlanList(data);
+  initMyPlanList(data);
+  setTimeout(() => {
+    const planItems = document.querySelectorAll('.plan-item');
+    planItems.forEach(planItem => {
+      planItem.addEventListener('click', async () => {
+        console.log('Plan item clicked:', planItem.getAttribute('data-plan-id'));
+        await loadPlan(planItem.getAttribute('data-plan-id'));
+      });
+    });
+  }, 0);
 
-  // emptyMyPlanList();
   attachEventListeners();
 }
 
@@ -93,17 +85,18 @@ function emptyMyPlanList() {
 function initMyPlanList(response) {
   const planList = document.querySelector('.plan-list');
   planList.innerHTML = response.map(plan => `
-    <div class="plan-item">
-      <h3>${plan.title}</h3>
-      <div class="description">
-        <div>${plan.travelTime}</div>
-        <div>${plan.travelDistance}</div>
-      </div>
-      <div class="plan-keywords">
-        ${plan.keywords.map(keyword => `<span class="keyword">${keyword}</span>`)}
-      </div>
+    <div class="plan-item" data-plan-id="${plan.id}">
+      <p>${plan.title}</p> 
     </div>
   `).join('');
+
+  // <div class="description">
+  //       <div>${plan.travelTime}</div>
+  //       <div>${plan.travelDistance}</div>
+  //     </div>
+  //     <div class="plan-keywords">
+  //       ${plan.keywords.map(keyword => `<span class="keyword">${keyword}</span>`)}
+  //     </div>
 }
 
 //Title - 동적 요소에 이벤트 리스너 부착
@@ -123,4 +116,17 @@ function attachEventListeners() {
     initRouteFormHandler();
   });
 
+}
+
+//Title - 특정 planId로 계획 불러오기
+export async function loadPlan(planId) {
+  console.log('Load plan with ID:', planId);
+  const response = await fetch(`/api/private/plan/${planId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  const data = await response.json();
+  console.log('Fetched plan data:', data);
 }

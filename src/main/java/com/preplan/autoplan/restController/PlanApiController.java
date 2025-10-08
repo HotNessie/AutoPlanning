@@ -36,7 +36,8 @@ public class PlanApiController {
 
   /*
    * 경로 찾기 - computeRoute
-   * 계획 생성 - savePlan
+   * 계획 생성 - savePlanString
+   * 내 계획 list 조회 - getMyPlans
    * 
    */
 
@@ -81,6 +82,7 @@ public class PlanApiController {
     }
   }
 
+  // Title - 경로 응답 DTO
   public record RoutePlanResponseDto(
       @JsonProperty("routeResponse") ComputeRoutesResponse routeResponse,
 
@@ -103,24 +105,33 @@ public class PlanApiController {
     return ResponseEntity.created(location).build();
   }
 
-  // Title - 내 계획 ID list 조회
+  // Title - 내 계획 list 조회
   // TODO: Member 구현 후 마무리
   @GetMapping("/api/private/my-plans")
-  public ResponseEntity<List<GetPlansId>> getMyPlans(Authentication authentication) {
+  public ResponseEntity<List<GetPlansSimple>> getMyPlans(Authentication authentication) {
     String email = authentication.getName();
     List<Plan> myPlans = planService.findByEmail(email);
     log.info("Found {} plans for email: {}", myPlans.size(), email);
-    List<GetPlansId> responseDtos = myPlans.stream()
-        .map(GetPlansId::fromEntity)
+    List<GetPlansSimple> responseDtos = myPlans.stream()
+        .map(GetPlansSimple::fromEntity)
         .toList();
     // 여기서 plan관련 모든 정보를 불러왔어야 했나
     return ResponseEntity.ok(responseDtos);
   }
 
-  public record GetPlansId(Long id) {
-    public static GetPlansId fromEntity(Plan plan) {
-      return new GetPlansId(plan.getId());
+  public record GetPlansSimple(Long id, String title) {
+    public static GetPlansSimple fromEntity(Plan plan) {
+      return new GetPlansSimple(plan.getId(), plan.getTitle());
     }
+  }
+
+  // Title - 단일 계획 상세 조회
+  @GetMapping("/api/private/plan/{planId}")
+  public ResponseEntity<PlanResponseDto> getPlanById(@PathVariable Long planId) {
+    Plan plan = planService.findById(planId);
+    PlanResponseDto responseDto = PlanResponseDto.fromEntity(plan);
+    return ResponseEntity.ok(responseDto);
+
   }
 
 }
