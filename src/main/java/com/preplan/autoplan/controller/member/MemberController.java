@@ -16,33 +16,33 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberService memberService;
+  private final MemberService memberService;
 
-    @GetMapping(value = "/members/new")
-    public String memberForm(Model model) {
-        model.addAttribute("memberFormDto", new MemberFormDto());
-        return "addMember"; // 회원가입 폼 템플릿 이름
+  @GetMapping(value = "/members/new")
+  public String memberForm(Model model) {
+    model.addAttribute("memberFormDto", new MemberFormDto());
+    return "fragments/member/addMember"; // 회원가입 폼 템플릿 이름
+  }
+
+  @PostMapping("/members/new")
+  public String newMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model) {
+
+    if (bindingResult.hasErrors()) {
+      return "fragments/member/addMember"; // 에러가 있을 경우 회원가입 폼으로 돌아감
     }
 
-    @PostMapping("/members/new")
-    public String newMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model) {
-
-        if (bindingResult.hasErrors()) {
-            return "addMember"; // 에러가 있을 경우 회원가입 폼으로 돌아감
-        }
-
-        try {
-            memberService.join(memberFormDto);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "회원가입 중 오류가 발생했습니다: " + e.getMessage());
-            return "addMember";
-        }
-
-        return "redirect:/plan"; // 회원가입 후 리다이렉트할 경로
+    try {
+      memberService.join(memberFormDto);
+    } catch (Exception e) {
+      model.addAttribute("errorMessage", "회원가입 중 오류가 발생했습니다: " + e.getMessage());
+      return "fragments/member/addMember";
     }
 
-    @GetMapping("/login")
-    public String loginPage() {
-        return "loginPage";
-    }
+    return "redirect:/plan"; // 회원가입 후 리다이렉트할 경로
+  }
+
+  @GetMapping("/login")
+  public String loginPage() {
+    return "fragments/member/loginPage";
+  }
 }

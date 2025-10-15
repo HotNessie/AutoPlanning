@@ -5,14 +5,14 @@
 
 .myPlanList>h2 {
   padding-top: 12px;
-  padding-left: 18px;
+  /* padding-left: 18px; */
   margin: 18px;
 }
 
 .myPlanList>.plan-actions {
   position: absolute;
   bottom: 4%;
-  left: 50%;
+  left: 48%;
   transform: translateX(-50%);
 }
 
@@ -22,7 +22,22 @@
 }
 
 .plan-list {
-  height: 80%;
+  height: 87%;
+  overflow: auto;
+  width: 90%;
+  gap: 2%;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.plan-list::-webkit-scrollbar {
+  width: 2px;
+}
+
+.plan-list::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border-radius: 4px;
 }
 
 .empty-plan-list {
@@ -36,7 +51,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 16px;
-  width: 80%;
+  width: 85%;
   color: rgba(255, 255, 255, 0.7);
   border: 1px solid transparent;
   transition: all 0.5s ease-in-out;
@@ -51,4 +66,59 @@
   background-image: linear-gradient(#121212), linear-gradient(to right, #8dacac62 0%, #f0659b62 100%);
   background-clip: padding-box, border-box;
   background-origin: border-box;
+}
+
+.plan-item {
+  /* margin-bottom: 15px; */
+  position: relative;
+  width: 93%;
+  left: 4.5%;
+  cursor: pointer;
+}
+
+.plan-item-content {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.plan-item:hover .plan-item-content {
+  border-color: rgba(240, 101, 155, 0.8);
+  background-color: rgba(240, 101, 155, 0.1);
+}
+
+.plan-item-content h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.plan-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.plan-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.plan-keywords span {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #f0659b;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }

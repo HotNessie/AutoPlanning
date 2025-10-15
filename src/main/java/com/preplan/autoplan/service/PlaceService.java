@@ -87,12 +87,13 @@ public class PlaceService {
     } else {
       // 장소가 없으면 새로 생성
       // ? 구를 반환하려 했는데 그렇지 않은 경우는 (시)를 반환
-      RegionResponseDto minRegion = processAddressAndCreateRegions(dto.address());
-      RegionResponseDto parentRegion = RegionResponseDto
-          .fromEntity(regionRepository.findById(minRegion.id()).orElse(null).getParent());
-      RegionResponseDto cityRegion = minRegion.type().equals("CITY") ? minRegion : parentRegion;
-      RegionResponseDto countryRegion = RegionResponseDto
-          .fromEntity(regionRepository.findById(cityRegion.id()).orElse(null).getParent());
+      Region minRegion = processAddressAndCreateRegions(dto.address());
+
+      Region parentRegion = regionRepository.findById(minRegion.getId()).orElse(null).getParent();
+
+      Region cityRegion = minRegion.getType().equals("CITY") ? minRegion : parentRegion;
+
+      Region countryRegion = regionRepository.findById(cityRegion.getId()).orElse(null).getParent();
 
       Place newPlace = Place.builder()
           .placeId(dto.placeId())
@@ -100,46 +101,30 @@ public class PlaceService {
           .address(dto.address())
           .latitude(dto.latitude())
           .longitude(dto.longitude())
-          .region(RegionResponseDto.toEntity(minRegion)) // 지역 설정
-          .cityRegion(RegionResponseDto.toEntity(cityRegion))
-          .countryRegion(RegionResponseDto.toEntity(countryRegion))
+          .region(minRegion) // 지역 설정
+          .cityRegion(cityRegion)
+          .countryRegion(countryRegion)
           .build();
       newPlace.increaseSearchCount(); // 최초 검색 횟수 1 증가
-      return PlaceResponseDto.fromEntity(placeRepository.save(newPlace)); // 저장
+      Place savePlace = placeRepository.save(newPlace);
+      return PlaceResponseDto.fromEntity(savePlace);
     }
   }
 
   // Title - address에서 region 추출
-  private RegionResponseDto processAddressAndCreateRegions(String address) {
+  private Region processAddressAndCreateRegions(String address) {
     String[] parts = address.split(" ");
-    if (parts.length == 0) {
+    if (parts.length < 2) {
       throw new IllegalArgumentException("Invalid address format: " + address);
     }
-    Region countryRegion = regionService.findOrCreateRegion(parts[0], "COUNTRY");
+    Region countryRegion = regionService.findOrCreateRegion(parts[0], "COUNTRY", null);
 
-    Region cityRegion = regionRepository.findByNameAndType(parts[1], "CITY")
-        .orElseGet(() -> {
-          Region newCity = Region.builder()
-              .name(parts[1])
-              .type("CITY")
-              .parent(countryRegion)
-              .build();
-          return regionRepository.save(newCity);
-        });
+    Region cityRegion = regionService.findOrCreateRegion(parts[1], "CITY", countryRegion);
 
     if (parts.length > 2) {
-      Region districtRegion = regionRepository.findByNameAndType(parts[2], "DISTRICT")
-          .orElseGet(() -> {
-            Region newDistrict = Region.builder()
-                .name(parts[2])
-                .type("DISTRICT")
-                .parent(cityRegion != null ? cityRegion : countryRegion)
-                .build();
-            return regionRepository.save(newDistrict);
-          });
-      return RegionResponseDto.fromEntity(districtRegion);
+      return regionService.findOrCreateRegion(parts[2], "DISTRICT", cityRegion);
     } else {
-      return RegionResponseDto.fromEntity(cityRegion);
+      return cityRegion;
     }
   }
 

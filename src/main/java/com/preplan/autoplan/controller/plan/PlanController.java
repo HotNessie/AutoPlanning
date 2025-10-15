@@ -6,48 +6,58 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PlanController {
 
-    @GetMapping("/plan")
-    public String plan() {
-        return "createPlan";
-    }
+  @GetMapping("/test")
+  public String test() {
+    return "test";
+  }
 
-    @GetMapping("/plan/submit")
-    public String submitPlan() {
-        return "fragments/selfPlanContent";
-    }
+  @GetMapping("/plan")
+  public String plan() {
+    return "createPlan";
+  }
 
-    @GetMapping("/hotContent")
-    public String getHotContent() {
-        return "fragments/hotContent";
-    }
+  @GetMapping("/plan/submit")
+  public String submitPlan() {
+    return "fragments/selfContent/selfPlanContent";
+  }
 
-    @GetMapping("/autoContent")
-    public String getAutoContent() {
-        return "fragments/autoContent";
-    }
+  @GetMapping("/hotContent")
+  public String getHotContent() {
+    return "fragments/hotContent";
+  }
 
-    @GetMapping("/selfContent")
-    public String getSelfContent() {
-        return "fragments/selfContent";
-    }
+  @GetMapping("/autoContent")
+  public String getAutoContent() {
+    return "fragments/autoContent";
+  }
 
-    @GetMapping("/myPlanList")
-    public String getMyPlanList() {
-        return "fragments/myPlanList";
-    }
+  @GetMapping("/selfContent")
+  public String getSelfContent() {
+    return "fragments/selfContent/selfContent";
+  }
 
-    @GetMapping("/routeResult")
-    public String getSelfResult() {
-        return "fragments/RouteResult";
-    }
+  @GetMapping("/myPlanList")
+  public String getMyPlanList() {
+    return "fragments/myPlanList/myPlanList";
+  }
 
-    @GetMapping("/bookmarkContent")
-    public String getBookmarkContent() {
-        return "fragments/bookmarkContent";
-    }
+  @GetMapping("/myPlanDetail")
+  public String getMyPlanDetail() {
+    return "fragments/myPlanList/myPlanDetails";
+  }
 
-    @GetMapping("/historyContent")
-    public String getHistoryContent() {
-        return "fragments/historyContent";
-    }
+  @GetMapping("/routeResult")
+  public String getSelfResult() {
+    return "fragments/RouteResult";
+  }
+
+  @GetMapping("/bookmarkContent")
+  public String getBookmarkContent() {
+    return "fragments/bookmarkContent";
+  }
+
+  @GetMapping("/historyContent")
+  public String getHistoryContent() {
+    return "fragments/historyContent";
+  }
 }
