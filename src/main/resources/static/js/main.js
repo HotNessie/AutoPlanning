@@ -4,7 +4,7 @@ import { initAutocomplete } from './search/autocomplete.js';
 import { findBySearch } from './search/findBySearch.js';
 import { initControls } from './ui/controls.js';
 import { initDomElements, cacheElement, elements, bindDynamicElements } from './ui/dom-elements.js';
-import { loadMyPlanList } from './selfContent/myPlanList.js';
+import { loadMyPlanList } from './myPlan/myPlanList.js';
 import { initSelfContent, initRouteFormHandler, removePlace, selectTransport, getDynamicElements } from './selfContent/selfContent.js';
 import { dumiSearch, initializeSearchEvents, initSearchResults, searchPlaceByInputId } from './selfContent/selfFind.js';
 import { initUIState, resetUIState } from './ui/state-manager.js';

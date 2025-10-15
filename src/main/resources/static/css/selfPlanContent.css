@@ -39,6 +39,7 @@
   margin: 10px 23px 10px 10px;
 }
 
+
 .dayTitleText {
   font-size: 14px;
   color: #c154ec;
@@ -46,6 +47,21 @@
   left: 10%;
   position: relative;
   top: 12%;
+  border: 1px solid transparent;
+  background-color: transparent;
+  padding: 2px 5px;
+  margin: 0;
+  width: auto;
+  cursor: default;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.dayTitleText.editable {
+  border-color: #888;
+  cursor: text;
+  background-color: #333;
+  border-radius: 4px;
 }
 
 .plan-details-box {

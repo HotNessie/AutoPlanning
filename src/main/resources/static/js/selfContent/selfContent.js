@@ -2,8 +2,8 @@ import { cacheElement, elements } from '../ui/dom-elements.js';
 import { markerManager } from '../map/marker.js';
 import { initSearchResults, attachSearchEventToInput } from './selfFind.js';
 import {
-    requestRoute,
-    adjustPlaceIndices,
+  requestRoute,
+  adjustPlaceIndices,
 } from '../plan/bySelfContent/selfRoute.js';
 import { fetchRoute } from '../map/commonRoute.js';
 import { initPlanContent } from './selfPlan.js';
@@ -15,28 +15,28 @@ const MIN_PLACES = 2; //최소 장소 개수
 let transportSelections = {};
 
 export function getDynamicElements() {
-    return [
-        { id: 'addPlace', selector: '#addPlaceBtn', events: [{ event: 'click', callback: addPlace }] },
-        { id: 'routeForm', selector: '#routeForm', events: [] },
-        { id: 'placeContainer', selector: '#placeContainer', events: [] },
-        { id: 'searchResults', selector: '#searchResults', events: [{ event: 'click', callback: initSearchResults }] },
-        { id: 'searchResultsContainer', selector: '#searchResultsContainer', events: [] },
-        { id: 'collapseButton', selector: '#collapseButton', events: [] },
-    ];
+  return [
+    { id: 'addPlace', selector: '#addPlaceBtn', events: [{ event: 'click', callback: addPlace }] },
+    { id: 'routeForm', selector: '#routeForm', events: [] },
+    { id: 'placeContainer', selector: '#placeContainer', events: [] },
+    { id: 'searchResults', selector: '#searchResults', events: [{ event: 'click', callback: initSearchResults }] },
+    { id: 'searchResultsContainer', selector: '#searchResultsContainer', events: [] },
+    { id: 'collapseButton', selector: '#collapseButton', events: [] },
+  ];
 }
 
 //Title - 장소 입력란 추가
 export function addPlace() {
-    console.log("addPlace");
-    const placeContainer = document.querySelector('#placeContainer');
-    const placeEnd = document.querySelector('#placeEnd');
+  console.log("addPlace");
+  const placeContainer = document.querySelector('#placeContainer');
+  const placeEnd = document.querySelector('#placeEnd');
 
-    if (placeCount < MAX_PLACES) {
-        const newPlaceDiv = document.createElement("div");
-        newPlaceDiv.className = "placeInput";
-        newPlaceDiv.id = `place${placeCount}`;
+  if (placeCount < MAX_PLACES) {
+    const newPlaceDiv = document.createElement("div");
+    newPlaceDiv.className = "placeInput";
+    newPlaceDiv.id = `place${placeCount}`;
 
-        newPlaceDiv.innerHTML = `
+    newPlaceDiv.innerHTML = `
                 <button type="button" class="removePlaceBtn" data-action="removePlace" data-place-Id="${placeCount}">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round"/>
@@ -82,183 +82,181 @@ export function addPlace() {
             </div>
         `;
 
-        // 항상 도착지 앞에 추가
-        placeContainer.insertBefore(newPlaceDiv, placeEnd);
-        placeCount++;
-        console.log("placeCount:", placeCount);
-        // initializePlaceEvents();
-        const input = newPlaceDiv.querySelector('input[type="text"]');
+    // 항상 도착지 앞에 추가
+    placeContainer.insertBefore(newPlaceDiv, placeEnd);
+    placeCount++;
+    console.log("placeCount:", placeCount);
+    // initializePlaceEvents();
+    const input = newPlaceDiv.querySelector('input[type="text"]');
 
-        attachSearchEventToInput(input);//DB검색 -> 구글 API 검색
-    } else {
-        placeCount++;
-        placeCount = Math.min(placeCount, MAX_PLACES); // placeCount가 MAX_PLACES를 초과하지 않도록 제한
-        console.log("placeCount:", placeCount);
-        alert("최대 7개 장소까지 추가 가능합니다.");
-    }
+    attachSearchEventToInput(input);//DB검색 -> 구글 API 검색
+  } else {
+    placeCount++;
+    placeCount = Math.min(placeCount, MAX_PLACES); // placeCount가 MAX_PLACES를 초과하지 않도록 제한
+    console.log("placeCount:", placeCount);
+    alert("최대 7개 장소까지 추가 가능합니다.");
+  }
 }
 
 //Title -경유지 삭제
 export function removePlace(placeId) {
-    // console.log("removePlace placeId:", placeId);
-    const placeDiv = document.querySelector(`#place${placeId}`);
-    console.log("이 placeDiv 지워짐:", placeDiv);
-    if (placeCount > MIN_PLACES) {
-        const placeIdInput = document.querySelector(`#placeId${placeId}`);
-        if (placeIdInput && placeIdInput.value) {
-            markerManager.removePlaceMarker(placeIdInput.value);
-        }
-        placeDiv.remove();
-        placeCount--;
-        console.log("placeCount:", placeCount);
-        delete transportSelections[`place${placeId}`];
+  // console.log("removePlace placeId:", placeId);
+  const placeDiv = document.querySelector(`#place${placeId}`);
+  console.log("이 placeDiv 지워짐:", placeDiv);
+  if (placeCount > MIN_PLACES) {
+    const placeIdInput = document.querySelector(`#placeId${placeId}`);
+    if (placeIdInput && placeIdInput.value) {
+      markerManager.removePlaceMarker(placeIdInput.value);
     }
+    placeDiv.remove();
+    placeCount--;
+    console.log("placeCount:", placeCount);
+    delete transportSelections[`place${placeId}`];
+  }
 }
 
 //Title - 교통 수단 선택
 export function selectTransport(placeId, transport) {
-    // 선택된 교통 수단 저장
-    transportSelections[placeId] = transport;
-    console.log("Selected transport for", placeId, ":", transport);
-    console.log("transportSelections", transportSelections);
+  // 선택된 교통 수단 저장
+  transportSelections[placeId] = transport;
+  console.log("Selected transport for", placeId, ":", transport);
+  console.log("transportSelections", transportSelections);
 
-    // 버튼 스타일 업데이트
-    const buttons = document.querySelectorAll(`.place${placeId}`); //이게 한번 실행되면서 생기는 문제겠지?
-    buttons.forEach(button => {
-        button.classList.remove('selected_transport'); // 모든 버튼에서 클래스 제거
-        if (button.dataset.transport === transport) {
-            button.classList.add('selected_transport'); // 선택된 버튼에만 추가
-            console.log("button classList:", button.classList);
-        }
-    });
-    const transportInput = document.getElementById(`transport${placeId}`);
-    if (transportInput) transportInput.value = transport;
+  // 버튼 스타일 업데이트
+  const buttons = document.querySelectorAll(`.place${placeId}`); //이게 한번 실행되면서 생기는 문제겠지?
+  buttons.forEach(button => {
+    button.classList.remove('selected_transport'); // 모든 버튼에서 클래스 제거
+    if (button.dataset.transport === transport) {
+      button.classList.add('selected_transport'); // 선택된 버튼에만 추가
+      console.log("button classList:", button.classList);
+    }
+  });
+  const transportInput = document.getElementById(`transport${placeId}`);
+  if (transportInput) transportInput.value = transport;
 };
 
 // Title - routeForm control
 /* selfContent form설정 */
 export function initRouteFormHandler() {
-    //계획 구성 form
-    const routeForm = document.querySelector('#routeForm');
+  //계획 구성 form
+  const routeForm = document.querySelector('#routeForm');
 
-    if (routeForm && !routeForm.dataset.listenerAdded) {
-        // 실시간 입력 필드 확인. validation 지우기
-        const clearValidationError = (inputField) => {
-            if (inputField) {
-                inputField.style.border = "";
-                const errorMessage = routeForm.querySelector(".error-message");
-                if (errorMessage) {
-                    errorMessage.remove();
-                }
-            }
-        };
+  if (routeForm && !routeForm.dataset.listenerAdded) {
+    // 실시간 입력 필드 확인. validation 지우기
+    const clearValidationError = (inputField) => {
+      if (inputField) {
+        inputField.style.border = "";
+        const errorMessage = routeForm.querySelector(".error-message");
+        if (errorMessage) {
+          errorMessage.remove();
+        }
+      }
+    };
 
-        // placeId 입력 필드 이벤트 리스너 추가
-        const setupValidationClearEvents = () => {
-            const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
-            placeIdInputs.forEach(input => {
-                // hidden input의 값이 변경되면 관련 텍스트 입력 필드의 오류 스타일 제거
-                input.addEventListener('change', () => {
-                    console.log("hidden input changed");
-                    const textInput = input.previousElementSibling.querySelector('input[type="text"]');
-                    clearValidationError(textInput);
-                });
-
-                // 관련 텍스트 입력 필드에도 검색 선택 후 이벤트 리스너 추가
-                const textInput = input.previousElementSibling.querySelector('input[type="text"]');
-                if (textInput && !textInput.dataset.validationListenerAdded) {
-                    textInput.addEventListener('change', () => {
-                        console.log("text input changed");
-                        if (input.value) clearValidationError(textInput);
-                    });
-                    textInput.dataset.validationListenerAdded = 'true';
-                }
-            });
-        };
-
-        // 초기 설정 및 동적으로 추가된 장소에 대한 이벤트 설정
-        setupValidationClearEvents();
-
-        //selfForm 제출시 이벤트
-        routeForm.addEventListener('submit', async (event) => {
-            console.log("submit routeForm");
-            event.preventDefault();
-            if (event.isComposing) return;
-
-            // 경로 순서를 올바르게 조정하는 로직 추가
-            adjustPlaceIndices();
-            // 기존 오류 메시지 제거
-            const existingError = routeForm.querySelector(".error-message");
-            if (existingError) existingError.remove();
-
-            //검증
-            const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
-            let hasError = false;
-
-            // 모든 입력 필드의 테두리 스타일 초기화
-            document.querySelectorAll(".placeInput input[type='text']").forEach(input => {
-                input.style.border = "";
-            });
-
-            placeIdInputs.forEach(input => {
-                if (!input.value) {
-                    hasError = true;
-                    // 검색 컨테이너 div인 경우
-                    const textInput = input.previousElementSibling.querySelector('input[type="text"]');
-                    if (textInput) textInput.style.border = '1px solid red';
-                }
-            });
-
-            if (hasError) {
-                const errorDiv = document.createElement("div");
-                errorDiv.className = "error-message";
-                errorDiv.style.color = "red";
-                errorDiv.style.fontSize = "14px";
-                errorDiv.style.marginBottom = "10px";
-                errorDiv.textContent = "검색을 통해 정확한 장소를 선택해 주세요.";
-                routeForm.prepend(errorDiv);
-                return;
-            }
-            // 경로 순서를 조정
-            adjustPlaceIndices();
-            // 경로 요청
-            requestRoute(routeForm, true).then(() => {
-                getPlanFragment();
-            });
+    // placeId 입력 필드 이벤트 리스너 추가
+    const setupValidationClearEvents = () => {
+      const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
+      placeIdInputs.forEach(input => {
+        // hidden input의 값이 변경되면 관련 텍스트 입력 필드의 오류 스타일 제거
+        input.addEventListener('change', () => {
+          console.log("hidden input changed");
+          const textInput = input.previousElementSibling.querySelector('input[type="text"]');
+          clearValidationError(textInput);
         });
-        routeForm.dataset.listenerAdded = "true"; // 중복 추가 방지
-    }
+
+        // 관련 텍스트 입력 필드에도 검색 선택 후 이벤트 리스너 추가
+        const textInput = input.previousElementSibling.querySelector('input[type="text"]');
+        if (textInput && !textInput.dataset.validationListenerAdded) {
+          textInput.addEventListener('change', () => {
+            console.log("text input changed");
+            if (input.value) clearValidationError(textInput);
+          });
+          textInput.dataset.validationListenerAdded = 'true';
+        }
+      });
+    };
+
+    // 초기 설정 및 동적으로 추가된 장소에 대한 이벤트 설정
+    setupValidationClearEvents();
+
+    //selfForm 제출시 이벤트
+    routeForm.addEventListener('submit', async (event) => {
+      console.log("submit routeForm");
+      event.preventDefault();
+      if (event.isComposing) return;
+
+      // 경로 순서를 올바르게 조정하는 로직 추가
+      adjustPlaceIndices();
+      // 기존 오류 메시지 제거
+      const existingError = routeForm.querySelector(".error-message");
+      if (existingError) existingError.remove();
+
+      //검증
+      const placeIdInputs = document.querySelectorAll(".placeInput input[type='hidden'][name$='.placeId']");
+      let hasError = false;
+
+      // 모든 입력 필드의 테두리 스타일 초기화
+      document.querySelectorAll(".placeInput input[type='text']").forEach(input => {
+        input.style.border = "";
+      });
+
+      placeIdInputs.forEach(input => {
+        if (!input.value) {
+          hasError = true;
+          // 검색 컨테이너 div인 경우
+          const textInput = input.previousElementSibling.querySelector('input[type="text"]');
+          if (textInput) textInput.style.border = '1px solid red';
+        }
+      });
+
+      if (hasError) {
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "error-message";
+        errorDiv.style.color = "red";
+        errorDiv.style.fontSize = "14px";
+        errorDiv.style.marginBottom = "10px";
+        errorDiv.textContent = "검색을 통해 정확한 장소를 선택해 주세요.";
+        routeForm.prepend(errorDiv);
+        return;
+      }
+      // 경로 순서를 조정
+      adjustPlaceIndices();
+      // 경로 요청
+      requestRoute(routeForm, true).then(() => {
+        getPlanFragment();
+      });
+    });
+    routeForm.dataset.listenerAdded = "true"; // 중복 추가 방지
+  }
 };
 
 //Title - getPlanFragment
 async function getPlanFragment() {
-    const collapseBody = document.querySelector('#collapseBody');
+  const collapseBody = document.querySelector('#collapseBody');
 
-    const response = await fetch('/plan/submit', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'Text/HTML',
-        },
-    });
-    if (!response.ok) {
-        console.error("Failed to submit plan");
-        return;
-    }
-    collapseBody.innerHTML = await response.text();
-    console.log("added event listener to submitButton");
-    initPlanContent();
+  const response = await fetch('/plan/submit', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'Text/HTML',
+    },
+  });
+  if (!response.ok) {
+    console.error("Failed to submit plan");
+    return;
+  }
+  collapseBody.innerHTML = await response.text();
+  console.log("added event listener to submitButton");
+  initPlanContent();
 };
 
 
-// selfContent에서 autoComplete 삭제 initSelfContent
-// selfContent에서 autoComplete 삭제 initSelfContent
-// selfContent에서 autoComplete 삭제 initSelfContent 
+//Title - selfContent에서 autoComplete 숨기기
 export function initSelfContent() {
-    // const selfButton = document.querySelector('#selfButton');
-    const selfButton = document.querySelector('#myPlanListButton');
-    selfButton.addEventListener('click', () => {
-        console.log("selfButton clicked");
-        const autoComplete = document.getElementById("autocomplete");
-        autoComplete.classList.add("autoComplete_displayNone");
-    });
+  // const selfButton = document.querySelector('#selfButton');
+  const selfButton = document.querySelector('#myPlanListButton');
+  selfButton.addEventListener('click', () => {
+    console.log("selfButton clicked");
+    const autoComplete = document.getElementById("autocomplete");
+    autoComplete.classList.add("autoComplete_displayNone");
+  });
 };

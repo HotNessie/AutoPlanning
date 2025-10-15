@@ -10,6 +10,7 @@ import java.util.List;
 public record PlanResponseDto(
     Long planId,
     MemberResponseDto member,
+    String title,
     String regionName,
     LocalDateTime startTime,
     LocalDateTime endTime,
@@ -23,6 +24,7 @@ public record PlanResponseDto(
     return new PlanResponseDto(
         plan.getId(),
         MemberResponseDto.fromEntity(plan.getMember()),
+        plan.getTitle(),
         plan.getRegion().getName(),
         plan.getStartTime(),
         plan.getEndTime(),

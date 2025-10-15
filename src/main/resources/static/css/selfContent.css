@@ -1,345 +1,345 @@
 .autoComplete_displayNone {
-    display: none !important;
+  display: none !important;
 }
 
 .travel {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 15px;
 }
 
 .travel,
 .placeInput {
-    flex: 1;
-    margin-bottom: 15px;
-    max-height: 10%;
+  flex: 1;
+  margin-bottom: 15px;
+  max-height: 10%;
 }
 
 .time-label {
-    margin-bottom: 5px;
-    color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .time-display input[type="datetime-local"] {
-    background-color: rgb(51, 51, 51);
-    color: rgba(255, 255, 255, 0.8);
-    border: none;
-    padding: 5px;
-    border-radius: 3px;
-    width: 96%;
+  background-color: rgb(51, 51, 51);
+  color: rgba(255, 255, 255, 0.8);
+  border: none;
+  padding: 5px;
+  border-radius: 3px;
+  width: 96%;
 }
 
 .time-selectors {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .place-container {
-    margin-top: 10px;
-    max-height: 65vh;
-    overflow-y: auto;
-    padding-right: 10px;
+  margin-top: 10px;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
 .place-container::-webkit-scrollbar {
-    width: 2px;
+  width: 2px;
 }
 
 .place-container::-webkit-scrollbar-thumb {
-    background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
-    border-radius: 4px;
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border-radius: 4px;
 }
 
 .placeInput {
-    background-color: rgba(51, 51, 51, 0.8);
-    padding: 10px;
-    border-radius: 5px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+  background-color: rgba(51, 51, 51, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .placeInput-row {
-    display: flex;
-    align-items: center;
-    justify-content: end;
+  display: flex;
+  align-items: center;
+  justify-content: end;
 }
 
 .travel label,
 .travel span {
-    margin-right: 10px;
-    color: rgba(255, 255, 255, 0.8);
+  margin-right: 10px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .travel select,
 .placeInput input[type="text"],
 .placeInput input[type="number"],
 .placeInput select {
-    background-color: rgb(51, 51, 51);
-    color: rgba(255, 255, 255, 0.8);
-    border: none;
-    padding: 5px;
-    border-radius: 3px;
+  background-color: rgb(51, 51, 51);
+  color: rgba(255, 255, 255, 0.8);
+  border: none;
+  padding: 5px;
+  border-radius: 3px;
 }
 
 .travel select {
-    width: 80px;
-    margin-right: 5px;
+  width: 80px;
+  margin-right: 5px;
 }
 
 .transport-buttons {
-    position: absolute;
-    bottom: 12%;
-    left: 4%;
-    display: flex;
-    gap: 5px;
+  position: absolute;
+  bottom: 12%;
+  left: 4%;
+  display: flex;
+  gap: 5px;
 }
 
 .transport-btn {
-    background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
-    border: none;
-    border-radius: 5px;
-    padding: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    transition: background-color 0.3s ease;
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  transition: background-color 0.3s ease;
 }
 
 .transport-btn.selected_transport {
-    background-image: linear-gradient(#fff 0%, #fff 100%);
+  background-image: linear-gradient(#fff 0%, #fff 100%);
 }
 
 .transport-btn svg {
-    fill: rgba(255, 255, 255, 0.8);
+  fill: rgba(255, 255, 255, 0.8);
 }
 
 .transport-btn.selected_transport svg {
-    fill: #c154ec;
+  fill: #c154ec;
 }
 
 .placeInput label {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .placeInput input[type="text"] {
-    width: 100%;
+  width: 100%;
 }
 
 .placeInput input[type="number"] {
-    width: 20%;
-    -moz-appearance: textfield;
+  width: 20%;
+  -moz-appearance: textfield;
 }
 
 .placeInput input[type="number"]::-webkit-inner-spin-button,
 .placeInput input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 #addPlaceBtn {
-    position: fixed;
-    left: 17%;
-    padding: 5px 10px;
-    background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
-    color: rgba(255, 255, 255, 0.8);
-    border: none;
-    border-radius: 9px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: transform 0.2s ease-in-out;
+  position: fixed;
+  left: 17%;
+  padding: 5px 10px;
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.2s ease-in-out;
 }
 
 .removePlaceBtn {
-    height: 10px;
-    background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
-    border: none;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  height: 10px;
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .removePlaceBtn:hover {
-    background-color: #f0659b;
+  background-color: #f0659b;
 }
 
 .submitContainer {
-    display: flex;
-    justify-content: end;
-    position: fixed;
-    right: 5%;
-    bottom: 4%;
+  display: flex;
+  justify-content: end;
+  position: fixed;
+  right: 5%;
+  bottom: 4%;
 }
 
 #submitBtn {
-    fill: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 8px 11px 8px 14px;
-    background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
-    border: none;
-    border-radius: 18px;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
+  fill: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 11px 8px 14px;
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
 }
 
 #resultContainer {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #181818;
-    color: rgba(255, 255, 255, 0.8);
-    border-radius: 5px;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #181818;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 5px;
 }
 
 #searchResultsContainer {
-    /* display: none; */
-    z-index: -1;
-    position: fixed;
-    top: 24px;
-    left: 66px;
-    width: 328px;
-    background-color: transparent;
-    transform: translate(-4px);
-    transition: transform 0.4s ease-in-out;
+  /* display: none; */
+  z-index: -1;
+  position: fixed;
+  top: 24px;
+  left: 66px;
+  width: 328px;
+  background-color: transparent;
+  transform: translate(-4px);
+  transition: transform 0.4s ease-in-out;
 }
 
 #searchResultsContainer.visible {
-    display: block;
-    transform: translateX(364px);
+  display: block;
+  transform: translateX(364px);
 }
 
 #searchResults {
-    height: 95vh;
-    border: none;
-    background-color: rgb(18, 18, 18);
-    border-radius: 24px;
-    color: rgba(255, 255, 255, 0.8);
-    overflow: hidden;
-    overflow-y: auto;
+  height: 95vh;
+  border: none;
+  background-color: rgb(18, 18, 18);
+  border-radius: 24px;
+  color: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 #searchResults::-webkit-scrollbar {
-    width: 1px;
-    display: none;
+  width: 1px;
+  display: none;
 }
 
 .result-item {
-    cursor: pointer;
-    height: 220px;
-    padding: 20px 25px 16px 25px;
-    display: flex;
-    flex-direction: column;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  height: 220px;
+  padding: 20px 25px 16px 25px;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .place-name {
-    font-size: 17px;
-    color: #c154ec;
-    border: none;
-    background-color: transparent;
-    padding: 0;
-    display: flex;
+  font-size: 17px;
+  color: #c154ec;
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  display: flex;
 }
 
 .place-rating {
-    font-size: 14px;
-    margin-bottom: 12px;
+  font-size: 14px;
+  margin-bottom: 12px;
 }
 
 .place-photos {
-    overflow-x: auto;
-    flex-grow: 1;
-    display: flex;
-    gap: 10px;
-    white-space: nowrap;
+  overflow-x: auto;
+  flex-grow: 1;
+  display: flex;
+  gap: 10px;
+  white-space: nowrap;
 }
 
 .place-photos::-webkit-scrollbar {
-    height: 2px;
-    display: none;
+  height: 2px;
+  display: none;
 }
 
 .place-photos img {
-    width: 90px;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 8px;
+  width: 90px;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .result-photo {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .result-details {
-    color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .result-details h3 {
-    margin: 0;
-    font-size: 14px;
+  margin: 0;
+  font-size: 14px;
 }
 
 .result-details p {
-    margin: 5px 0 0;
-    font-size: 12px;
+  margin: 5px 0 0;
+  font-size: 12px;
 }
 
 .search-input-container {
-    display: flex;
-    width: 100%;
-    position: relative;
-    align-items: center;
+  display: flex;
+  width: 100%;
+  position: relative;
+  align-items: center;
 }
 
 .search-input-container input {
-    flex-grow: 1;
-    padding-right: 30px;
+  flex-grow: 1;
+  padding-right: 30px;
 }
 
 .search-place-btn {
-    position: absolute;
-    right: 0;
-    height: 100%;
-    width: 30px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: absolute;
+  right: 0;
+  height: 100%;
+  width: 30px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .search-place-btn svg {
-    width: 14px;
-    height: 14px;
-    fill: rgba(193, 84, 236, 0.8);
-    /* transform 속성 제거 - 더 이상 회전이 필요없음 */
+  width: 14px;
+  height: 14px;
+  fill: rgba(193, 84, 236, 0.8);
+  /* transform 속성 제거 - 더 이상 회전이 필요없음 */
 }
 
 .search-place-btn:hover svg {
-    fill: rgba(240, 101, 155, 1);
+  fill: rgba(240, 101, 155, 1);
 }
 
 /* 유효성 검사 관련 스타일 */
 .error-message {
-    color: red;
-    font-size: 14px;
-    margin-bottom: 10px;
-    padding: 5px;
-    border-radius: 3px;
-    background-color: rgba(255, 0, 0, 0.05);
-    transition: all 0.3s ease;
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 3px;
+  background-color: rgba(255, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 input.error {
-    border: 1px solid red !important;
+  border: 1px solid red !important;
 }

@@ -78,7 +78,6 @@ function generatePlanContent() {
 /* 
 Title - svg 수정
 * 그건데, 첫번째 카드랑 마지막 카드 왼쪽에 바 세워둔거 가리기
-! 즉, 다시 볼 필요 없다는 뜻
 */
 function updateSvgBoxes() {
   // 기존 스타일 시트가 있다면 제거
@@ -88,7 +87,8 @@ function updateSvgBoxes() {
   }
 
   const daySvgBoxes = document.querySelectorAll('.day-svg-box');
-  if (daySvgBoxes.length === 0) return;
+  if (daySvgBoxes.length === 0) return
+    ;
 
   // 클래스 초기화
   daySvgBoxes.forEach(box => {
@@ -315,7 +315,7 @@ function getPlaceKeyword(placeName) {  //다 서버 값으로 할거임 키워�
 Title - 교통수단 아이콘 가져오기 
 * svg 모음집
 */
-function getTransportIcon(transport) {
+export function getTransportIcon(transport) {
   const icons = {
     DRIVE: `< svg width = "20" height = "20" viewBox = "0 0 24 24" fill = "#c154ec" >
         <path d="M22.357,8A34.789,34.789,0,0,0,19.21,3.245a4.4,4.4,0,0,0-2.258-1.54A15.235,15.235,0,0,0,12,1a19.175,19.175,0,0,0-5.479.713A4.382,4.382,0,0,0,4.29,3.245,23.466,23.466,0,0,0,1.464,8H0V20H3v3H7V20H17v3h4V20h3V8ZM5.5,17A1.5,1.5,0,1,1,7,15.5,1.5,1.5,0,0,1,5.5,17ZM12,11a64.834,64.834,0,0,0-8.8.711A23.405,23.405,0,0,1,6.671,5.07a1.394,1.394,0,0,1,.714-.484A16.164,16.164,0,0,1,12,4a12.3,12.3,0,0,1,4.115.586,1.4,1.4,0,0,1,.714.483,27.139,27.139,0,0,1,3.956,6.64A64.92,64.92,0,0,0,12,11Zm6.5,6A1.5,1.5,0,1,1,20,15.5,1.5,1.5,0,0,1,18.5,17Z" />
@@ -339,7 +339,8 @@ function bindPlanEvents() {
   // 카드 편집 버튼 이벤트
   document.addEventListener('click', (event) => {
     const target = event.target.closest('[data-action]');
-    if (!target) return;
+    if (!target) return
+      ;
 
     const action = target.dataset.action;
     const placeIndex = parseInt(target.dataset.placeIndex);
@@ -400,10 +401,52 @@ function bindPlanEvents() {
     saveBtn.addEventListener('click', handleSavePlan);
   }
 
-  // 편집 버튼
-  const editBtn = document.getElementById('editPlanBtn');
-  if (editBtn) {
-    editBtn.addEventListener('click', handleEditPlan);
+  // 제목 수정 이벤트 바인딩
+  EditTitle();
+}
+
+/* 
+Title - 제목 수정
+*/
+function EditTitle() {
+  const titleEditBtn = document.querySelector('.editDayPlan');
+  const titleInput = document.querySelector('.dayTitleText');
+
+  if (titleEditBtn && titleInput) {
+    const switchToReadOnly = () => {
+      titleInput.setAttribute('readonly', true);
+      titleInput.classList.remove('editable');
+    };
+
+    const switchToEdit = () => {
+      titleInput.removeAttribute('readonly');
+      titleInput.classList.add('editable');
+      titleInput.focus();
+      titleInput.setSelectionRange(titleInput.value.length, titleInput.value.length);
+    };
+
+    titleEditBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+    });
+
+    titleEditBtn.addEventListener('click', () => {
+      if (titleInput.hasAttribute('readonly')) {
+        switchToEdit();
+      } else {
+        switchToReadOnly();
+      }
+    });
+
+    titleInput.addEventListener('blur', () => {
+      switchToReadOnly();
+    });
+
+    titleInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === 'Escape') {
+        switchToReadOnly();
+        titleInput.blur();
+      }
+    });
   }
 }
 
@@ -634,8 +677,17 @@ function proceedToSavePlan() {
   const routeLegs = currentPlanData.routeResponse.routes && currentPlanData.routeResponse.routes.length > 0 ?
     currentPlanData.routeResponse.routes[0].legs : [];
 
-  // const title = document.querySelector('.plan-title').textContent;
-  const title = null;
+  const titleInput = document.querySelector('.dayTitleText');
+  let finalTitle = titleInput.value;
+
+  // 사용자가 제목을 수정하지 않은 경우, 날짜를 제목으로 설정
+  if (finalTitle === '여행 계획 완성') {
+    const date = new Date(currentPlanData.departureTime);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    finalTitle = `${year}.${month}.${day}`;
+  }
 
   const routes = currentPlanData.places.map((place, index) => {
     const previousLeg = index > 0 ? routeLegs[index - 1] : null;
@@ -653,7 +705,7 @@ function proceedToSavePlan() {
 
   const planData = {
     regionName: null,
-    title: '제목 없음',
+    title: finalTitle,
     startTime: currentPlanData.departureTime,
     endTime: null, //TODO: 도착 시간 계산 필요
     purposeKeywords: selectedPurposeKeywords,
@@ -772,7 +824,8 @@ function showLoginModal() {
 Title - 모달 닫기
  */
 function closeModal(modalBase) {
-  if (!modalBase) return;
+  if (!modalBase) return
+    ;
   modalBase.style.display = 'none';
   modalBase.innerHTML = ''; // 모달 내용 초기화
 };
@@ -785,7 +838,8 @@ function handleEditPlan() {
   const loadContent = async (url) => {
     try {
       const response = await fetch(url);
-      if (!response.ok) throw new Error('응답 안함');
+      if (!response.ok) throw new Error('응답 안함')
+        ;
       const data = await response.text();
       document.querySelector('#collapseBody').innerHTML = data;
 
