@@ -1,5 +1,5 @@
 //지도 기본 위치
-import { setMapInstance, getMapInstance } from '../store/map-store.js';
+import { setMapInstance } from '../store/map-store.js';
 import { getCurrentPosition } from './position.js';
 
 const DEFAULT_POS = { lat: 37.65564466099954, lng: 127.06206796919646 }; //default 위치 상수처리

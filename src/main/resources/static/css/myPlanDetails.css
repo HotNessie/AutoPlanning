@@ -1,7 +1,8 @@
 /* --- Plan Detail View Styles (접두사 적용) --- */
 .planDetail-container {
-  padding: 20px;
-  height: 100%;
+  padding: 20px 0 20px 0px;
+  height: 100vh;
+  width: 90%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -23,6 +24,15 @@
   flex-grow: 1;
 }
 
+.planDetail-list-box::-webkit-scrollbar {
+  width: 2px;
+}
+
+.planDetail-list-box::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border-radius: 4px;
+}
+
 .planDetail-card {
   position: relative;
 }
@@ -40,6 +50,7 @@
   width: 30px;
   display: flex;
   justify-content: center;
+  z-index: 1;
 }
 
 .planDetail-day-svg-box svg :nth-of-type(1) {
@@ -66,6 +77,7 @@
   border-radius: 8px;
   padding: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  align-items: center;
 }
 
 .planDetail-place-details {
@@ -76,7 +88,7 @@
 }
 
 .planDetail-memo-display {
-  flex-basis: 150px;
+  flex-basis: 200px;
   flex-shrink: 0;
   font-size: 0.85rem;
   color: #ccc;
@@ -97,6 +109,8 @@
 }
 
 .planDetail-no-memo {
+  position: relative;
+  left: -15%;
   color: #777;
   font-style: italic;
 }
@@ -122,12 +136,16 @@
   color: #aaa;
 }
 
-.planDetail-transport-card .planDetail-day-card-content {
+/*  */
+/*  */
+/*  */
+/*  */
+/* .planDetail-transport-card .planDetail-day-card-content {
   display: flex;
   align-items: center;
   gap: 15px;
   padding: 10px 0;
-}
+} */
 
 .planDetail-transport-icon-box {
   flex-shrink: 0;

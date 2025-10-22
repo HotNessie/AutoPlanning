@@ -5,16 +5,29 @@
 */
 
 import { bindDynamicElements } from "../ui/dom-elements.js";
-import { initSelfContent, getDynamicElements, initRouteFormHandler } from "../selfContent/selfContent.js";
+import { hideAutoComplete, getDynamicElements, initRouteFormHandler } from "../selfContent/selfContent.js";
 import { getTransportIcon } from "../selfContent/selfPlan.js";
 import { initializeSearchEvents, initSearchResults } from "../selfContent/selfFind.js";
+import { adjustContentWidth } from "../ui/state-manager.js";
 
 //Title - 계획 리스트 불러오기
 export async function loadMyPlanList() {
-  //TODO:계획 리스트 불러와서 HTML구성
   console.log('loadMyPlanList');
   //   //TODO:title이전에 image추가해주기
-  //   //description에 몇박인지 만들기. 우선 Plan Entitiy에 몇박도 카운트 가능하도록 수정해야 함.
+  //TODO: description에 몇박인지 만들기. 우선 Plan Entitiy에 몇박도 카운트 가능하도록 수정해야 함. 
+  const loginStatus = await fetch('/status', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!loginStatus.ok) {
+    //TODO: 로그인 모달 띄우기
+    alert('로그인이 필요합니다.');
+    emptyMyPlanList();
+    createPlanButtonEvent();
+    return;
+  }
 
   const response = await fetch('/api/private/my-plans'
     , {
@@ -42,6 +55,7 @@ export async function loadMyPlanList() {
         await loadPlan(planItem.getAttribute('data-plan-id'));
       });
     });
+    adjustContentWidth();
   }, 0);
   const createPlanButtonBox = document.querySelector('.plan-actions');
   createPlanButtonBox.style.display = 'none';
@@ -49,8 +63,6 @@ export async function loadMyPlanList() {
 
 //Title - 빈 계획 리스트 처리
 function emptyMyPlanList() {
-  //TODO: 만약 내 계획 리스트가 비어있다면
-  //? ㄴ>뭔소리임???이게 왜 todo야????
   const planList = document.querySelector('.plan-list');
   const collapseBody = document.querySelector('#collapseBody');
   planList.innerHTML = `
@@ -65,7 +77,7 @@ function emptyMyPlanList() {
       const data = await response.text();
       collapseBody.innerHTML = data;
       bindDynamicElements(getDynamicElements());
-      initSelfContent();
+      hideAutoComplete();
       initializeSearchEvents();
       initSearchResults();
       initRouteFormHandler();
@@ -107,7 +119,7 @@ function initMyPlanList(response) {
 //     </div>
 
 
-//Title - 동적 요소에 이벤트 리스너 부착
+//Title - 새 계획 만들기 버튼 이벤트
 function createPlanButtonEvent() {
   const createPlanButtonBox = document.querySelector('.plan-actions');
   createPlanButtonBox.style.display = 'flex';
@@ -122,7 +134,7 @@ function createPlanButtonEvent() {
     const data = await response.text();
     collapseBody.innerHTML = data;
     bindDynamicElements(getDynamicElements());
-    initSelfContent(); //self로 이동했으니까 autocomplete 숨기기
+    hideAutoComplete(); //self로 이동했으니까 autocomplete 숨기기
     initializeSearchEvents(); //self 검색 이벤트
     initSearchResults();// searchResult 이벤트
     initRouteFormHandler(); //self form 설정
@@ -141,8 +153,6 @@ export async function loadPlan(planId) {
     },
   });
   const planData = await planResponse.json();
-  //bookmarks, createAt, endTime, likes, member, moodKeywords, planId, purposeKeywords, regionName, startTime, title, updateAt
-  //TODO: route 정보 불러와야 함.
   const routeResponse = await fetch(`/api/private/routes/${planId}`, {
     method: 'GET',
     headers: {
@@ -169,6 +179,9 @@ export async function loadPlan(planId) {
   if (collapseBody) {
     collapseBody.innerHTML = detailHtml;
   }
+  setTimeout(() => {
+    adjustContentWidth();
+  }, 0);
 }
 
 
@@ -216,17 +229,21 @@ export function initMyPlanDetail(plan, routes) {
     if (index < routes.length - 1) {
       const nextRoute = routes[index + 1];
       const transportIcon = getTransportIcon(route.transportMode);
-      
+
       const transportCardHtml = `
         <li class="planDetail-card planDetail-transport-card">
           <div class="myPlan-card-body">
-            <span class="planDetail-day-svg-box"></span>
-            <div class="planDetail-day-card-content">
+            <span class="planDetail-day-svg-box">
+              <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 48 48"><g fill="#c7d5ef"><circle cx="24" cy="24" r="12" fill-opacity="0.5" /></g><g fill="#575757"><circle cx="24" cy="24" r="6" /></g></svg>
+              </div>
+            </span>
+            <div class="planDetail-day-card-content-grid">
               <div class="planDetail-transport-icon-box">${transportIcon}</div>
               <div class="planDetail-transport-details">
                 <div class="planDetail-transport-mode">${route.transportMode || '이동'}</div>
                 <div class="planDetail-transport-route">${place.name} → ${nextRoute.place.name}</div>
-                <div class="planDetail-transport-time">예상 소요시간: ${route.travelTime || '?'}분</div>
+                <div class="planDetail-transport-time">예상 소요시간: ${route.travelTime ?? '?'}분</div>
               </div>
             </div>
           </div>

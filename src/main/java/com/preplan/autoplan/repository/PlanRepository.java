@@ -1,5 +1,8 @@
 package com.preplan.autoplan.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import java.time.LocalDateTime;
@@ -16,7 +19,7 @@ import com.preplan.autoplan.domain.planPlace.Plan;
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Long> {
 
-        List<Plan> findByMemberId(Long memberId);
+        Page<Plan> findByMemberId(Long memberId, Pageable pageable);
 
         // 어떤 장소가 들어간 계획을 보고 싶을 수 있잖아 근데 route로 부터 장소를 참조해야됨?
         // placeId를 모르는데... 흠... placeName검색(findByName) -> placeId추출 -> findByPlaceId

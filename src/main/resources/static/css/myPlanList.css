@@ -22,9 +22,9 @@
 }
 
 .plan-list {
-  height: 87%;
+  height: 87vh;
   overflow: auto;
-  width: 90%;
+  width: 95%;
   gap: 2%;
   display: flex;
   flex-direction: column;

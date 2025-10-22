@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -108,15 +110,19 @@ public class PlanApiController {
   // Title - 내 계획 list 조회
   // TODO: Member 구현 후 마무리
   @GetMapping("/api/private/my-plans")
-  public ResponseEntity<List<PlanResponseDto>> getMyPlans(Authentication authentication) {
+  public ResponseEntity<Page<PlanResponseDto>> getMyPlans(Authentication authentication, Pageable pageable) {
     String email = authentication.getName();
-    List<Plan> myPlans = planService.findByEmail(email);
-    log.info("Found {} plans for email: {}", myPlans.size(), email);
-    List<PlanResponseDto> responseDtos = myPlans.stream()
-        .map(PlanResponseDto::fromEntity)
-        .toList();
-    // 여기서 plan관련 모든 정보를 불러왔어야 했나
-    return ResponseEntity.ok(responseDtos);
+    // List<Plan> myPlans = planService.findByEmail(email);
+    // log.info("Found {} plans for email: {}", myPlans.size(), email);
+    // List<PlanResponseDto> responseDtos = myPlans.stream()
+    // .map(PlanResponseDto::fromEntity)
+    // .toList();
+    // // 여기서 plan관련 모든 정보를 불러왔어야 했나
+    // return ResponseEntity.ok(responseDtos);
+    Page<Plan> myPlansPage = planService.findByEmail(email, pageable);
+    log.info("Found {} plans for email: {}", myPlansPage.getTotalElements(), email);
+    Page<PlanResponseDto> responseDtosPage = myPlansPage.map(PlanResponseDto::fromEntity);
+    return ResponseEntity.ok(responseDtosPage);
   }
 
   /*
@@ -135,6 +141,15 @@ public class PlanApiController {
     PlanResponseDto responseDto = PlanResponseDto.fromEntity(plan);
     return ResponseEntity.ok(responseDto);
 
+  }
+
+  @GetMapping("/api/public/latest-plans")
+  public ResponseEntity<List<PlanResponseDto>> getLatestPlans() {
+    List<Plan> latestPlans = planService.findPlans();
+    List<PlanResponseDto> responseDtos = latestPlans.stream()
+        .map(PlanResponseDto::fromEntity)
+        .toList();
+    return ResponseEntity.ok(responseDtos);
   }
 
 }

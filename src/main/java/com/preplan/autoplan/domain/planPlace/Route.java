@@ -10,48 +10,49 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Route {
-    // Route는 Plan과 Place를 연결하는 엔티티
-    // 여행 계획에서 특정 장소에 대한 정보를 담고 있음
+  // Route는 Plan과 Place를 연결하는 엔티티
+  // 여행 계획에서 특정 장소에 대한 정보를 담고 있음
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id")
-    private Plan plan;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "plan_id")
+  private Plan plan;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "place_id")
-    private Place place;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "place_id")
+  private Place place;
 
-    @Column(nullable = false)
-    private int sequence;
+  @Column(nullable = false)
+  private int sequence;
 
-    private String transportMode;
+  private String transportMode;
 
-    @Column(nullable = false)
-    private Long stayTime;
+  @Column(nullable = false)
+  private Long stayTime;
 
-    private String memo;
+  private String memo;
 
-    private Integer travelTime;
+  private Integer travelTime;
 
-    private Integer travelDistance;
+  private Integer travelDistance;
 
-    private String polyline;
+  @Lob
+  private String polyline;
 
-    @Builder
-    public Route(Plan plan, Place place, int sequence, String transportMode, Long stayTime,
-            String memo, Integer travelTime, Integer travelDistance, String polyline) {
-        this.plan = plan;
-        this.place = place;
-        this.sequence = sequence;
-        this.transportMode = transportMode;
-        this.stayTime = stayTime;
-        this.memo = memo;
-        this.travelTime = travelTime;
-        this.travelDistance = travelDistance;
-        this.polyline = polyline;
-    }
+  @Builder
+  public Route(Plan plan, Place place, int sequence, String transportMode, Long stayTime,
+      String memo, Integer travelTime, Integer travelDistance, String polyline) {
+    this.plan = plan;
+    this.place = place;
+    this.sequence = sequence;
+    this.transportMode = transportMode;
+    this.stayTime = stayTime;
+    this.memo = memo;
+    this.travelTime = travelTime;
+    this.travelDistance = travelDistance;
+    this.polyline = polyline;
+  }
 }

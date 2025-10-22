@@ -7,8 +7,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,10 +51,10 @@ public class PlanService {
 
   // TITLE - findByEmail
   @Transactional(readOnly = true)
-  public List<Plan> findByEmail(String email) { // 찾찾 By email
+  public Page<Plan> findByEmail(String email, Pageable pageable) { // 찾찾 By email
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" + email));
-    return planRepository.findByMemberId(member.getId());
+    return planRepository.findByMemberId(member.getId(), pageable);
   }
 
   // TITLE - findSharedPlans
@@ -69,7 +70,6 @@ public class PlanService {
     return planRepository.save(plan);
   }
 
-  // ? TODO: Member 구현 후 맴버 추가해야됨
   // TITLE - createPlan
   @Transactional
   public Long createPlan(PlanCreateRequestDto dto, String email) { // 계획 생성
@@ -152,6 +152,7 @@ public class PlanService {
           .memo(routeDto.memo())
           .travelTime(routeDto.travelTime())
           .travelDistance(routeDto.travelDistance())
+          .polyline(routeDto.polyline() != null ? routeDto.polyline() : "")
           .build();
       // 체류시간 업데이트
       // placeEntity.updateAverageStayTime(routeDto.stayTime());
@@ -182,8 +183,7 @@ public class PlanService {
   /**
    * TITLE -키워드 및 체류시간 적용
    */
-  private void applyKeywordsAndStayTime(List<Route> routes, List<String> purposeKeywords,
-      List<String> moodKeywords) {
+  private void applyKeywordsAndStayTime(List<Route> routes, List<String> purposeKeywords, List<String> moodKeywords) {
     List<PurposeField> purposeFields = purposeKeywords.stream()
         .map(PurposeField::valueOf)
         .collect(Collectors.toList());
@@ -210,5 +210,11 @@ public class PlanService {
   public void bookmarkPlan(Long planId) {
     Plan plan = findById(planId);
     plan.increaseBookmarks();
+  }
+
+  // TITLE - 최신 계획 조회
+  // TODO : 페이징, 정렬 추가해야됨
+  public List<Plan> findPlans() {
+    return planRepository.findAll();
   }
 }
