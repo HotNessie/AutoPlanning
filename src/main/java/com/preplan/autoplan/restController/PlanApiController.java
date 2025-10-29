@@ -3,6 +3,7 @@ package com.preplan.autoplan.restController;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import com.preplan.autoplan.domain.planPlace.Plan;
 import com.preplan.autoplan.dto.plan.PlanCreateRequestDto;
 import com.preplan.autoplan.dto.plan.PlanResponseDto;
@@ -108,7 +109,6 @@ public class PlanApiController {
   }
 
   // Title - 내 계획 list 조회
-  // TODO: Member 구현 후 마무리
   @GetMapping("/api/private/my-plans")
   public ResponseEntity<Page<PlanResponseDto>> getMyPlans(Authentication authentication, Pageable pageable) {
     String email = authentication.getName();
@@ -117,22 +117,12 @@ public class PlanApiController {
     // List<PlanResponseDto> responseDtos = myPlans.stream()
     // .map(PlanResponseDto::fromEntity)
     // .toList();
-    // // 여기서 plan관련 모든 정보를 불러왔어야 했나
     // return ResponseEntity.ok(responseDtos);
     Page<Plan> myPlansPage = planService.findByEmail(email, pageable);
     log.info("Found {} plans for email: {}", myPlansPage.getTotalElements(), email);
     Page<PlanResponseDto> responseDtosPage = myPlansPage.map(PlanResponseDto::fromEntity);
     return ResponseEntity.ok(responseDtosPage);
   }
-
-  /*
-   * //반환 테스트용
-   * public record GetPlansSimple(Long id, String title) {
-   * public static GetPlansSimple fromEntity(Plan plan) {
-   * return new GetPlansSimple(plan.getId(), plan.getTitle());
-   * }
-   * }
-   */
 
   // Title - 단일 계획 상세 조회
   @GetMapping("/api/private/plan/{planId}")
@@ -143,13 +133,24 @@ public class PlanApiController {
 
   }
 
-  @GetMapping("/api/public/latest-plans")
-  public ResponseEntity<List<PlanResponseDto>> getLatestPlans() {
-    List<Plan> latestPlans = planService.findPlans();
-    List<PlanResponseDto> responseDtos = latestPlans.stream()
-        .map(PlanResponseDto::fromEntity)
-        .toList();
+  // Title - 모든 계획 조회 (페이징)
+  @GetMapping("/api/public/plans")
+  public ResponseEntity<Page<PlanResponseDto>> getPlans(Pageable pageable) {
+    Page<Plan> plans = planService.findPlans(pageable);
+    Page<PlanResponseDto> responseDtos = plans.map(PlanResponseDto::fromEntity);
     return ResponseEntity.ok(responseDtos);
   }
 
+  // Title - 계획 검색(제목, 지역, 키워드)
+  @GetMapping("/api/public/plans/search")
+  public ResponseEntity<Page<PlanResponseDto>> searchPlans(
+      @RequestParam(required = false) String title,
+      @RequestParam(required = false) String region,
+      @RequestParam(required = false) String keywords,
+      Pageable pageable) {
+    log.info("Searching plans with title: {}, region: {}, keywords: {}", title, region, keywords);
+    Page<Plan> plans = planService.findPlansCriteria(title, region, keywords, pageable);
+    Page<PlanResponseDto> responseDtos = plans.map(PlanResponseDto::fromEntity);
+    return ResponseEntity.ok(responseDtos);
+  }
 }

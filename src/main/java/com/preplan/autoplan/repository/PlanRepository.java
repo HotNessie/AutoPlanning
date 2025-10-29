@@ -33,20 +33,22 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
 
         List<Plan> findByMoodKeywordsIn(List<String> moodKeywords); // 감정 키워드로 찾기
 
-        @Query("SELECT DISTINCT p FROM Plan p WHERE (:memberId IS NULL OR p.member.id = :memberId) " +
-                        "AND (:regionId IS NULL OR p.region.id = :regionId) " +
+        @Query("SELECT p FROM Plan p WHERE (:title IS NULL OR p.title LIKE %:title%) " +
+                        "AND (:memberName IS NULL OR p.member.name = :memberName) " +
+                        "AND (:regionName IS NULL OR p.region.name = :regionName) " +
                         "AND (:purposeKeywords IS NULL OR EXISTS (SELECT 1 FROM p.purposeKeywords pk WHERE pk IN :purposeKeywords)) "
                         +
                         "AND (:moodKeywords IS NULL OR EXISTS (SELECT 1 FROM p.moodKeywords mk WHERE mk IN :moodKeywords)) "
                         +
                         "AND (:startTime IS NULL OR p.startTime >= :startTime) " +
                         "AND (:endTime IS NULL OR p.endTime <= :endTime)")
-        List<Plan> findByCriteria(
-                        @Param("memberId") Long memberId,
-                        @Param("regionId") Long regionId,
+        Page<Plan> findByCriteria(
+                        @Param("title") String title,
+                        @Param("memberName") String memberName,
+                        @Param("regionName") String regionName,
                         @Param("purposeKeywords") List<PurposeField> purposeKeywords,
                         @Param("moodKeywords") List<MoodField> moodKeywords,
                         @Param("startTime") LocalDateTime startTime,
                         @Param("endTime") LocalDateTime endTime,
-                        Sort sort); // 복합 검색
+                        Pageable pageable); // 복합 검색
 }

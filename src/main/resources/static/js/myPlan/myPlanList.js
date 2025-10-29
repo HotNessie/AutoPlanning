@@ -10,107 +10,105 @@ import { getTransportIcon } from "../selfContent/selfPlan.js";
 import { initializeSearchEvents, initSearchResults } from "../selfContent/selfFind.js";
 import { adjustContentWidth } from "../ui/state-manager.js";
 
-//Title - 계획 리스트 불러오기
+// --- 페이징 상태 관리 변수 ---
+let currentPage = 0;
+let isLastPage = false;
+let isLoading = false;
+let scrollListener = null; // 스크롤 리스너 참조 저장
+
+//Title - 계획 리스트 불러오기 (무한 스크롤 초기화)
 export async function loadMyPlanList() {
-  console.log('loadMyPlanList');
+  console.log('loadMyPlanList 초기화');
   //   //TODO:title이전에 image추가해주기
   //TODO: description에 몇박인지 만들기. 우선 Plan Entitiy에 몇박도 카운트 가능하도록 수정해야 함. 
+  const planList = document.querySelector('.plan-list');
+
+  // 이전 리스너가 있다면 제거
+  if (planList && scrollListener) {
+    planList.removeEventListener('scroll', scrollListener);
+  }
+
+  // UI 및 상태 초기화
+  planList.innerHTML = '';
+  currentPage = 0;
+  isLastPage = false;
+  isLoading = false;
+
+  // 로그인 상태 확인
   const loginStatus = await fetch('/status', {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    headers: { 'Content-Type': 'application/json' }
   });
   if (!loginStatus.ok) {
-    //TODO: 로그인 모달 띄우기
     alert('로그인이 필요합니다.');
     emptyMyPlanList();
     createPlanButtonEvent();
     return;
   }
 
-  const response = await fetch('/api/private/my-plans'
-    , {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    });
-  const data = await response.json();
+  // 첫 페이지 로드 및 스크롤 리스너 설정
+  await fetchAndAppendPlans(currentPage);
+  setupScrollListener();
 
-  //반환 없으면 없다고 표시.
-  if (!data || data.length === 0) {
-    emptyMyPlanList();
-    createPlanButtonEvent();
-    return;
-  }
-
-  console.log('Fetched plans:', data);
-  initMyPlanList(data);
-  setTimeout(() => {
-    const planItems = document.querySelectorAll('.plan-item');
-    planItems.forEach(planItem => {
-      planItem.addEventListener('click', async () => {
-        console.log('Plan item clicked:', planItem.getAttribute('data-plan-id'));
-        await loadPlan(planItem.getAttribute('data-plan-id'));
-      });
-    });
-    adjustContentWidth();
-  }, 0);
   const createPlanButtonBox = document.querySelector('.plan-actions');
   createPlanButtonBox.style.display = 'none';
 }
 
-//Title - 빈 계획 리스트 처리
-function emptyMyPlanList() {
-  const planList = document.querySelector('.plan-list');
-  const collapseBody = document.querySelector('#collapseBody');
-  planList.innerHTML = `
-    <div class="empty-plan-list">
-      <p>+</p>
-    </div>
-    `;
-  setTimeout(() => {
-    const emptyPlanList = document.querySelector('.empty-plan-list');
-    emptyPlanList.addEventListener('click', async () => {
-      const response = await fetch('/selfContent');
-      const data = await response.text();
-      collapseBody.innerHTML = data;
-      bindDynamicElements(getDynamicElements());
-      hideAutoComplete();
-      initializeSearchEvents();
-      initSearchResults();
-      initRouteFormHandler();
-    });
-  }, 0);
-};
+//Title - 페이징 데이터 로딩 및 렌더링
+async function fetchAndAppendPlans(page) {
+  if (isLoading || isLastPage) return;
+  isLoading = true;
 
-//Title - 내 계획 리스트가 있는 경우 보여줄 html구성
-function initMyPlanList(response) {
-  const planList = document.querySelector('.plan-list');
+  try {
+    const response = await fetch(`/api/private/my-plans?page=${page}&size=10&sort=createdDate,desc`);
+    if (!response.ok) throw new Error('Failed to fetch plans');
 
-  // 날짜 포맷팅 헬퍼 함수
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
-  };
+    const data = await response.json();
 
-  planList.innerHTML = response.map(plan => `
-    <div class="plan-item" data-plan-id="${plan.planId}">
-      <div class="plan-item-content">
-        <h4>${plan.title}</h4>
-        <div class="plan-details">
-          <span>${plan.regionName}</span>
-          <span>${formatDate(plan.startTime)} ~ ${formatDate(plan.endTime)}</span>
-        </div>
-        <div class="plan-keywords">
-          ${plan.purposeKeywords.map(k => `<span>#${k}</span>`).join('')}
-          ${plan.moodKeywords.map(k => `<span>#${k}</span>`).join('')}
+    if (data.content && data.content.length > 0) {
+      const planList = document.querySelector('.plan-list');
+      const plansHtml = createPlansHtml(data.content);
+      planList.insertAdjacentHTML('beforeend', plansHtml);
+      attachClickListenersToNewItems();
+    }
+    else if (page === 0) {
+      emptyMyPlanList();
+      createPlanButtonEvent();
+    }
+
+    isLastPage = data.last;
+    currentPage = data.number;
+
+  } catch (error) {
+    console.error('Error fetching plans:', error);
+  } finally {
+    isLoading = false;
+  }
+}
+
+export function createPlansHtml(plans) {
+  return plans.map(plan => {
+    const formatDate = (dateString) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
+    };
+    return `
+      <div class="plan-item" data-plan-id="${plan.planId}" data-event-attached="false">
+        <div class="plan-item-content">
+          <h4>${plan.title}</h4>
+          <div class="plan-details">
+            <span>${plan.regionName}</span>
+            <span>${formatDate(plan.startTime)} ~ ${formatDate(plan.endTime)}</span>
+          </div>
+          <div class="plan-keywords">
+            ${plan.purposeKeywords.map(k => `<span>#${k}</span>`).join('')}
+            ${plan.moodKeywords.map(k => `<span>#${k}</span>`).join('')}
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 //       <div>${plan.travelDistance}</div>
 //     </div>
@@ -184,14 +182,45 @@ export async function loadPlan(planId) {
   }, 0);
 }
 
+// --- 이벤트 리스너 및 헬퍼 함수 ---
 
 /*
- * 상세 계획 UI를 생성하여 HTML 문자열로 반환합니다.
- * selfPlan.js의 타임라인 UI를 참고하여 구성하며, 메모를 항상
-표시합니다.
+ * Title - 무한 스크롤 이벤트 설정
+ */
+function setupScrollListener() {
+  const planList = document.querySelector('.plan-list');
+  if (!planList) return;
+
+  scrollListener = () => {
+    const isAtBottom = planList.scrollTop + planList.clientHeight >= planList.scrollHeight - 150; // 150px의 버퍼를 둠
+
+    if (isAtBottom && !isLoading && !isLastPage) {
+      console.log('Fetching next page...');
+      fetchAndAppendPlans(currentPage + 1);
+    }
+  };
+
+  planList.addEventListener('scroll', scrollListener);
+}
+
+/*
+* Title - 새로 추가된 계획 아이템에 이벤트를 부여
+*/
+function attachClickListenersToNewItems() {
+  const newItems = document.querySelectorAll('.plan-item:not([data-event-attached="true"])');
+  newItems.forEach(item => {
+    item.setAttribute('data-event-attached', 'true');
+    item.addEventListener('click', async () => {
+      console.log('Plan item clicked:', item.getAttribute('data-plan-id'));
+      await loadPlan(item.getAttribute('data-plan-id'));
+    });
+  });
+}
+
+/*
+ * Title - 상세 계획 UI HTML
  * @param {object} plan - PlanResponseDto 형식의 계획 정보
- * @param {Array<object>} routes - List<RouteResponseDto> 형식의 경로
-정보 배열
+ * @param {Array<object>} routes - List<RouteResponseDto> 형식의 경로 정보 배열
  * @returns {string} - 생성된 HTML 문자열
  */
 export function initMyPlanDetail(plan, routes) {

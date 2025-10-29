@@ -1,32 +1,81 @@
 
+import { createPlansHtml } from '../myPlan/myPlanList.js';
+
+/* 
+* Title - 계획 검색 메뉴 진입 초기화
+*/
+let currentPage = 0;
+const pageSize = 10;
+let currentSort = 'createdDate';
+let isLoading = false;
+let isLastPage = false;
+let currentQuery = { title: '', region: '', keywords: '' };
+
 export function initSearchPlans() {
-  generateSearchPlans();
-}
+  const contentBody = document.querySelector('#collapseSearchBody');
+  const searchButton = document.querySelector('#search-plans-button');
 
-async function generateSearchPlans() {
-  const collapseBody = document.querySelector('#collapseBody');
+  resetAndLoad();
 
-  const latestPlanResponse = await fetch('/api/public/latest-plans', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
+  contentBody.addEventListener('scroll', () => {
+    if (contentBody.scrollTop + contentBody.clientHeight >= contentBody.scrollHeight - 100) {
+      if (!isLoading && !isLastPage) {
+        loadMorePlans();
+      }
     }
   });
 
-  const latestPlans = await latestPlanResponse.json();
-
-  let planHtml = '';
-
-  latestPlans.forEach(plan => {
-    const planCardHtml = `
-  <li class="latest-plan-item">
-    <span>${plan.title}</span>
-  </li>
-  `;
-    planHtml += planCardHtml;
+  searchButton.addEventListener('click', () => {
+    currentQuery.title = document.querySelector('#search-title').value;
+    currentQuery.region = document.querySelector('#search-region').value;
+    currentQuery.keywords = document.querySelector('#search-keywords').value;
+    resetAndLoad();
   });
 
-  if (collapseBody) {
-    collapseBody.innerHTML = planHtml;
+  function resetAndLoad() {
+    const contentBody = document.querySelector('#collapseSearchBody');
+    contentBody.innerHTML = '';
+    currentPage = 0;
+    isLastPage = false;
+    loadMorePlans();
+  }
+}
+
+async function loadMorePlans() {
+  if (isLoading || isLastPage) return;
+  isLoading = true;
+
+  let url;
+  const hasQuery = currentQuery.title || currentQuery.region || currentQuery.keywords;
+  if (hasQuery) {
+    url = '/api/public/plans/search?';
+  } else {
+    url = '/api/public/plans?';
+  }
+  if (currentQuery.title) url += `title=${currentQuery.title}&`;
+  if (currentQuery.region) url += `region=${currentQuery.region}&`;
+  if (currentQuery.keywords) url += `keywords=${currentQuery.keywords}&`;
+  url += `page=${currentPage}&size=${pageSize}&sort=${currentSort}`;
+
+  const contentBody = document.querySelector('#collapseSearchBody');
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const plansPage = await response.json();
+
+    isLastPage = plansPage.last;
+    const plans = plansPage.content;
+
+    const plansHtml = createPlansHtml(plans);
+
+    contentBody.innerHTML += plansHtml;
+    currentPage++;
+  } catch (error) {
+    console.error("Failed to load plans:", error);
+  } finally {
+    isLoading = false;
   }
 }

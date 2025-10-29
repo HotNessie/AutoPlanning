@@ -1,0 +1,79 @@
+#searchPlans {
+  width: 100%;
+}
+
+.search-form-container {
+  margin: 14px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(193, 84, 236, 0.3);
+  border-radius: 14px;
+}
+
+.search-input-container {
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+}
+
+.search-input {
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 18px 24px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(193, 84, 236, 0.3);
+}
+
+/* 첫 번째 자식 요소 */
+.search-input-container :nth-of-type(1) {
+  border-radius: 14px 14x 0 0;
+}
+
+/* 마지막 자식 요소 */
+.search-input-container :nth-last-child(1) {
+  border-bottom: none;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #c154ec;
+  box-shadow: 0 0 5px rgba(193, 84, 236, 0.5);
+  border-radius: 14px 14px 0 0;
+}
+
+.search-button {
+  background-image: linear-gradient(135deg, #f0659b 0%, #c154ec 100%);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 0 0 8px 8px;
+  transition: background-image 0.3s ease;
+  /*TODO: 변환 이벤트 반전으로 하지 말고 부드럽게 하는게 좋겠는데.. */
+}
+
+.search-button:hover {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+}
+
+#collapseSearchBody {
+  color: rgba(255, 255, 255, 0.8);
+  width: 100%;
+  overflow: auto;
+  height: 72vh;
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  right: 2%;
+}
+
+#collapseSearchBody::-webkit-scrollbar {
+  width: 2px;
+}
+
+#collapseSearchBody::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border-radius: 4px;
+}

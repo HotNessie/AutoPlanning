@@ -213,8 +213,44 @@ public class PlanService {
   }
 
   // TITLE - 최신 계획 조회
-  // TODO : 페이징, 정렬 추가해야됨
-  public List<Plan> findPlans() {
-    return planRepository.findAll();
+  @Transactional(readOnly = true)
+  public Page<Plan> findPlans(Pageable pageable) {
+    return planRepository.findAll(pageable);
+  }
+
+  // Title - 복합 검색
+  @Transactional(readOnly = true)
+  public Page<Plan> findPlansCriteria(String searchTitle, String searchRegion, String searchKeywords, Pageable pageable) {
+    List<PurposeField> purposeKeywords = null;
+    List<MoodField> moodKeywords = null;
+
+    if (searchKeywords != null && !searchKeywords.isEmpty()) {
+        List<String> keywords = List.of(searchKeywords.split(","));
+        purposeKeywords = keywords.stream()
+                .map(String::trim)
+                .map(keyword -> {
+                    try {
+                        return PurposeField.valueOf(keyword.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        moodKeywords = keywords.stream()
+                .map(String::trim)
+                .map(keyword -> {
+                    try {
+                        return MoodField.valueOf(keyword.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    return planRepository.findByCriteria(searchTitle, null, searchRegion, purposeKeywords, moodKeywords, null, null, pageable);
   }
 }
