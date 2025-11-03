@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/css/selfPlanContent.css">
   <link rel="stylesheet" href="/css/myPlanList.css">
   <link rel="stylesheet" href="/css/myPlanDetails.css">
+  <link rel="stylesheet" href="/css/searchPlans.css">
 </head>
 
 <body>
@@ -33,6 +34,7 @@
     <!--메뉴 목록 선택 버튼-->
     <nav>
       <ul>
+
         <!-- Title - Hot Content -->
         <li id="hot_content_list" class="content_list selected">
           <button id="hotButton" class="contentButton">
@@ -46,6 +48,23 @@
               </span>
             </div>
             <span id="hot_content_span" class="navbar_text menu_color hover_li">Hot</span>
+          </button>
+        </li>
+
+        <!-- Title - SearchPlans Content -->
+        <li id="searchPlans" class="content_list">
+          <button id="searchPlansButton" class="contentButton">
+            <div class="icon">
+              <span class="icon_inner" aria-hidden="true">
+                <svg id="searchPlans_menuSvg" class="menu_svg hover_li" viewBox="0 0 513.749 513.749"
+                  xmlns="http://www.w3.org/2000/svg" version="1.1">
+                  <path
+                    d="M504.352,459.061l-99.435-99.477c74.402-99.427,54.115-240.344-45.312-314.746S119.261-9.277,44.859,90.15   S-9.256,330.494,90.171,404.896c79.868,59.766,189.565,59.766,269.434,0l99.477,99.477c12.501,12.501,32.769,12.501,45.269,0   c12.501-12.501,12.501-32.769,0-45.269L504.352,459.061z M225.717,385.696c-88.366,0-160-71.634-160-160s71.634-160,160-160   s160,71.634,160,160C385.623,314.022,314.044,385.602,225.717,385.696z" />
+                  <polygon points="10 7 10 13.621 13.439 17.061 15.561 14.939 13 12.379 13 7 10 7" />
+                </svg>
+              </span>
+            </div>
+            <span id="searchPlans_content_span" class="navbar_text hover_li">Find</span>
           </button>
         </li>
 
@@ -100,22 +119,6 @@
           </button>
         </li>
 
-        <!-- Title - SearchPlans Content -->
-        <li id="searchPlans" class="content_list">
-          <button id="searchPlansButton" class="contentButton">
-            <div class="icon">
-              <span class="icon_inner" aria-hidden="true">
-                <svg id="searchPlans_menuSvg" class="menu_svg hover_li" viewBox="0 0 513.749 513.749"
-                  xmlns="http://www.w3.org/2000/svg" version="1.1">
-                  <path
-                    d="M504.352,459.061l-99.435-99.477c74.402-99.427,54.115-240.344-45.312-314.746S119.261-9.277,44.859,90.15   S-9.256,330.494,90.171,404.896c79.868,59.766,189.565,59.766,269.434,0l99.477,99.477c12.501,12.501,32.769,12.501,45.269,0   c12.501-12.501,12.501-32.769,0-45.269L504.352,459.061z M225.717,385.696c-88.366,0-160-71.634-160-160s71.634-160,160-160   s160,71.634,160,160C385.623,314.022,314.044,385.602,225.717,385.696z" />
-                  <polygon points="10 7 10 13.621 13.439 17.061 15.561 14.939 13 12.379 13 7 10 7" />
-                </svg>
-              </span>
-            </div>
-            <span id="searchPlans_content_span" class="navbar_text hover_li">Find</span>
-          </button>
-        </li>
         <!-- Title - Login / Logout -->
         <li sec:authorize-expr="isAnonymous()" class="content_list">
           <button class="contentButton" onclick="location.href='/login'">

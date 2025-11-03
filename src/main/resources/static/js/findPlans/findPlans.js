@@ -1,5 +1,6 @@
 
 import { createPlansHtml } from '../myPlan/myPlanList.js';
+import { attachClickListenersToNewItems } from '../myPlan/myPlanList.js';
 
 /* 
 * Title - 계획 검색 메뉴 진입 초기화
@@ -73,6 +74,8 @@ async function loadMorePlans() {
 
     contentBody.innerHTML += plansHtml;
     currentPage++;
+
+    attachClickListenersToNewItems();
   } catch (error) {
     console.error("Failed to load plans:", error);
   } finally {

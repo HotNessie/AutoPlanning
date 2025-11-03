@@ -35,7 +35,7 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
 
         @Query("SELECT p FROM Plan p WHERE (:title IS NULL OR p.title LIKE %:title%) " +
                         "AND (:memberName IS NULL OR p.member.name = :memberName) " +
-                        "AND (:regionName IS NULL OR p.region.name = :regionName) " +
+                        "AND (:regionName IS NULL OR p.region.name LIKE %:regionName%) " +
                         "AND (:purposeKeywords IS NULL OR EXISTS (SELECT 1 FROM p.purposeKeywords pk WHERE pk IN :purposeKeywords)) "
                         +
                         "AND (:moodKeywords IS NULL OR EXISTS (SELECT 1 FROM p.moodKeywords mk WHERE mk IN :moodKeywords)) "

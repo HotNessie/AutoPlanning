@@ -1,20 +1,21 @@
-//myPlanList fragment 호출시 로드 우선
-
 /*
 *My 메뉴 기능 
 */
-
 import { bindDynamicElements } from "../ui/dom-elements.js";
 import { hideAutoComplete, getDynamicElements, initRouteFormHandler } from "../selfContent/selfContent.js";
 import { getTransportIcon } from "../selfContent/selfPlan.js";
 import { initializeSearchEvents, initSearchResults } from "../selfContent/selfFind.js";
 import { adjustContentWidth } from "../ui/state-manager.js";
+import { getMapInstance } from "../store/map-store.js";
+import { displayRoute } from "../map/commonRoute.js";
+import { markerManager, createMarker } from "../map/marker.js";
 
 // --- 페이징 상태 관리 변수 ---
 let currentPage = 0;
 let isLastPage = false;
 let isLoading = false;
 let scrollListener = null; // 스크롤 리스너 참조 저장
+
 
 //Title - 계획 리스트 불러오기 (무한 스크롤 초기화)
 export async function loadMyPlanList() {
@@ -158,9 +159,38 @@ export async function loadPlan(planId) {
     },
   });
   const routeData = await routeResponse.json();
+  console.log("routeData:", routeData);
 
-  console.log('Fetched plan data:', planData);
-  console.log('Fetched route data:', routeData);
+  // commonRoute.js의 displayRoute가 예상하는 데이터 구조로 변환
+  const transformedRouteData = {
+    routes: [
+      {
+        legs: routeData.map(route => ({
+          polyline: {
+            encodedPolyline: route.polyline
+          }
+        }))
+      }
+    ]
+  };
+
+  await displayRoute(transformedRouteData);
+
+  markerManager.clearMarkers();
+  const markerPromises = routeData.map((route, index) => {
+    const originalPlace = route.place;
+    const transformedPlace = {
+      location: {
+        lat: originalPlace.latitude,
+        lng: originalPlace.longitude
+      },
+      displayName: originalPlace.name,
+      formattedAddress: originalPlace.address || '',
+      placeId: originalPlace.placeId || ''
+    };
+    return createMarker(transformedPlace, getMapInstance(), index + 1);
+  });
+  await Promise.all(markerPromises);
 
   // 2. 기존 목록 숨기기                                                        
   const myPlanListElement = document.querySelector(
@@ -206,7 +236,7 @@ function setupScrollListener() {
 /*
 * Title - 새로 추가된 계획 아이템에 이벤트를 부여
 */
-function attachClickListenersToNewItems() {
+export function attachClickListenersToNewItems() {
   const newItems = document.querySelectorAll('.plan-item:not([data-event-attached="true"])');
   newItems.forEach(item => {
     item.setAttribute('data-event-attached', 'true');
