@@ -3,7 +3,6 @@ package com.preplan.autoplan.restController;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import com.preplan.autoplan.domain.planPlace.Plan;
 import com.preplan.autoplan.dto.plan.PlanCreateRequestDto;
 import com.preplan.autoplan.dto.plan.PlanResponseDto;
@@ -125,7 +124,7 @@ public class PlanApiController {
   }
 
   // Title - 단일 계획 상세 조회
-  @GetMapping("/api/private/plan/{planId}")
+  @GetMapping("/api/public/plan/{planId}")
   public ResponseEntity<PlanResponseDto> getPlanById(@PathVariable Long planId) {
     Plan plan = planService.findById(planId);
     PlanResponseDto responseDto = PlanResponseDto.fromEntity(plan);
