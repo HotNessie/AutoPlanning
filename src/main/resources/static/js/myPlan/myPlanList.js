@@ -145,14 +145,14 @@ function createPlanButtonEvent() {
 //TODO: 클릭한 계획으로 이동시키기
 export async function loadPlan(planId) {
   console.log('Load plan with ID:', planId);
-  const planResponse = await fetch(`/api/private/plan/${planId}`, {
+  const planResponse = await fetch(`/api/public/plan/${planId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     },
   });
   const planData = await planResponse.json();
-  const routeResponse = await fetch(`/api/private/routes/${planId}`, {
+  const routeResponse = await fetch(`/api/public/routes/${planId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

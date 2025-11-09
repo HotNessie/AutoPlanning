@@ -115,6 +115,8 @@ export async function createMarker(place, map, index = null) {
       map: map,
     });
   });
+
+  return markerManager.addMarker(markerElement);
 }
 
 //Title - fitAllMarkers

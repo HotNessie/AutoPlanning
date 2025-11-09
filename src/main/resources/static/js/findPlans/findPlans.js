@@ -7,7 +7,7 @@ import { attachClickListenersToNewItems } from '../myPlan/myPlanList.js';
 */
 let currentPage = 0;
 const pageSize = 10;
-let currentSort = 'createdDate';
+let currentSort = 'createdDate,desc';
 let isLoading = false;
 let isLastPage = false;
 let currentQuery = { title: '', region: '', keywords: '' };
