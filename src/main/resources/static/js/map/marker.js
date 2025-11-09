@@ -60,9 +60,10 @@ export const markerManager = new MarkerManager();
 
 
 
+//Title - createMarker
 // 일반 검색 결과용 마커 생성
-//fields를 불러온 상태에서 사용하는 marker, displayname 지우는거 고려해보셈
-export async function createMarker(place, map = getMapInstance()) {
+//fields를 불러온 상태에서 사용하는 marker
+export async function createMarker(place, map, index = null) {
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
   const infoWindow = new google.maps.InfoWindow();
 
@@ -83,87 +84,73 @@ export async function createMarker(place, map = getMapInstance()) {
     </div>
   `;
 
-  const markerElement = new AdvancedMarkerElement({
-    map: getMapInstance(),
+  let markerOptions = {
+    map: map,
     position: place.location,
     title: place.displayName,
-  });
+  };
+
+  if (index !== null) {
+    const markerContent = document.createElement('div');
+    markerContent.innerHTML = `
+      <div style="width: 32px; height: 32px; position: relative; display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 24 24" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#EA4335" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"></path>
+        </svg>
+        <span style="position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 14px; font-weight: bold;">
+          ${index}
+        </span>
+      </div>
+    `;
+    markerOptions.content = markerContent;
+  }
+
+  const markerElement = new AdvancedMarkerElement(markerOptions);
 
   // 'gmp-click' 이벤트 사용
   markerElement.addListener('gmp-click', () => {
     infoWindow.setContent(content);
     infoWindow.open({
       anchor: markerElement,
-      map: getMapInstance(),
+      map: map,
     });
   });
-
-  // // 'gmp-mouseover' 이벤트 -- 이거 안됨;;;;;;
-  // markerElement.addListener('gmp-mouseover', () => {
-  //   infoWindow.setContent(content);
-  //   infoWindow.open({
-  //     anchor: markerElement,
-  //     map: map
-  //   });
-  // });
-
-  // // 'gmp-mouseout' 이벤트
-  // markerElement.addListener("gmp-mouseout", () => {
-  //   infoWindow.close();
-  // });
-
-  // return markerElement;
 
   return markerManager.addMarker(markerElement);
 }
 
-
-
-
-//TODO: 조정 필요
+//Title - fitAllMarkers
 // 모든 마커가 지도에 표시되도록 경계 설정
 export function fitAllMarkers() {
-  // 현재 등록된 모든 placeId 수집
-  const placeIdInputs = document.querySelectorAll('input[type="hidden"][name$=".placeId"]');
-  const validPlaceIds = Array.from(placeIdInputs)
-    .filter(input => input.value) // 값이 있는 input만 선택
-    .map(input => input.value);    // placeId 값만 추출
+  const map = getMapInstance();
+  const allMarkers = markerManager.getMarkers();
 
-  // 마커 매니저에서 해당 placeId의 마커 위치 가져오기
-  if (window.markerManager && Object.keys(window.markerManager.placeMarkers).length > 0) {
-    const bounds = new google.maps.LatLngBounds();
-    let hasValidMarkers = false;
+  if (!allMarkers || allMarkers.length === 0) {
+    return;
+  }
 
-    // 각 마커를 경계에 추가
-    for (const placeId of validPlaceIds) {
-      const marker = window.markerManager.placeMarkers[placeId];
-      if (marker && marker.position) {
-        bounds.extend(marker.position);
-        hasValidMarkers = true;
+  const bounds = new google.maps.LatLngBounds();
+  let validMarkersFound = 0;
+
+  allMarkers.forEach(marker => {
+    if (marker.position) {
+      bounds.extend(marker.position);
+      validMarkersFound++;
+    }
+  });
+
+  if (validMarkersFound > 0) {
+    map.fitBounds(bounds, 50); // 50px padding
+
+    google.maps.event.addListenerOnce(map, 'bounds_changed', function () {
+      if (map.getZoom() > 16) {
+        map.setZoom(16);
       }
-    }
-
-    if (hasValidMarkers) {
-      // 경계에 맞춰 지도 조정 (약간의 패딩 추가)
-      window.map.fitBounds(bounds, {
-        top: 50,
-        right: 50,
-        bottom: 50,
-        left: 50
-      });
-
-      // 줌 레벨이 너무 높을 경우 (단일 마커 또는 가까운 마커들) 최대 줌 제한
-      google.maps.event.addListenerOnce(window.map, 'bounds_changed', function () {
-        if (window.map.getZoom() > 16) {
-          window.map.setZoom(16);
-        }
-      });
-    }
+    });
   }
 }
 
-// 단일 마커 생성 (서버 데이터용)
-// 단일 마커 생성 (서버 데이터용)
+//Title - createServerMarker 단일 마커 생성
 // 단일 마커 생성 (서버 데이터용)
 export async function createServerMarker(place) {
   const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");

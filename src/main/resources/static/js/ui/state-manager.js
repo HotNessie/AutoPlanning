@@ -1,7 +1,10 @@
 import { elements } from './dom-elements.js';
 import { cleanupFunctions } from '../main.js';
 
-export function initUIState() {
+/* 
+* Title - collapseButton 클릭 이벤트부여
+*/
+export function collapseButtonEvent() {
   // 공통 UI 요소 캐싱
   const content = elements.content;
   const rightArrow = elements.rightArrow;
@@ -14,10 +17,10 @@ export function initUIState() {
   collapseButton.addEventListener('click', () => { toggleContent(); console.log("collapseButton 클릭"); });
 }
 
-//content 상태 초기화
-//content 상태 초기화
-//content 상태 초기화
-export function resetUIState(isSelfContent = false) {
+/* 
+* Title - collapseButton css 상태, selfContent에서 autocomplete 숨김
+*/
+export function resetCollapseButtonStateWithAutoComplete(hideAutoComplete = false) {
   const content = elements.content;
   const rightArrow = elements.rightArrow;
   const leftArrow = elements.leftArrow;
@@ -34,7 +37,8 @@ export function resetUIState(isSelfContent = false) {
   collapseButton.style.left = '100%';
   collapseButton.classList.remove('expanded');
 
-  if (isSelfContent) { // selfContent에서
+  //true면 autocomplete 숨기기
+  if (hideAutoComplete) {
     autocomplete.classList.add('autoComplete_displayNone'); //autocomplete 안보이게
     if (searchResultsContainer) {
       searchResultsContainer.classList.remove('visible');
@@ -44,10 +48,26 @@ export function resetUIState(isSelfContent = false) {
   }
 }
 
-// collapseButton 토글
-// collapseButton 토글
-// collapseButton 토글
-export function toggleContent() {
+/* 
+* Title - .contentWidth 조절
+* 메뉴마다 다 너비를 다르게 할 수도 있음
+*/
+export function adjustContentWidth(width) {
+  const content = elements.content;
+  console.log("adjustContentWidth 호출");
+  console.log(content);
+  const planDetail = document.querySelector('.planDetail-container');
+  if (planDetail) {
+    content.style.width = '500px';
+  } else {
+    content.style.width = '390px';
+  }
+}
+
+/* 
+* Title - content 접기/펼치기 function
+*/
+function toggleContent() {
   const content = elements.content;
   const rightArrow = elements.rightArrow;
   const leftArrow = elements.leftArrow;
@@ -81,7 +101,9 @@ export function toggleContent() {
   }
 }
 
-// 검색 결과 컨테이너 표시/숨김 관리
+/*
+* Title - 검색 결과 컨테이너 표시/숨김 관리
+*/
 export function toggleSearchResultsVisibility(visible = true) {
   const searchResultsContainer = document.querySelector("#searchResultsContainer");
   const collapseButton = document.querySelector('#collapseButton');

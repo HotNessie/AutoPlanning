@@ -28,15 +28,15 @@ export function searchPlaceByInputId(inputId) { // inputId는 placeName1, placeN
   if (!input.value) return;
 
   const searchResultsContainer = document.querySelector("#searchResultsContainer");
-  const lastQuery = searchResultsContainer.dataset.lastQuery;
+  // const lastQuery = searchResultsContainer.dataset.lastQuery;
 
-  if (lastQuery === input.value) {
-    console.log("동일한 검색어 감지, 캐시된 결과 사용:", input.value);
-    setCurrentPlaceInput(input);
-    toggleSearchResultsVisibility(true);
-    console.log("그냥 펼침");
-    return;
-  }
+  // if (lastQuery === input.value) {
+  //   console.log("동일한 검색어 감지, 캐시된 결과 사용:", input.value);
+  //   setCurrentPlaceInput(input);
+  //   toggleSearchResultsVisibility(true);
+  //   console.log("그냥 펼침");
+  //   return;
+  // }
 
   // 현재 입력 필드 설정
   setCurrentPlaceInput(input);
@@ -101,23 +101,7 @@ export async function handlePlaceSearch(inputElemnet) {
   const searchTerm = inputElemnet.value.trim();
   /* 
 !항상 장소 검색 반환은 항상 구글 API에 위임으로 변경
-    try {
-      // 서버 검색 시도
-      const response = await fetch(`/api/public/places/search?name=${encodeURIComponent(searchTerm)}`);
-  
-      if (response.ok) {
-        const places = await response.json();
-        if (places && places.length > 0) {
-          displayServerSearchResults(places, inputElemnet.id);
-          return;
-        }
-      } else if (response.status === 404) {
-        console.log("장소 검색 결과 없음, GOOGLE API로 대체");
-        searchPlaceByInputId(inputElemnet.id);
-      }
-    } catch (error) {
-      console.log("DB에 장소 데이터 없음 고로 구글 API요청 보냄", error);
-    } */
+*/
 
   // 서버 검색 실패 시 더미 데이터 사용
   searchPlaceByInputId(inputElemnet.id);

@@ -50,7 +50,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             // 모든 사용자가 접근 가능한 경로들
             .requestMatchers(
-                "/", "/home", "/login", "/logout", "/members/new", "/error", "status", // 기본 페이지
+                "/test", "/", "/home", "/login", "/logout", "/members/new", "/error", "/status", "/myPlanDetail",
+                "/searchPlans", // 기본페이지
                 "/css/**", "/js/**", "/icon/**", "/img/**", "/fragments/**", // 정적 리소스
                 "/api/google-maps-key", "/api/public/**", // 공개 API
                 "/api/auth/**", // 로그인 및 상태 확인 API

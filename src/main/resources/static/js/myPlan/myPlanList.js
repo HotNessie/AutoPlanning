@@ -1,104 +1,115 @@
-//myPlanList fragment 호출시 로드 우선
-
 /*
 *My 메뉴 기능 
 */
-
 import { bindDynamicElements } from "../ui/dom-elements.js";
-import { initSelfContent, getDynamicElements, initRouteFormHandler } from "../selfContent/selfContent.js";
+import { hideAutoComplete, getDynamicElements, initRouteFormHandler } from "../selfContent/selfContent.js";
 import { getTransportIcon } from "../selfContent/selfPlan.js";
 import { initializeSearchEvents, initSearchResults } from "../selfContent/selfFind.js";
+import { adjustContentWidth } from "../ui/state-manager.js";
+import { getMapInstance } from "../store/map-store.js";
+import { displayRoute } from "../map/commonRoute.js";
+import { markerManager, createMarker } from "../map/marker.js";
 
-//Title - 계획 리스트 불러오기
+// --- 페이징 상태 관리 변수 ---
+let currentPage = 0;
+let isLastPage = false;
+let isLoading = false;
+let scrollListener = null; // 스크롤 리스너 참조 저장
+
+
+//Title - 계획 리스트 불러오기 (무한 스크롤 초기화)
 export async function loadMyPlanList() {
-  //TODO:계획 리스트 불러와서 HTML구성
-  console.log('loadMyPlanList');
+  console.log('loadMyPlanList 초기화');
   //   //TODO:title이전에 image추가해주기
-  //   //description에 몇박인지 만들기. 우선 Plan Entitiy에 몇박도 카운트 가능하도록 수정해야 함.
+  //TODO: description에 몇박인지 만들기. 우선 Plan Entitiy에 몇박도 카운트 가능하도록 수정해야 함. 
+  const planList = document.querySelector('.plan-list');
 
-  const response = await fetch('/api/private/my-plans'
-    , {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    });
-  const data = await response.json();
+  // 이전 리스너가 있다면 제거
+  if (planList && scrollListener) {
+    planList.removeEventListener('scroll', scrollListener);
+  }
 
-  //반환 없으면 없다고 표시.
-  if (!data || data.length === 0) {
+  // UI 및 상태 초기화
+  planList.innerHTML = '';
+  currentPage = 0;
+  isLastPage = false;
+  isLoading = false;
+
+  // 로그인 상태 확인
+  const loginStatus = await fetch('/status', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (!loginStatus.ok) {
+    alert('로그인이 필요합니다.');
     emptyMyPlanList();
     createPlanButtonEvent();
     return;
   }
 
-  console.log('Fetched plans:', data);
-  initMyPlanList(data);
-  setTimeout(() => {
-    const planItems = document.querySelectorAll('.plan-item');
-    planItems.forEach(planItem => {
-      planItem.addEventListener('click', async () => {
-        console.log('Plan item clicked:', planItem.getAttribute('data-plan-id'));
-        await loadPlan(planItem.getAttribute('data-plan-id'));
-      });
-    });
-  }, 0);
+  // 첫 페이지 로드 및 스크롤 리스너 설정
+  await fetchAndAppendPlans(currentPage);
+  setupScrollListener();
+
   const createPlanButtonBox = document.querySelector('.plan-actions');
   createPlanButtonBox.style.display = 'none';
 }
 
-//Title - 빈 계획 리스트 처리
-function emptyMyPlanList() {
-  //TODO: 만약 내 계획 리스트가 비어있다면
-  //? ㄴ>뭔소리임???이게 왜 todo야????
-  const planList = document.querySelector('.plan-list');
-  const collapseBody = document.querySelector('#collapseBody');
-  planList.innerHTML = `
-    <div class="empty-plan-list">
-      <p>+</p>
-    </div>
-    `;
-  setTimeout(() => {
-    const emptyPlanList = document.querySelector('.empty-plan-list');
-    emptyPlanList.addEventListener('click', async () => {
-      const response = await fetch('/selfContent');
-      const data = await response.text();
-      collapseBody.innerHTML = data;
-      bindDynamicElements(getDynamicElements());
-      initSelfContent();
-      initializeSearchEvents();
-      initSearchResults();
-      initRouteFormHandler();
-    });
-  }, 0);
-};
+//Title - 페이징 데이터 로딩 및 렌더링
+async function fetchAndAppendPlans(page) {
+  if (isLoading || isLastPage) return;
+  isLoading = true;
 
-//Title - 내 계획 리스트가 있는 경우 보여줄 html구성
-function initMyPlanList(response) {
-  const planList = document.querySelector('.plan-list');
+  try {
+    const response = await fetch(`/api/private/my-plans?page=${page}&size=10&sort=createdDate,desc`);
+    if (!response.ok) throw new Error('Failed to fetch plans');
 
-  // 날짜 포맷팅 헬퍼 함수
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
-  };
+    const data = await response.json();
 
-  planList.innerHTML = response.map(plan => `
-    <div class="plan-item" data-plan-id="${plan.planId}">
-      <div class="plan-item-content">
-        <h4>${plan.title}</h4>
-        <div class="plan-details">
-          <span>${plan.regionName}</span>
-          <span>${formatDate(plan.startTime)} ~ ${formatDate(plan.endTime)}</span>
-        </div>
-        <div class="plan-keywords">
-          ${plan.purposeKeywords.map(k => `<span>#${k}</span>`).join('')}
-          ${plan.moodKeywords.map(k => `<span>#${k}</span>`).join('')}
+    if (data.content && data.content.length > 0) {
+      const planList = document.querySelector('.plan-list');
+      const plansHtml = createPlansHtml(data.content);
+      planList.insertAdjacentHTML('beforeend', plansHtml);
+      attachClickListenersToNewItems();
+    }
+    else if (page === 0) {
+      emptyMyPlanList();
+      createPlanButtonEvent();
+    }
+
+    isLastPage = data.last;
+    currentPage = data.number;
+
+  } catch (error) {
+    console.error('Error fetching plans:', error);
+  } finally {
+    isLoading = false;
+  }
+}
+
+export function createPlansHtml(plans) {
+  return plans.map(plan => {
+    const formatDate = (dateString) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
+    };
+    return `
+      <div class="plan-item" data-plan-id="${plan.planId}" data-event-attached="false">
+        <div class="plan-item-content">
+          <h4>${plan.title}</h4>
+          <div class="plan-details">
+            <span>${plan.regionName}</span>
+            <span>${formatDate(plan.startTime)} ~ ${formatDate(plan.endTime)}</span>
+          </div>
+          <div class="plan-keywords">
+            ${plan.purposeKeywords.map(k => `<span>#${k}</span>`).join('')}
+            ${plan.moodKeywords.map(k => `<span>#${k}</span>`).join('')}
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 //       <div>${plan.travelDistance}</div>
 //     </div>
@@ -107,7 +118,7 @@ function initMyPlanList(response) {
 //     </div>
 
 
-//Title - 동적 요소에 이벤트 리스너 부착
+//Title - 새 계획 만들기 버튼 이벤트
 function createPlanButtonEvent() {
   const createPlanButtonBox = document.querySelector('.plan-actions');
   createPlanButtonBox.style.display = 'flex';
@@ -122,7 +133,7 @@ function createPlanButtonEvent() {
     const data = await response.text();
     collapseBody.innerHTML = data;
     bindDynamicElements(getDynamicElements());
-    initSelfContent(); //self로 이동했으니까 autocomplete 숨기기
+    hideAutoComplete(); //self로 이동했으니까 autocomplete 숨기기
     initializeSearchEvents(); //self 검색 이벤트
     initSearchResults();// searchResult 이벤트
     initRouteFormHandler(); //self form 설정
@@ -134,25 +145,52 @@ function createPlanButtonEvent() {
 //TODO: 클릭한 계획으로 이동시키기
 export async function loadPlan(planId) {
   console.log('Load plan with ID:', planId);
-  const planResponse = await fetch(`/api/private/plan/${planId}`, {
+  const planResponse = await fetch(`/api/public/plan/${planId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     },
   });
   const planData = await planResponse.json();
-  //bookmarks, createAt, endTime, likes, member, moodKeywords, planId, purposeKeywords, regionName, startTime, title, updateAt
-  //TODO: route 정보 불러와야 함.
-  const routeResponse = await fetch(`/api/private/routes/${planId}`, {
+  const routeResponse = await fetch(`/api/public/routes/${planId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     },
   });
   const routeData = await routeResponse.json();
+  console.log("routeData:", routeData);
 
-  console.log('Fetched plan data:', planData);
-  console.log('Fetched route data:', routeData);
+  // commonRoute.js의 displayRoute가 예상하는 데이터 구조로 변환
+  const transformedRouteData = {
+    routes: [
+      {
+        legs: routeData.map(route => ({
+          polyline: {
+            encodedPolyline: route.polyline
+          }
+        }))
+      }
+    ]
+  };
+
+  await displayRoute(transformedRouteData);
+
+  markerManager.clearMarkers();
+  const markerPromises = routeData.map((route, index) => {
+    const originalPlace = route.place;
+    const transformedPlace = {
+      location: {
+        lat: originalPlace.latitude,
+        lng: originalPlace.longitude
+      },
+      displayName: originalPlace.name,
+      formattedAddress: originalPlace.address || '',
+      placeId: originalPlace.placeId || ''
+    };
+    return createMarker(transformedPlace, getMapInstance(), index + 1);
+  });
+  await Promise.all(markerPromises);
 
   // 2. 기존 목록 숨기기                                                        
   const myPlanListElement = document.querySelector(
@@ -169,16 +207,50 @@ export async function loadPlan(planId) {
   if (collapseBody) {
     collapseBody.innerHTML = detailHtml;
   }
+  setTimeout(() => {
+    adjustContentWidth();
+  }, 0);
 }
 
+// --- 이벤트 리스너 및 헬퍼 함수 ---
 
 /*
- * 상세 계획 UI를 생성하여 HTML 문자열로 반환합니다.
- * selfPlan.js의 타임라인 UI를 참고하여 구성하며, 메모를 항상
-표시합니다.
+ * Title - 무한 스크롤 이벤트 설정
+ */
+function setupScrollListener() {
+  const planList = document.querySelector('.plan-list');
+  if (!planList) return;
+
+  scrollListener = () => {
+    const isAtBottom = planList.scrollTop + planList.clientHeight >= planList.scrollHeight - 150; // 150px의 버퍼를 둠
+
+    if (isAtBottom && !isLoading && !isLastPage) {
+      console.log('Fetching next page...');
+      fetchAndAppendPlans(currentPage + 1);
+    }
+  };
+
+  planList.addEventListener('scroll', scrollListener);
+}
+
+/*
+* Title - 새로 추가된 계획 아이템에 이벤트를 부여
+*/
+export function attachClickListenersToNewItems() {
+  const newItems = document.querySelectorAll('.plan-item:not([data-event-attached="true"])');
+  newItems.forEach(item => {
+    item.setAttribute('data-event-attached', 'true');
+    item.addEventListener('click', async () => {
+      console.log('Plan item clicked:', item.getAttribute('data-plan-id'));
+      await loadPlan(item.getAttribute('data-plan-id'));
+    });
+  });
+}
+
+/*
+ * Title - 상세 계획 UI HTML
  * @param {object} plan - PlanResponseDto 형식의 계획 정보
- * @param {Array<object>} routes - List<RouteResponseDto> 형식의 경로
-정보 배열
+ * @param {Array<object>} routes - List<RouteResponseDto> 형식의 경로 정보 배열
  * @returns {string} - 생성된 HTML 문자열
  */
 export function initMyPlanDetail(plan, routes) {
@@ -216,17 +288,21 @@ export function initMyPlanDetail(plan, routes) {
     if (index < routes.length - 1) {
       const nextRoute = routes[index + 1];
       const transportIcon = getTransportIcon(route.transportMode);
-      
+
       const transportCardHtml = `
         <li class="planDetail-card planDetail-transport-card">
           <div class="myPlan-card-body">
-            <span class="planDetail-day-svg-box"></span>
-            <div class="planDetail-day-card-content">
+            <span class="planDetail-day-svg-box">
+              <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 48 48"><g fill="#c7d5ef"><circle cx="24" cy="24" r="12" fill-opacity="0.5" /></g><g fill="#575757"><circle cx="24" cy="24" r="6" /></g></svg>
+              </div>
+            </span>
+            <div class="planDetail-day-card-content-grid">
               <div class="planDetail-transport-icon-box">${transportIcon}</div>
               <div class="planDetail-transport-details">
                 <div class="planDetail-transport-mode">${route.transportMode || '이동'}</div>
                 <div class="planDetail-transport-route">${place.name} → ${nextRoute.place.name}</div>
-                <div class="planDetail-transport-time">예상 소요시간: ${route.travelTime || '?'}분</div>
+                <div class="planDetail-transport-time">예상 소요시간: ${route.travelTime ?? '?'}분</div>
               </div>
             </div>
           </div>

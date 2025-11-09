@@ -56,8 +56,8 @@ public class PlanController {
     return "fragments/bookmarkContent";
   }
 
-  @GetMapping("/historyContent")
+  @GetMapping("/searchPlans")
   public String getHistoryContent() {
-    return "fragments/historyContent";
+    return "fragments/searchPlans";
   }
 }

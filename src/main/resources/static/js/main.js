@@ -5,9 +5,10 @@ import { findBySearch } from './search/findBySearch.js';
 import { initControls } from './ui/controls.js';
 import { initDomElements, cacheElement, elements, bindDynamicElements } from './ui/dom-elements.js';
 import { loadMyPlanList } from './myPlan/myPlanList.js';
-import { initSelfContent, initRouteFormHandler, removePlace, selectTransport, getDynamicElements } from './selfContent/selfContent.js';
+import { hideAutoComplete, initRouteFormHandler, removePlace, selectTransport, getDynamicElements } from './selfContent/selfContent.js';
 import { dumiSearch, initializeSearchEvents, initSearchResults, searchPlaceByInputId } from './selfContent/selfFind.js';
-import { initUIState, resetUIState } from './ui/state-manager.js';
+import { collapseButtonEvent, resetCollapseButtonStateWithAutoComplete, adjustContentWidth } from './ui/state-manager.js';
+import { initSearchPlans } from './findPlans/findPlans.js';
 
 export const cleanupFunctions = [];
 
@@ -15,12 +16,12 @@ async function bootstrap() {
   console.log('bootstrap');
   await initMap();
   initDomElements();
-  initUIState();
+  collapseButtonEvent();
   // initAutocomplete(); // 요청 너무 많아서 임시 주석
-  initControls();
+  initControls();//controls.js 지도 컨트롤러
   // initSelfContent();//selfContent.js
-  initSearchResults();//selfFind.js
-  initializeSearchEvents();//selfFind.js
+  initSearchResults();//selfFind.js 검색 결과 클릭 이벤트
+  initializeSearchEvents();//selfFind.js input에 이벤트 부여
   elements.searchButton.addEventListener('click', () => {//autocomplete
     findBySearch(searchInput.id);
   });
@@ -46,16 +47,22 @@ async function bootstrap() {
       collapseBody.innerHTML = data;
 
       if (url === '/selfContent') {
-        resetUIState(url === '/selfContent');
+        resetCollapseButtonStateWithAutoComplete(url === '/selfContent');
         // resetConstentState();  아직 안함 아니 할 필요가 없지않냐
         bindDynamicElements(getDynamicElements());
-        initSelfContent();
+        adjustContentWidth();//폭 조절
+        hideAutoComplete(); //selfContent에서 autocomplete 숨기기
         initializeSearchEvents();
         initSearchResults(); //확인 요망 이벤트용 함수로 바꿈
         setTimeout(() => initRouteFormHandler(), 100);
       } else if (url === '/myPlanList') {
-        resetUIState(url === '/myPlanList');
+        resetCollapseButtonStateWithAutoComplete(url === '/myPlanList');
+        adjustContentWidth();
         loadMyPlanList();
+      } else if (url === '/searchPlans') {
+        resetCollapseButtonStateWithAutoComplete(url === '/searchPlans');
+        adjustContentWidth();
+        initSearchPlans();
       }
     } catch (error) {
       console.error('Error fetching content:', error);
@@ -78,10 +85,8 @@ async function bootstrap() {
     { id: 'hotButton', url: '/hotContent', list: 'hot_content_list', svg: 'hot_menuSvg', span: 'hot_content_span' },
     { id: 'autoButton', url: '/autoContent', list: 'auto_content_list', svg: 'auto_menuSvg', span: 'auto_content_span' },
     { id: 'selfButton', url: '/selfContent', list: 'self_content_list', svg: 'self_menuSvg', span: 'self_content_span' },
-    // { id: 'myPlanListButton', url: '/myPlanList', list: 'self_content_list', svg: 'self_menuSvg', span: 'self_content_span' },
-    // { id: 'bookmarkButton', url: '/bookmarkContent', list: 'bookmark_content_list', svg: 'bookmark_menuSvg', span: 'bookmark_content_span' },
     { id: 'myPlanListButton', url: '/myPlanList', list: 'bookmark_content_list', svg: 'bookmark_menuSvg', span: 'bookmark_content_span' },
-    { id: 'historyButton', url: '/historyContent', list: 'history_content_list', svg: 'history_menuSvg', span: 'history_content_span' },
+    { id: 'searchPlansButton', url: '/searchPlans', list: 'searchPlans', svg: 'searchPlans_menuSvg', span: 'searchPlans_content_span' },
   ];
 
   menus.forEach(menu => {

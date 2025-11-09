@@ -1,7 +1,6 @@
 package com.preplan.autoplan.googleApi;
 
 import com.preplan.autoplan.domain.keyword.Transport;
-import com.preplan.autoplan.domain.planPlace.Route;
 import com.preplan.autoplan.dto.route.RouteResponseDto;
 import com.preplan.autoplan.exception.RouteComputationException;
 import com.preplan.autoplan.repository.RouteRepository;
@@ -20,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -31,14 +29,12 @@ import java.util.stream.Collectors;
 public class RouteService {
 
   private final GoogleRouteClient googleRouteClient;
-  // private final RouteValidationService routeValidationService;
+  private final RouteRepository routeRepository;
 
   @Value("${google.route.field-mask}")
   private String routeFieldMask;
 
-  private final RouteRepository routeRepository;
-
-  // 경로 계산 with 캐싱
+  // Title - 경로 계산 with 캐싱
   @Transactional
   @Cacheable(value = "routes", key = "#request.hashCode()")
   @Retryable(retryFor = { Exception.class }, maxAttempts = 2, backoff = @Backoff(delay = 1000))
@@ -144,18 +140,6 @@ public class RouteService {
         originalRequest.routingPreference(),
         originalRequest.units());
   }
-
-  /*
-   * // TRANSIT 모드 요청 생성 //존나 헷갈려서 지움 로직도 없는데 이름 갈아끼우기 메소드임
-   * private GoogleRoutesRequest createTransitRequest(
-   * ComputeRoutesRequest.PlaceInfo origin,
-   * ComputeRoutesRequest.PlaceInfo destination,
-   * LocalDateTime departureTime,
-   * ComputeRoutesRequest originalRequest) {
-   * return createRequest(origin, destination, null, Transport.TRANSIT,
-   * departureTime, originalRequest);
-   * }
-   */
 
   // 출발 시간 업데이트
   private LocalDateTime updateDepartureTime(ComputeRoutesResponse response,

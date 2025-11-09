@@ -12,13 +12,23 @@ export function initPlanContent() {
   const planResponseDto = JSON.parse(sessionStorage.getItem('planResponseDto'));
   console.log("planResponseDto:", planResponseDto);
 
+  /* 
+  *@Route
+  * Sequence, TravelDistance, TravelTime, ID, PlaceId, StayTime, Memo, Polyline, TransportMode
+  */
+
+  /* 
+  * @Plan
+  Bookmarks, isShared, liks, createAt, endTime, Id, LastModified, memberId, RegionId, StartTime, Title
+   */
+
   currentPlanData = {
     places: planResponseDto.places.map((place, index) => ({
-      name: place.name,
-      stayTime: place.time || 60, // 기본 체류시간 60분
-      transport: place.transportMode || 'TRANSIT', // 기본 교통수단
+      name: place.name, //place에 저장
+      stayTime: place.time || 60, // 기본 체류시간 60분 //Route에 저장, place에 평균 체류시간 계산됨
+      transport: place.transportMode || 'TRANSIT', // 기본 교통수단 //Route에 저장
       isLast: index === planResponseDto.places.length - 1,
-      memo: '',
+      memo: '', // Route에 저장
       // visitTime: 계산 필요
     })),
     departureTime: planResponseDto.departureTime || new Date().toISOString(),
@@ -645,7 +655,7 @@ function handleDeleteCard(placeIndex) {
 }
 
 /* 
-Title - 계획 저장 처리 
+Title - 로그인 확인 후, 계획 저장함수 호출
 */
 async function handleSavePlan() {
   // 1. 서버에 현재 로그인 상태 확인
@@ -674,6 +684,9 @@ function proceedToSavePlan() {
     .map(btn => btn.dataset.keyword);
   const initialPlanResponse = JSON.parse(sessionStorage.getItem('planResponseDto'));
   const placeIdMap = new Map(initialPlanResponse.places.map(place => [place.name, place.placeId]));
+  /*
+  * legs{distanceMeters, duration, polyline{encodedPolyline}} 
+  */
   const routeLegs = currentPlanData.routeResponse.routes && currentPlanData.routeResponse.routes.length > 0 ?
     currentPlanData.routeResponse.routes[0].legs : [];
 
@@ -689,20 +702,32 @@ function proceedToSavePlan() {
     finalTitle = `${year}.${month}.${day}`;
   }
 
+  /* 
+  *Route 데이터 매핑 
+  */
   const routes = currentPlanData.places.map((place, index) => {
+    // index가 0보다 크면 routeLegs
     const previousLeg = index > 0 ? routeLegs[index - 1] : null;
+    console.log(`${routeLegs[index]}:`, routeLegs[index]);
+    const currentLeg = routeLegs[index] || {};
     return {
       placeId: placeIdMap.get(place.name) || null,
       sequence: index + 1,
       transportMode: place.transport || 'TRANSIT',
       stayTime: place.stayTime || 60,
       memo: place.memo || '',
-      travelTime: previousLeg ? Math.floor(parseInt(previousLeg.duration, 10) / 60) : 0,
-      travelDistance: previousLeg ? previousLeg.distanceMeters || 0 : 0,
-      polyline: previousLeg && previousLeg.polyline ? previousLeg.polyline.encodedPolyline : '',
+      travelTime: Math.floor(parseInt(currentLeg.duration, 10) / 60) || 0,
+      // previousLeg ? Math.floor(parseInt(previousLeg.duration, 10) / 60) : 0,
+      travelDistance: currentLeg.distanceMeters || 0,
+      // travelDistance: previousLeg ? previousLeg.distanceMeters || 0 : 0,
+      polyline: currentLeg.polyline ? currentLeg.polyline.encodedPolyline : '',
+      // polyline: previousLeg && previousLeg.polyline ? previousLeg.polyline.encodedPolyline : '',
     }
   });
 
+  /*
+  * Plan데이터 매핑 
+  */
   const planData = {
     regionName: null,
     title: finalTitle,

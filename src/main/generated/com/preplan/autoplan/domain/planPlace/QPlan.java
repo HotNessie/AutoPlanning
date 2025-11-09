@@ -40,6 +40,8 @@ public class QPlan extends EntityPathBase<Plan> {
 
     public final ListPath<com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField, EnumPath<com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField>> moodKeywords = this.<com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField, EnumPath<com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField>>createList("moodKeywords", com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField.class, EnumPath.class, PathInits.DIRECT2);
 
+    public final ListPath<com.preplan.autoplan.domain.keyword.PlanKeyword, com.preplan.autoplan.domain.keyword.QPlanKeyword> planKeywords = this.<com.preplan.autoplan.domain.keyword.PlanKeyword, com.preplan.autoplan.domain.keyword.QPlanKeyword>createList("planKeywords", com.preplan.autoplan.domain.keyword.PlanKeyword.class, com.preplan.autoplan.domain.keyword.QPlanKeyword.class, PathInits.DIRECT2);
+
     public final ListPath<com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField, EnumPath<com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField>> purposeKeywords = this.<com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField, EnumPath<com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField>>createList("purposeKeywords", com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField.class, EnumPath.class, PathInits.DIRECT2);
 
     public final QRegion region;

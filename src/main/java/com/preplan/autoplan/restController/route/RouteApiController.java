@@ -18,7 +18,7 @@ public class RouteApiController {
 
   private final RouteService routeService;
 
-  @GetMapping("/api/private/routes/{planId}")
+  @GetMapping("/api/public/routes/{planId}")
   public ResponseEntity<List<RouteResponseDto>> getRoutesByPlanId(@PathVariable Long planId) {
     List<RouteResponseDto> routeResponseDtos = routeService.findRouteByPlanId(planId);
     return ResponseEntity.ok(routeResponseDtos);

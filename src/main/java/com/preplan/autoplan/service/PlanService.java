@@ -7,11 +7,13 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.preplan.autoplan.domain.keyword.Keyword;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField;
 import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import com.preplan.autoplan.domain.member.Member;
@@ -26,6 +28,7 @@ import com.preplan.autoplan.exception.PlaceNotFoundException;
 import com.preplan.autoplan.repository.MemberRepository;
 import com.preplan.autoplan.repository.PlanRepository;
 import com.preplan.autoplan.repository.RouteRepository;
+import com.preplan.autoplan.repository.keyword.KeywordRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +43,7 @@ public class PlanService {
   private final PlaceService placeService;
   private final MemberRepository memberRepository;
   private final RouteRepository routeRepository;
+  private final KeywordRepository keywordRepository;
 
   // TITLE - findById
   @Transactional(readOnly = true)
@@ -50,10 +54,10 @@ public class PlanService {
 
   // TITLE - findByEmail
   @Transactional(readOnly = true)
-  public List<Plan> findByEmail(String email) { // 찾찾 By email
+  public Page<Plan> findByEmail(String email, Pageable pageable) { // 찾찾 By email
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new MemberNotFoundException("그런 회원은 없어용~:" + email));
-    return planRepository.findByMemberId(member.getId());
+    return planRepository.findByMemberId(member.getId(), pageable);
   }
 
   // TITLE - findSharedPlans
@@ -69,7 +73,6 @@ public class PlanService {
     return planRepository.save(plan);
   }
 
-  // ? TODO: Member 구현 후 맴버 추가해야됨
   // TITLE - createPlan
   @Transactional
   public Long createPlan(PlanCreateRequestDto dto, String email) { // 계획 생성
@@ -124,6 +127,10 @@ public class PlanService {
             .map(MoodField::valueOf).collect(Collectors.toList()))
         .build();
 
+    if (dto.keywords() != null && !dto.keywords().isEmpty()) {
+      processAndAddKeywords(plan, dto.keywords());
+    }
+
     log.info("Plan 엔티티 생성 완료. 저장 전: {}", plan);
     Plan savePlan = planRepository.save(plan);
     log.info("Plan 엔티티 저장 완료. 저장 후 ID: {}", savePlan.getId());
@@ -152,6 +159,7 @@ public class PlanService {
           .memo(routeDto.memo())
           .travelTime(routeDto.travelTime())
           .travelDistance(routeDto.travelDistance())
+          .polyline(routeDto.polyline() != null ? routeDto.polyline() : "")
           .build();
       // 체류시간 업데이트
       // placeEntity.updateAverageStayTime(routeDto.stayTime());
@@ -180,10 +188,25 @@ public class PlanService {
   }
 
   /**
+   * TITLE - 사용자 정의 키워드 처리 및 Plan에 추가
+   */
+  private void processAndAddKeywords(Plan plan, List<String> keywordNames) {
+    log.info("사용자 정의 키워드 처리. 키워드: {}", keywordNames);
+    for (String name : keywordNames) {
+      Keyword keyword = keywordRepository.findByName(name)
+          .orElseGet(() -> {
+            log.info("새로운 키워드", name);
+            return keywordRepository.save(new Keyword(name));
+          });
+      plan.addKeyword(keyword);
+    }
+    log.info("사용자 정의 키워드 처리 완료.");
+  }
+
+  /**
    * TITLE -키워드 및 체류시간 적용
    */
-  private void applyKeywordsAndStayTime(List<Route> routes, List<String> purposeKeywords,
-      List<String> moodKeywords) {
+  private void applyKeywordsAndStayTime(List<Route> routes, List<String> purposeKeywords, List<String> moodKeywords) {
     List<PurposeField> purposeFields = purposeKeywords.stream()
         .map(PurposeField::valueOf)
         .collect(Collectors.toList());
@@ -210,5 +233,49 @@ public class PlanService {
   public void bookmarkPlan(Long planId) {
     Plan plan = findById(planId);
     plan.increaseBookmarks();
+  }
+
+  // TITLE - 최신 계획 조회
+  @Transactional(readOnly = true)
+  public Page<Plan> findPlans(Pageable pageable) {
+    return planRepository.findAll(pageable);
+  }
+
+  // Title - 복합 검색
+  @Transactional(readOnly = true)
+  public Page<Plan> findPlansCriteria(String searchTitle, String searchRegion, String searchKeywords,
+      Pageable pageable) {
+    List<PurposeField> purposeKeywords = null;
+    List<MoodField> moodKeywords = null;
+
+    if (searchKeywords != null && !searchKeywords.isEmpty()) {
+      List<String> keywords = List.of(searchKeywords.split(","));
+      purposeKeywords = keywords.stream()
+          .map(String::trim)
+          .map(keyword -> {
+            try {
+              return PurposeField.valueOf(keyword.toUpperCase());
+            } catch (IllegalArgumentException e) {
+              return null;
+            }
+          })
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
+
+      moodKeywords = keywords.stream()
+          .map(String::trim)
+          .map(keyword -> {
+            try {
+              return MoodField.valueOf(keyword.toUpperCase());
+            } catch (IllegalArgumentException e) {
+              return null;
+            }
+          })
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
+    }
+
+    return planRepository.findByCriteria(searchTitle, null, searchRegion, purposeKeywords, moodKeywords, null, null,
+        pageable);
   }
 }

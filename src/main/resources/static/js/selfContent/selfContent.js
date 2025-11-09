@@ -251,7 +251,7 @@ async function getPlanFragment() {
 
 
 //Title - selfContent에서 autoComplete 숨기기
-export function initSelfContent() {
+export function hideAutoComplete() {
   // const selfButton = document.querySelector('#selfButton');
   const selfButton = document.querySelector('#myPlanListButton');
   selfButton.addEventListener('click', () => {
