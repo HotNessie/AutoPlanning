@@ -11,5 +11,6 @@ public record PlanCreateRequestDto(
     LocalDateTime endTime,
     List<String> purposeKeywords,
     List<String> moodKeywords,
+    List<String> keywords,
     List<RouteCreateRequestDto> routes) {
 }

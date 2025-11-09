@@ -19,36 +19,36 @@ import com.preplan.autoplan.domain.planPlace.Plan;
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Long> {
 
-        Page<Plan> findByMemberId(Long memberId, Pageable pageable);
+  Page<Plan> findByMemberId(Long memberId, Pageable pageable);
 
-        // 어떤 장소가 들어간 계획을 보고 싶을 수 있잖아 근데 route로 부터 장소를 참조해야됨?
-        // placeId를 모르는데... 흠... placeName검색(findByName) -> placeId추출 -> findByPlaceId
-        // ->route에서 장소 찾고 planId반환시켜야됨
+  // 어떤 장소가 들어간 계획을 보고 싶을 수 있잖아 근데 route로 부터 장소를 참조해야됨?
+  // placeId를 모르는데... 흠... placeName검색(findByName) -> placeId추출 -> findByPlaceId
+  // ->route에서 장소 찾고 planId반환시켜야됨
 
-        List<Plan> findByIsSharedTrue(Sort sort); // 공유된 계획들
+  List<Plan> findByIsSharedTrue(Sort sort); // 공유된 계획들
 
-        List<Plan> findByRegionId(Long regionId); // 지역으로 찾기
+  List<Plan> findByRegionId(Long regionId); // 지역으로 찾기
 
-        List<Plan> findByPurposeKeywordsIn(List<String> purposeKeywords); // 목적 키워드로 찾기
+  List<Plan> findByPurposeKeywordsIn(List<String> purposeKeywords); // 목적 키워드로 찾기
 
-        List<Plan> findByMoodKeywordsIn(List<String> moodKeywords); // 감정 키워드로 찾기
+  List<Plan> findByMoodKeywordsIn(List<String> moodKeywords); // 감정 키워드로 찾기
 
-        @Query("SELECT p FROM Plan p WHERE (:title IS NULL OR p.title LIKE %:title%) " +
-                        "AND (:memberName IS NULL OR p.member.name = :memberName) " +
-                        "AND (:regionName IS NULL OR p.region.name LIKE %:regionName%) " +
-                        "AND (:purposeKeywords IS NULL OR EXISTS (SELECT 1 FROM p.purposeKeywords pk WHERE pk IN :purposeKeywords)) "
-                        +
-                        "AND (:moodKeywords IS NULL OR EXISTS (SELECT 1 FROM p.moodKeywords mk WHERE mk IN :moodKeywords)) "
-                        +
-                        "AND (:startTime IS NULL OR p.startTime >= :startTime) " +
-                        "AND (:endTime IS NULL OR p.endTime <= :endTime)")
-        Page<Plan> findByCriteria(
-                        @Param("title") String title,
-                        @Param("memberName") String memberName,
-                        @Param("regionName") String regionName,
-                        @Param("purposeKeywords") List<PurposeField> purposeKeywords,
-                        @Param("moodKeywords") List<MoodField> moodKeywords,
-                        @Param("startTime") LocalDateTime startTime,
-                        @Param("endTime") LocalDateTime endTime,
-                        Pageable pageable); // 복합 검색
+  @Query("SELECT p FROM Plan p WHERE (:title IS NULL OR p.title LIKE %:title%) " +
+      "AND (:memberName IS NULL OR p.member.name = :memberName) " +
+      "AND (:regionName IS NULL OR p.region.name LIKE %:regionName%) " +
+      "AND (:purposeKeywords IS NULL OR EXISTS (SELECT 1 FROM p.purposeKeywords pk WHERE pk IN :purposeKeywords)) "
+      +
+      "AND (:moodKeywords IS NULL OR EXISTS (SELECT 1 FROM p.moodKeywords mk WHERE mk IN :moodKeywords)) "
+      +
+      "AND (:startTime IS NULL OR p.startTime >= :startTime) " +
+      "AND (:endTime IS NULL OR p.endTime <= :endTime)")
+  Page<Plan> findByCriteria(
+      @Param("title") String title,
+      @Param("memberName") String memberName,
+      @Param("regionName") String regionName,
+      @Param("purposeKeywords") List<PurposeField> purposeKeywords,
+      @Param("moodKeywords") List<MoodField> moodKeywords,
+      @Param("startTime") LocalDateTime startTime,
+      @Param("endTime") LocalDateTime endTime,
+      Pageable pageable); // 복합 검색
 }
