@@ -1,4 +1,3 @@
-// selfPlan.js - selfPlanContent 동적 생성 및 관리
 let currentPlanData = null;
 let currentRouteData = null;
 
@@ -8,41 +7,27 @@ TITLE - 계획 완성 페이지 초기화
 */
 export function initPlanContent() {
   console.log("initPlanContent 시작");
-
   const planResponseDto = JSON.parse(sessionStorage.getItem('planResponseDto'));
   console.log("planResponseDto:", planResponseDto);
 
-  /* 
-  *@Route
-  * Sequence, TravelDistance, TravelTime, ID, PlaceId, StayTime, Memo, Polyline, TransportMode
-  */
-
-  /* 
-  * @Plan
-  Bookmarks, isShared, liks, createAt, endTime, Id, LastModified, memberId, RegionId, StartTime, Title
-   */
-
   currentPlanData = {
     places: planResponseDto.places.map((place, index) => ({
-      name: place.name, //place에 저장
-      stayTime: place.time || 60, // 기본 체류시간 60분 //Route에 저장, place에 평균 체류시간 계산됨
-      transport: place.transportMode || 'TRANSIT', // 기본 교통수단 //Route에 저장
+      name: place.name,
+      stayTime: place.time || 60,
+      transport: place.transportMode || 'TRANSIT',
       isLast: index === planResponseDto.places.length - 1,
-      memo: '', // Route에 저장
-      // visitTime: 계산 필요
+      memo: '',
     })),
     departureTime: planResponseDto.departureTime || new Date().toISOString(),
-    // arrivalTime: planResponseDto.arrivalTime,
     totalPlaces: planResponseDto.places.length,
     routeResponse: planResponseDto.routeResponse
   };
 
-  // 페이지 생성
   generatePlanContent();
-
-  // 이벤트 바인딩
   bindPlanEvents();
 }
+
+
 
 /*
 Title - 계획 내용 생성 
@@ -413,6 +398,66 @@ function bindPlanEvents() {
 
   // 제목 수정 이벤트 바인딩
   EditTitle();
+
+  // 키워드 추가 with #hashtag#
+  const editor = document.getElementById('hashtag-editor');
+  if (editor) {
+    // 한글 입력기(IME) 문제를 해결하고 더 정확한 시점에 스타일을 적용하기 위해 'keyup' 이벤트를 사용합니다.
+    editor.addEventListener('keyup', (e) => {
+      // 사용자가 스페이스바나 엔터 키를 눌러 단어 입력을 마쳤을 때 스타일을 적용합니다.
+      if (e.key === ' ' || e.key === 'Enter') {
+        const text = editor.textContent;
+
+        // 정규식으로 #다음에 공백이 아닌 문자가 오는 모든 단어(#keyword)를 찾습니다.
+        const newHtml = text.replace(/(#\S+)/g, '<span class="hashtag">$1</span>');
+
+        // 변경된 내용이 있을 경우에만 DOM을 업데이트하여 불필요한 리렌더링을 방지합니다.
+        if (editor.innerHTML !== newHtml) {
+          // 커서 위치가 초기화되는 것을 방지하기 위해 현재 커서 위치를 저장합니다.
+          const selection = window.getSelection(); // 현재 선택 영역을 가져옵니다.
+          const range = selection.getRangeAt(0); // 선택 영역의 첫 번째 Range
+          const preCaretRange = range.cloneRange(); // Range 복사
+          preCaretRange.selectNodeContents(editor); // 편집기 전체 내용을 선택
+          preCaretRange.setEnd(range.endContainer, range.endOffset); // 커서 위치까지 범위 설정
+          const caretOffset = preCaretRange.toString().length; // 커서 위치를 문자 수로 계산
+
+          editor.innerHTML = newHtml;
+
+          // 저장했던 커서 위치를 복원합니다.
+          const newRange = document.createRange(); // 새로운 Range 생성
+          const newSel = window.getSelection(); // 새로운 선택 영역 가져오기
+          let charCount = 0;
+          let found = false;
+
+          // 노드를 순회하며 커서가 위치해야 할 텍스트 노드와 위치를 찾습니다.
+          function traverse(node) {
+            if (found) return;
+            if (node.nodeType === Node.TEXT_NODE) { // 텍스트 노드인 경우
+              const nextCharCount = charCount + node.length;
+              if (caretOffset >= charCount && caretOffset <= nextCharCount) {
+                newRange.setStart(node, caretOffset - charCount);
+                found = true;
+              }
+              charCount = nextCharCount;
+            } else {
+              for (const child of node.childNodes) {
+                traverse(child);
+              }
+            }
+          }
+          traverse(editor);
+
+          // 커서 위치를 최종적으로 설정합니다.
+          if (found) {
+            newRange.collapse(true);
+            newSel.removeAllRanges();
+            newSel.addRange(newRange);
+          }
+        }
+      }
+
+    });
+  }
 }
 
 /* 
@@ -717,11 +762,8 @@ function proceedToSavePlan() {
       stayTime: place.stayTime || 60,
       memo: place.memo || '',
       travelTime: Math.floor(parseInt(currentLeg.duration, 10) / 60) || 0,
-      // previousLeg ? Math.floor(parseInt(previousLeg.duration, 10) / 60) : 0,
       travelDistance: currentLeg.distanceMeters || 0,
-      // travelDistance: previousLeg ? previousLeg.distanceMeters || 0 : 0,
       polyline: currentLeg.polyline ? currentLeg.polyline.encodedPolyline : '',
-      // polyline: previousLeg && previousLeg.polyline ? previousLeg.polyline.encodedPolyline : '',
     }
   });
 
@@ -735,6 +777,7 @@ function proceedToSavePlan() {
     endTime: null, //TODO: 도착 시간 계산 필요
     purposeKeywords: selectedPurposeKeywords,
     moodKeywords: selectedMoodKeywords,
+    keywords: userKeywords, // 사용자 정의 키워드 추가
     routes: routes,
   };
 
@@ -745,7 +788,6 @@ function proceedToSavePlan() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // [header]: token // CSRF 토큰 헤더 추가
     },
     body: JSON.stringify(planData)
   })
