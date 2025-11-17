@@ -402,61 +402,190 @@ function bindPlanEvents() {
   // 키워드 추가 with #hashtag#
   const editor = document.getElementById('hashtag-editor');
   if (editor) {
-    // 한글 입력기(IME) 문제를 해결하고 더 정확한 시점에 스타일을 적용하기 위해 'keyup' 이벤트를 사용합니다.
+
     editor.addEventListener('keyup', (e) => {
-      // 사용자가 스페이스바나 엔터 키를 눌러 단어 입력을 마쳤을 때 스타일을 적용합니다.
       if (e.key === ' ' || e.key === 'Enter') {
-        const text = editor.textContent;
+        highlightHashtagsInEditor(editor);
+      }
+    });
 
-        // 정규식으로 #다음에 공백이 아닌 문자가 오는 모든 단어(#keyword)를 찾습니다.
-        const newHtml = text.replace(/(#\S+)/g, '<span class="hashtag">$1</span>');
+    // --- 해시태그 추천 기능 ---
+    const suggestionsContainer = document.getElementById('hashtag-suggestions');
 
-        // 변경된 내용이 있을 경우에만 DOM을 업데이트하여 불필요한 리렌더링을 방지합니다.
-        if (editor.innerHTML !== newHtml) {
-          // 커서 위치가 초기화되는 것을 방지하기 위해 현재 커서 위치를 저장합니다.
-          const selection = window.getSelection(); // 현재 선택 영역을 가져옵니다.
-          const range = selection.getRangeAt(0); // 선택 영역의 첫 번째 Range
-          const preCaretRange = range.cloneRange(); // Range 복사
-          preCaretRange.selectNodeContents(editor); // 편집기 전체 내용을 선택
-          preCaretRange.setEnd(range.endContainer, range.endOffset); // 커서 위치까지 범위 설정
-          const caretOffset = preCaretRange.toString().length; // 커서 위치를 문자 수로 계산
+    if (suggestionsContainer) {
+      editor.addEventListener('input', async () => {
+        const { word } = getWordAtCaret(editor);
 
-          editor.innerHTML = newHtml;
+        if (word && word.startsWith('#')) {
+          const searchTerm = word.substring(1);
 
-          // 저장했던 커서 위치를 복원합니다.
-          const newRange = document.createRange(); // 새로운 Range 생성
-          const newSel = window.getSelection(); // 새로운 선택 영역 가져오기
-          let charCount = 0;
-          let found = false;
-
-          // 노드를 순회하며 커서가 위치해야 할 텍스트 노드와 위치를 찾습니다.
-          function traverse(node) {
-            if (found) return;
-            if (node.nodeType === Node.TEXT_NODE) { // 텍스트 노드인 경우
-              const nextCharCount = charCount + node.length;
-              if (caretOffset >= charCount && caretOffset <= nextCharCount) {
-                newRange.setStart(node, caretOffset - charCount);
-                found = true;
+          if (searchTerm.length > 0) {
+            try {
+              const response = await fetch(`/api/private/keywords/search?prefix=${encodeURIComponent(searchTerm)}`);
+              if (!response.ok) {
+                throw new Error('Server response was not ok');
               }
-              charCount = nextCharCount;
-            } else {
-              for (const child of node.childNodes) {
-                traverse(child);
-              }
+              const keywords = await response.json();
+              displaySuggestions(keywords, editor);
+            } catch (error) {
+              console.error('Error fetching keywords:', error);
+              displaySuggestions([], editor); // 오류 발생 시 추천 목록 숨기기
             }
+          } else {
+            displaySuggestions([], editor); // 검색어가 없으면 추천 목록 숨기기
           }
-          traverse(editor);
+        } else {
+          displaySuggestions([], editor); // 해시태그가 아니면 추천 목록 숨기기
+        }
+      });
+    }
+    // --- 해시태그 추천 기능 끝 ---
+  }
+}
 
-          // 커서 위치를 최종적으로 설정합니다.
-          if (found) {
-            newRange.collapse(true);
-            newSel.removeAllRanges();
-            newSel.addRange(newRange);
-          }
+/*
+Title - 해시태그 추천 관련 헬퍼 함수
+*/
+
+// 현재 캐럿(커서) 위치의 단어와 그 시작 인덱스를 찾습니다.
+function getWordAtCaret(editor) {
+  const selection = window.getSelection(); //선택 객체, 커서 위치 불러오기
+  if (selection.rangeCount === 0) return {};
+
+  const range = selection.getRangeAt(0); //첫번째 range 가져오기
+  const textNode = range.startContainer; //커서가 위치한 노드
+  const caretPos = range.startOffset; //컨테이너에서의 커서 위치(아마 단어의 끝일 경우가 가장 높겠죠?)
+
+  // 캐럿이 텍스트 노드 안에 있을 때만 작동
+  if (textNode.nodeType !== Node.TEXT_NODE) {
+    // 만약 editor의 자식으로 바로 span이 있는 경우, 그 안의 텍스트 노드를 찾아 들어갑니다.
+    if (range.startContainer.childNodes.length > 0 && range.startContainer.childNodes[range.startOffset] && range.startContainer.childNodes[range.startOffset].nodeType === Node.TEXT_NODE) {
+      textNode = range.startContainer.childNodes[range.startOffset];
+      caretPos = 0;
+    } else {
+      return {};
+    }
+  }
+
+  const content = textNode.textContent; //div에 생성된 텍스트 content 전부(span포함X 이미 생성된 키워드는 제외됨)
+  const wordStartIndex = content.lastIndexOf(' ', caretPos - 1) + 1; //단어 앞에 공백을 찾아서 시작 위치로
+  let wordEndIndex = content.indexOf(' ', caretPos); //단어 끝 위치
+  if (wordEndIndex === -1) {
+    wordEndIndex = content.length;
+  }
+
+  const word = content.substring(wordStartIndex, wordEndIndex);
+  return { word, textNode, wordStartIndex, wordEndIndex };
+}
+
+// 추천 키워드를 화면에 표시합니다.
+function displaySuggestions(keywords, editor) {
+  const suggestionsContainer = document.getElementById('hashtag-suggestions');
+  suggestionsContainer.innerHTML = '';
+
+  if (keywords.length === 0) {
+    suggestionsContainer.style.display = 'none';
+    return;
+  }
+
+  keywords.forEach(keyword => {
+    const suggestionEl = document.createElement('div');
+    suggestionEl.className = 'suggestion-item';
+    suggestionEl.textContent = keyword;
+    suggestionEl.addEventListener('mousedown', (e) => {
+      e.preventDefault(); // editor의 blur 이벤트를 막기 위해 mousedown 사용
+      replaceHashtag(editor, keyword);
+    });
+    suggestionsContainer.appendChild(suggestionEl);
+  });
+
+  suggestionsContainer.style.display = 'block';
+}
+
+// 추천 키워드를 클릭했을 때, 에디터의 내용을 교체합니다.
+function replaceHashtag(editor, selectedKeyword) {
+  const { textNode, wordStartIndex, wordEndIndex } = getWordAtCaret(editor);
+  if (!textNode) return;
+
+  const originalContent = textNode.textContent;
+
+  // #을 포함하여 교체될 새 단어
+  const newWord = `#${selectedKeyword} `;
+  const newContent = originalContent.substring(0, wordStartIndex) + newWord + originalContent.substring(wordEndIndex);
+
+  textNode.textContent = newContent;
+
+  // 추천 목록 숨기기
+  const suggestionsContainer = document.getElementById('hashtag-suggestions');
+  suggestionsContainer.innerHTML = '';
+  suggestionsContainer.style.display = 'none';
+
+  // 중요: highlightHashtagsInEditor를 호출하기 전에 캐럿 위치를 먼저 설정합니다.
+  // 이렇게 해야 highlight 함수가 올바른 최신 캐럿 위치를 저장할 수 있습니다.
+  const selection = window.getSelection();
+  const range = document.createRange();
+  const newCaretPosition = wordStartIndex + newWord.length;
+
+  if (textNode && textNode.textContent) {
+    range.setStart(textNode, Math.min(newCaretPosition, textNode.textContent.length));
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  // 스타일 재적용 및 최종 커서 위치 복원
+  highlightHashtagsInEditor(editor);
+}
+
+/*
+Title - 해시태그 스타일 및 커서 위치 관리
+* editor의 전체 텍스트를 읽어 해시태그를 찾아 span으로 감싸고, 기존 커서 위치를 복원합니다.
+*/
+function highlightHashtagsInEditor(editor) {
+  // 커서 위치가 초기화되는 것을 방지하기 위해 현재 커서 위치를 저장합니다.
+  const selection = window.getSelection();
+  if (selection.rangeCount === 0) return;
+
+  const range = selection.getRangeAt(0);
+  const preCaretRange = range.cloneRange(); // 커서 위치 저장
+  preCaretRange.selectNodeContents(editor);
+  preCaretRange.setEnd(range.endContainer, range.endOffset); //range 끝점 설정
+  const caretOffset = preCaretRange.toString().length;
+
+  const text = editor.textContent;
+  const newHtml = text.replace(/(#\S+)/g, '<span class="hashtag">$1</span>');
+
+  if (editor.innerHTML !== newHtml) {
+    editor.innerHTML = newHtml;
+
+    // 저장했던 커서 위치를 복원합니다.
+    const newRange = document.createRange();
+    const newSel = window.getSelection();
+    let charCount = 0;
+    let found = false;
+
+    function traverse(node) {
+      if (found) return;
+      if (node.nodeType === Node.TEXT_NODE) {
+        const nextCharCount = charCount + node.length;
+        if (caretOffset >= charCount && caretOffset <= nextCharCount) {
+          newRange.setStart(node, caretOffset - charCount); //캐럿(range) 위치 설정
+          found = true;
+        }
+        charCount = nextCharCount;
+      } else {
+        for (const child of node.childNodes) {
+          traverse(child);
         }
       }
+    }
+    traverse(editor);
 
-    });
+    if (found) {
+      newRange.collapse(true); //range 축소(range 시작점과 끝점을 동일하게 접어줌)
+      newSel.removeAllRanges(); //기존 선택 영역 제거(range제거)
+      newSel.addRange(newRange); //저장했던 커서 위치 복원(캐럿 위치 설정)
+    }
   }
 }
 
@@ -722,6 +851,14 @@ Title - 실제 계획 저장을 진행하는 함수
 */
 function proceedToSavePlan() {
 
+  // 사용자가 직접 입력한 해시태그 추출
+  const editor = document.getElementById('hashtag-editor');
+  const hashtagText = editor ? editor.textContent : '';
+  // 정규식을 사용하여 #으로 시작하는 모든 단어를 찾습니다.
+  const hashtagMatches = hashtagText.match(/#(\S+)/g) || [];
+  // '#' 문자를 제거하여 순수 키워드만 추출합니다.
+  const userKeywords = hashtagMatches.map(tag => tag.substring(1));
+
   //계획 데이터 생성
   const selectedPurposeKeywords = Array.from(document.querySelectorAll('#purposeKeywords .keyword-btn.selected'))
     .map(btn => btn.dataset.keyword);
@@ -777,13 +914,12 @@ function proceedToSavePlan() {
     endTime: null, //TODO: 도착 시간 계산 필요
     purposeKeywords: selectedPurposeKeywords,
     moodKeywords: selectedMoodKeywords,
-    keywords: userKeywords, // 사용자 정의 키워드 추가
+    keywords: userKeywords,
     routes: routes,
   };
 
   console.log("저장할 계획 데이터:", JSON.stringify(planData, null, 2));
 
-  // 서버로 전송 (CSRF 토큰 포함)
   fetch('/api/private/plans', {
     method: 'POST',
     headers: {
