@@ -131,7 +131,7 @@
 
 .day-card-body::before {
   position: absolute;
-  left: 26px;
+  left: 28px;
   width: 2px;
   height: 110%;
   content: '';
@@ -603,4 +603,52 @@
   border-radius: 8px;
   color: #ff6b6b;
   text-align: center;
+}
+
+/* 해시태그 편집기 스타일 */
+.plan-description-area {
+  width: 100%;
+  padding: 0 10px;
+
+}
+
+.plan-description-area h4 {
+  font-size: 12px;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+
+}
+
+.editable-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px 12px;
+  background-color: rgba(51, 51, 51, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  outline: none;
+  transition: border-color 0.3s ease;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+
+}
+
+.editable-textarea:focus {
+  border-color: #c154ec;
+
+}
+
+.editable-textarea[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+
+}
+
+.hashtag {
+  color: #f0659b;
+  font-weight: 500;
 }
