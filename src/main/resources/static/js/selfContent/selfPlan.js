@@ -1,3 +1,7 @@
+/* 
+self 메뉴 제출 이후 계획 완성 페이지 관련 코드임
+ */
+
 let currentPlanData = null;
 let currentRouteData = null;
 
@@ -68,11 +72,20 @@ function generatePlanContent() {
   setTimeout(() => {
     updateSvgBoxes();
   }, 0);
+
+  const dayTitleText = document.querySelector('.dayTitleText');
+  if (dayTitleText) {
+    dayTitleText.removeAttribute('readonly');
+    dayTitleText.classList.add('editable');
+    dayTitleText.focus();
+    dayTitleText.setSelectionRange(dayTitleText.value.length, dayTitleText.value.length);
+  }
 }
 
 /* 
 Title - svg 수정
-* 그건데, 첫번째 카드랑 마지막 카드 왼쪽에 바 세워둔거 가리기
+* 첫번째 카드랑 마지막 카드 왼쪽에 바 세워둔거 가리기
+* TODO: CSS로 하는게 더 좋아보임
 */
 function updateSvgBoxes() {
   // 기존 스타일 시트가 있다면 제거
@@ -402,10 +415,11 @@ function bindPlanEvents() {
   // 키워드 추가 with #hashtag#
   const editor = document.getElementById('hashtag-editor');
   if (editor) {
-
     editor.addEventListener('keyup', (e) => {
       if (e.key === ' ' || e.key === 'Enter') {
-        highlightHashtagsInEditor(editor);
+        requestAnimationFrame(() => {
+          hashtaggingver5(editor);
+        });
       }
     });
 
@@ -421,7 +435,7 @@ function bindPlanEvents() {
 
           if (searchTerm.length > 0) {
             try {
-              const response = await fetch(`/api/private/keywords/search?prefix=${encodeURIComponent(searchTerm)}`);
+              const response = await fetch(`/api/public/keywords/search?prefix=${encodeURIComponent(searchTerm)}`);
               if (!response.ok) {
                 throw new Error('Server response was not ok');
               }
@@ -438,8 +452,178 @@ function bindPlanEvents() {
           displaySuggestions([], editor); // 해시태그가 아니면 추천 목록 숨기기
         }
       });
+
+      // 에디터 외부를 클릭하여 포커스를 잃었을 때 추천 목록을 숨깁니다.
+      editor.addEventListener('blur', () => {
+        // 추천 항목 클릭 시 blur 이벤트가 먼저 발생하는 것을 막기 위해 약간의 지연을 줍니다.
+        // 이 지연 시간 동안 추천 항목의 mousedown/click 이벤트가 먼저 처리될 수 있습니다.
+        setTimeout(() => {
+          if (suggestionsContainer) {
+            suggestionsContainer.style.display = 'none';
+          }
+        }, 150);
+      });
     }
     // --- 해시태그 추천 기능 끝 ---
+  }
+
+}
+//Title - 해시태그 fragment 생성
+function createHashtagFragment(textContent, matches, hashtagRegex) {
+  let lastIndex = 0;
+
+  const fragment = document.createDocumentFragment();
+  for (const match of matches) {
+    const hashtag = match[0];
+    const start = match.index; //해시태그 시작 인덱스
+
+    if (start > lastIndex) {// textBefore 추가
+      fragment.appendChild(
+        document.createTextNode(textContent.slice(lastIndex, start))
+      );
+    }
+
+    const span = document.createElement('span');
+    span.textContent = hashtag;
+    span.className = 'hashtag';
+    span.contentEditable = 'false';
+    fragment.appendChild(span);
+
+    lastIndex = start + hashtag.length; //해시태그 끝 인덱스
+  }
+
+  // textAfter 추가 (빈 경우에도 빈 TextNode)
+  const textAfter = textContent.slice(lastIndex);
+  const textAfterNode = document.createTextNode(textAfter || '');
+  fragment.appendChild(textAfterNode);
+
+  return { fragment, textAfterNode };
+}
+
+//Title - 커서 위치 재설정
+function setNewRangeVer2(editor2, selection, textAfterNode) {
+  const newRange = document.createRange();
+
+  if (textAfterNode.textContent.trim() === '') {
+    console.log('true: textAfterNode is empty string');
+    newRange.setStart(textAfterNode, textAfterNode.length);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  } else {
+    console.log('false: textAfterNode is NOT empty string');
+    newRange.setStart(textAfterNode, 0);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+
+  requestAnimationFrame(() => {
+    editor2.focus();
+  });
+}
+
+/* 
+Title - 해시태그 강조 표시
+*/
+function hashtaggingver5(editor2) {
+  console.log('--function hashtaggingver5--');
+  console.log('--function hashtaggingver5--');
+  console.log('--function hashtaggingver5--');
+
+  const selection = window.getSelection();
+  const currentNode = selection.getRangeAt(0).commonAncestorContainer;
+  const currentNodeParentElement = currentNode.parentElement.nodeName;
+  console.log('currentNode:', currentNode);
+  console.log('currentNode parent nodeName:', currentNode.parentElement.nodeName, '&& currentNode parentElement:', currentNode.parentElement);
+  const hashtagRegex = /#[^\s]+(?=\s|$|[.,!?;:\)\]\}])/g;
+
+  if (currentNodeParentElement === 'DIV' && currentNode.parentElement.parentNode === editor2) {
+    console.log('current node is DIV under editor2');
+
+    //1. 몇번째 줄인지 파악하기 (줄은 div로 구분)
+    const cloneRange = selection.getRangeAt(0).cloneRange();
+    const editorChildren = Array.from(editor2.childNodes);
+    console.log('editorChildren:', editorChildren);
+
+    //여기에 div태그들을 담아줌 (2번째 줄은 index 0)
+    let divList = [];
+    for (const node of editorChildren) {
+      if (node.nodeName === 'DIV') {
+        divList.push(node);
+        console.log('divList:', divList);
+      }
+    }
+    //divList에서 현재 노드가 몇번째 div인지 파악
+    const currentDivIndex = divList.findIndex(divNode =>
+      divNode.contains(selection.getRangeAt(0).commonAncestorContainer)
+    );
+    console.log('currentDivIndex:', currentDivIndex);
+    //2. 그 줄에서 몇번째 노드인지 파악하기 (노드는 textNode or spanNode)
+
+    //div 하위 노드들
+    const ArrayChildrenUnderDiv = Array.from(currentNode.parentElement.childNodes);
+    console.log('currentNode.parentElement:', currentNode.parentElement);
+    console.log('ArrayChildrenUnderDiv:', ArrayChildrenUnderDiv);
+    //div 하위 노드들 중 현재 노드가 몇번째인지(index반환)
+    const currentNodeInDivIndex = ArrayChildrenUnderDiv.findIndex(node =>
+      node.contains(selection.getRangeAt(0).commonAncestorContainer)
+    );
+    console.log('currentNodeInDivIndex:', currentNodeInDivIndex);
+
+    //3. 그 노드에서 해시태그 파악, createFragment생성
+    const currentNodeTextContent = currentNode.textContent;
+    console.log('currentNodeTextContent:', currentNodeTextContent);
+    const matches = Array.from(currentNodeTextContent.matchAll(hashtagRegex));
+    if (matches.length === 0) {
+      console.log('No hashtags found in the current node.');
+      return;
+    }
+    console.log('matches:', matches);
+    // const fragment = document.createDocumentFragment();
+    const { fragment, textAfterNode } = createHashtagFragment(currentNodeTextContent, matches, hashtagRegex);
+    console.log('fragment:', fragment, 'is Node?', fragment instanceof Node, 'is DocumentFragment?', fragment instanceof DocumentFragment);
+
+    //4. 노드 교체 (replaceChild)
+    const afterCurrentDiv = divList[currentDivIndex];
+    afterCurrentDiv.replaceChild(fragment, ArrayChildrenUnderDiv[currentNodeInDivIndex]);
+    editor2.normalize();
+
+    //5. 커서 위치 재설정 (기존 노드는 파괴됐으니, 기존 줄, 기존 노드 인덱스로 넘기기)
+    setNewRangeVer2(editor2, selection, textAfterNode);
+    //6. sex
+  } else {
+    console.log('current node is NOT DIV under editor2');
+    const cloneRange = selection.getRangeAt(0).cloneRange();
+    //div 하위 노드들
+    const ArrayChildren = Array.from(currentNode.parentElement.childNodes);
+    const currentNodeIndex = ArrayChildren.findIndex(node =>
+      node.contains(selection.getRangeAt(0).commonAncestorContainer)
+    );
+    console.log('ArrayChildren:', ArrayChildren);
+    console.log('current node index in DIV:', currentNodeIndex);
+
+    const textContent = currentNode.textContent;//text 반환
+    const matches = Array.from(textContent.matchAll(hashtagRegex));
+    console.log('currentNode', currentNode);
+    console.log('textContent', textContent);
+    console.log('matches:', matches);
+
+    if (matches.length === 0) {
+      console.log('No hashtags found in the current node.');
+      return;
+    }
+    console.log('matches:', matches);
+
+    const { fragment, textAfterNode } = createHashtagFragment(textContent, matches, hashtagRegex);
+
+    currentNode.parentElement.replaceChild(fragment, currentNode);
+
+    editor2.normalize();
+
+    const afterArrayChildren = Array.from(editor2.childNodes)
+    console.log('afterArrayChildren:', afterArrayChildren);
+    setNewRangeVer2(editor2, selection, textAfterNode);
   }
 }
 
@@ -454,7 +638,7 @@ function getWordAtCaret(editor) {
 
   const range = selection.getRangeAt(0); //첫번째 range 가져오기
   const textNode = range.startContainer; //커서가 위치한 노드
-  const caretPos = range.startOffset; //컨테이너에서의 커서 위치(아마 단어의 끝일 경우가 가장 높겠죠?)
+  const caretPos = range.startOffset; //컨테이너에서의 커서 위치
 
   // 캐럿이 텍스트 노드 안에 있을 때만 작동
   if (textNode.nodeType !== Node.TEXT_NODE) {
@@ -478,7 +662,9 @@ function getWordAtCaret(editor) {
   return { word, textNode, wordStartIndex, wordEndIndex };
 }
 
-// 추천 키워드를 화면에 표시합니다.
+/*
+Title - 추천 키워드를 화면에 표시합니다.
+ */
 function displaySuggestions(keywords, editor) {
   const suggestionsContainer = document.getElementById('hashtag-suggestions');
   suggestionsContainer.innerHTML = '';
@@ -502,7 +688,9 @@ function displaySuggestions(keywords, editor) {
   suggestionsContainer.style.display = 'block';
 }
 
-// 추천 키워드를 클릭했을 때, 에디터의 내용을 교체합니다.
+/*
+Title - 추천 키워드를 클릭했을 때, 에디터의 내용을 교체합니다.
+ */
 function replaceHashtag(editor, selectedKeyword) {
   const { textNode, wordStartIndex, wordEndIndex } = getWordAtCaret(editor);
   if (!textNode) return;
@@ -531,61 +719,6 @@ function replaceHashtag(editor, selectedKeyword) {
     range.collapse(true);
     selection.removeAllRanges();
     selection.addRange(range);
-  }
-
-  // 스타일 재적용 및 최종 커서 위치 복원
-  highlightHashtagsInEditor(editor);
-}
-
-/*
-Title - 해시태그 스타일 및 커서 위치 관리
-* editor의 전체 텍스트를 읽어 해시태그를 찾아 span으로 감싸고, 기존 커서 위치를 복원합니다.
-*/
-function highlightHashtagsInEditor(editor) {
-  // 커서 위치가 초기화되는 것을 방지하기 위해 현재 커서 위치를 저장합니다.
-  const selection = window.getSelection();
-  if (selection.rangeCount === 0) return;
-
-  const range = selection.getRangeAt(0);
-  const preCaretRange = range.cloneRange(); // 커서 위치 저장
-  preCaretRange.selectNodeContents(editor);
-  preCaretRange.setEnd(range.endContainer, range.endOffset); //range 끝점 설정
-  const caretOffset = preCaretRange.toString().length;
-
-  const text = editor.textContent;
-  const newHtml = text.replace(/(#\S+)/g, '<span class="hashtag">$1</span>');
-
-  if (editor.innerHTML !== newHtml) {
-    editor.innerHTML = newHtml;
-
-    // 저장했던 커서 위치를 복원합니다.
-    const newRange = document.createRange();
-    const newSel = window.getSelection();
-    let charCount = 0;
-    let found = false;
-
-    function traverse(node) {
-      if (found) return;
-      if (node.nodeType === Node.TEXT_NODE) {
-        const nextCharCount = charCount + node.length;
-        if (caretOffset >= charCount && caretOffset <= nextCharCount) {
-          newRange.setStart(node, caretOffset - charCount); //캐럿(range) 위치 설정
-          found = true;
-        }
-        charCount = nextCharCount;
-      } else {
-        for (const child of node.childNodes) {
-          traverse(child);
-        }
-      }
-    }
-    traverse(editor);
-
-    if (found) {
-      newRange.collapse(true); //range 축소(range 시작점과 끝점을 동일하게 접어줌)
-      newSel.removeAllRanges(); //기존 선택 영역 제거(range제거)
-      newSel.addRange(newRange); //저장했던 커서 위치 복원(캐럿 위치 설정)
-    }
   }
 }
 
