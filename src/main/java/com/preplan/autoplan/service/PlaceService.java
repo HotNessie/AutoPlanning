@@ -3,9 +3,7 @@ package com.preplan.autoplan.service;
 import com.preplan.autoplan.repository.RegionRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +12,6 @@ import com.preplan.autoplan.domain.planPlace.Region;
 import com.preplan.autoplan.dto.place.ComplexSearchDto;
 import com.preplan.autoplan.dto.place.PlaceCreateRequestDto;
 import com.preplan.autoplan.dto.place.PlaceResponseDto;
-import com.preplan.autoplan.dto.region.RegionResponseDto;
 import com.preplan.autoplan.exception.PlaceNotFoundException;
 import com.preplan.autoplan.repository.PlaceRepository;
 

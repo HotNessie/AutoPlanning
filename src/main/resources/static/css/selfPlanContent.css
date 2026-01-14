@@ -51,7 +51,7 @@
   background-color: transparent;
   padding: 2px 5px;
   margin: 0;
-  width: auto;
+  width: 80%;
   cursor: default;
   outline: none;
   transition: all 0.2s ease;
@@ -609,7 +609,7 @@
 .plan-description-area {
   width: 100%;
   padding: 0 10px;
-
+  position: relative;
 }
 
 .plan-description-area h4 {
@@ -631,9 +631,9 @@
   color: rgba(255, 255, 255, 0.9);
   outline: none;
   transition: border-color 0.3s ease;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-
+  /* white-space: pre-wrap; */
+  /* word-wrap: break-word; */
+  margin-top: 12px;
 }
 
 .editable-textarea:focus {
@@ -651,4 +651,41 @@
 .hashtag {
   color: #f0659b;
   font-weight: 500;
+}
+
+#hashtag-suggestions {
+  margin-top: 10px;
+  background-color: rgba(60, 60, 60, 0.9);
+  box-shadow: 0px 0px 3px 3px rgba(255, 255, 255, 0.2);
+  min-height: 40px;
+  position: absolute;
+  min-width: 350px;
+  z-index: 5;
+  display: none;
+  max-height: 300px;
+  overflow: auto;
+}
+
+#hashtag-suggestions::-webkit-scrollbar {
+  width: 2px;
+}
+
+#hashtag-suggestions::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border-radius: 4px;
+}
+
+#hashtag-suggestions::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.3);
+  /* 스크롤바 트랙 색상 */
+}
+
+#hashtag-suggestions div {
+  cursor: pointer;
+  padding: 10px;
+}
+
+#hashtag-suggestions div:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
 }

@@ -36,7 +36,7 @@ public class QRoute extends EntityPathBase<Route> {
 
     public final NumberPath<Long> stayTime = createNumber("stayTime", Long.class);
 
-    public final StringPath transportMode = createString("transportMode");
+    public final EnumPath<com.preplan.autoplan.domain.keyword.Transport> transportMode = createEnum("transportMode", com.preplan.autoplan.domain.keyword.Transport.class);
 
     public final NumberPath<Integer> travelDistance = createNumber("travelDistance", Integer.class);
 

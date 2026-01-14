@@ -36,21 +36,13 @@ public class QPlace extends EntityPathBase<Place> {
 
     public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
 
-    public final ListPath<PlaceKeyword, QPlaceKeyword> moodKeywords = this.<PlaceKeyword, QPlaceKeyword>createList("moodKeywords", PlaceKeyword.class, QPlaceKeyword.class, PathInits.DIRECT2);
-
     public final StringPath name = createString("name");
 
     public final StringPath placeId = createString("placeId");
 
-    public final ListPath<PlaceKeyword, QPlaceKeyword> purposeKeywords = this.<PlaceKeyword, QPlaceKeyword>createList("purposeKeywords", PlaceKeyword.class, QPlaceKeyword.class, PathInits.DIRECT2);
-
     public final QRegion region;
 
     public final NumberPath<Integer> searchCount = createNumber("searchCount", Integer.class);
-
-    public final ListPath<com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField, EnumPath<com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField>> topMoodKeywords = this.<com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField, EnumPath<com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField>>createList("topMoodKeywords", com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField.class, EnumPath.class, PathInits.DIRECT2);
-
-    public final ListPath<com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField, EnumPath<com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField>> topPurposeKeywords = this.<com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField, EnumPath<com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField>>createList("topPurposeKeywords", com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField.class, EnumPath.class, PathInits.DIRECT2);
 
     public QPlace(String variable) {
         this(Place.class, forVariable(variable), INITS);
