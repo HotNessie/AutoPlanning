@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.preplan.autoplan.domain.planPlace.Plan;
+
 import com.preplan.autoplan.dto.plan.PlanCreateRequestDto;
+import com.preplan.autoplan.dto.plan.PlanKeywordsUpdateRequestDto;
 import com.preplan.autoplan.dto.plan.PlanResponseDto;
 import com.preplan.autoplan.googleApi.ComputeRoutesRequest;
 import com.preplan.autoplan.googleApi.ComputeRoutesResponse;
@@ -40,6 +42,9 @@ public class PlanApiController {
    * 경로 찾기 - computeRoute
    * 계획 생성 - savePlanString
    * 내 계획 list 조회 - getMyPlans
+   * 단일 계획 상세 조회 - getPlanById
+   * 모든 계획 조회 (페이징) - getPlans
+   * 계획 검색(제목, 지역, 키워드) - searchPlans
    * 
    */
 
@@ -93,8 +98,7 @@ public class PlanApiController {
       @JsonProperty("departureTime") @JsonSerialize(using = ToStringSerializer.class) LocalDateTime departureTime) {
   }
 
-  // Title - 계획 저장
-  // TODO: 사용자 인증 정보에서 member뽑아 오는게 맞지 않을까?
+  // Title - 계획 저장 ?이름이 왜 String인거임??
   @PostMapping("/api/private/plans")
   public ResponseEntity<Plan> savePlanString(@RequestBody PlanCreateRequestDto dto, Authentication authentication) {
 
@@ -111,12 +115,6 @@ public class PlanApiController {
   @GetMapping("/api/private/my-plans")
   public ResponseEntity<Page<PlanResponseDto>> getMyPlans(Authentication authentication, Pageable pageable) {
     String email = authentication.getName();
-    // List<Plan> myPlans = planService.findByEmail(email);
-    // log.info("Found {} plans for email: {}", myPlans.size(), email);
-    // List<PlanResponseDto> responseDtos = myPlans.stream()
-    // .map(PlanResponseDto::fromEntity)
-    // .toList();
-    // return ResponseEntity.ok(responseDtos);
     Page<Plan> myPlansPage = planService.findByEmail(email, pageable);
     log.info("Found {} plans for email: {}", myPlansPage.getTotalElements(), email);
     Page<PlanResponseDto> responseDtosPage = myPlansPage.map(PlanResponseDto::fromEntity);
@@ -151,5 +149,57 @@ public class PlanApiController {
     Page<Plan> plans = planService.findPlansCriteria(title, region, keywords, pageable);
     Page<PlanResponseDto> responseDtos = plans.map(PlanResponseDto::fromEntity);
     return ResponseEntity.ok(responseDtos);
+  }
+
+  // Title - 계획 설명 수정
+  @PatchMapping("/api/private/plan/{planId}/description")
+  public ResponseEntity<Void> editPlanDescription(
+      @PathVariable Long planId,
+      @RequestBody Map<String, String> descriptionRequest) {
+    String description = descriptionRequest.get("description");
+    log.info("Editing description for planId {}: {}", planId, description);
+    planService.editDescription(planId, description);
+    return ResponseEntity.noContent().build();
+  }
+
+  // Title - 키워드 수정
+  @PatchMapping("/api/private/plan/{planId}/keywords")
+  public ResponseEntity<Void> updatePlanKeywords(
+      @PathVariable Long planId,
+      @RequestBody PlanKeywordsUpdateRequestDto requestDto) {
+    log.info("Updating keywords for planId {}: {}", planId, requestDto.keywords());
+    planService.updateKeywords(planId, requestDto.keywords());
+    return ResponseEntity.ok().build();
+  }
+
+  // Title - 제목 수정
+  @PatchMapping("/api/private/plan/{planId}/title")
+  public ResponseEntity<Void> editPlanTitle(
+      @PathVariable Long planId,
+      @RequestBody Map<String, String> titleRequest) {
+    String title = titleRequest.get("title");
+    log.info("Editing title for planId {}: {}", planId, title);
+    planService.editTitle(planId, title);
+    return ResponseEntity.noContent().build();
+  }
+
+  // Title - endTime 수정
+  @PatchMapping("/api/private/plan/{planId}/endTime")
+  public ResponseEntity<Void> editPlanEndTime(
+      @PathVariable Long planId,
+      @RequestBody Map<String, Long> durationRequest) {
+    long duration = durationRequest.get("duration");
+    log.info("Editing endTime for planId {}: adding duration {} seconds", planId, duration);
+    planService.editEndTime(planId, duration);
+    return ResponseEntity.noContent().build();
+  }
+
+  // Title - 기존 계획에 장소 추가
+  @PostMapping("/api/private/plan/{planId}/add-places")
+  public ResponseEntity<Void> addPlacesToPlan(
+      @PathVariable Long planId,
+      @RequestBody ComputeRoutesRequest requestDto) {
+    planService.addPlacesToPlan(planId, requestDto);
+    return ResponseEntity.ok().build();
   }
 }

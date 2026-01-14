@@ -14,8 +14,6 @@ public record PlaceResponseDto(
     Double latitude,
     Double longitude,
     Integer searchCount,
-    List<String> topPurposeKeywords,
-    List<String> topMoodKeywords,
     Long averageStayTime,
     Long regionId) {
   public static PlaceResponseDto fromEntity(Place place) {
@@ -27,8 +25,6 @@ public record PlaceResponseDto(
         place.getLatitude(),
         place.getLongitude(),
         place.getSearchCount(),
-        place.getTopPurposeKeywords().stream().map(Enum::name).collect(Collectors.toList()),
-        place.getTopMoodKeywords().stream().map(Enum::name).collect(Collectors.toList()),
         place.getAverageStayTime(),
         place.getRegion().getId());
   }

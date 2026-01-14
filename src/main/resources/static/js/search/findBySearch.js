@@ -5,6 +5,10 @@ import { getMapInstance } from '../store/map-store.js';
 
 //TODO PlaceService로 바꾸면서 페이지네이션 추가
 //Title - 장소 검색 (Google API)
+/* 
+* @inputElementId 검색어가 입력된 input 필드의 id에서 value추출해서 검색
+* @return places 검색된 장소 배열 반환
+*/
 export async function findBySearch(inputElementId) {
   console.log("findBySearch 실행");
   const { Place } = await google.maps.importLibrary('places');

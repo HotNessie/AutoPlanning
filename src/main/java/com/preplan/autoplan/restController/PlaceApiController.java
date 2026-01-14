@@ -1,9 +1,6 @@
 package com.preplan.autoplan.restController;
 
-import com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField;
-import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import com.preplan.autoplan.domain.planPlace.Place;
-import com.preplan.autoplan.dto.place.ComplexSearchDto;
 import com.preplan.autoplan.dto.place.PlaceCreateRequestDto;
 import com.preplan.autoplan.dto.place.PlaceResponseDto;
 import com.preplan.autoplan.exception.PlaceNotFoundException;
@@ -62,7 +59,6 @@ public class PlaceApiController {
   }
 
   // Title - 장소 생성 또는 업데이트
-  // @PostMapping("/api/private/places")
   @PostMapping("/api/public/places")
   public ResponseEntity<PlaceResponseDto> createOrUpdatePlace(@RequestBody PlaceCreateRequestDto place) {
     log.info("장소 생성/업데이트 요청: {}", place);
@@ -75,62 +71,72 @@ public class PlaceApiController {
     }
   }
 
-  // Title - 키워드로 장소 검색
-  @GetMapping("/api/public/places/keywords")
-  public ResponseEntity<List<PlaceResponseDto>> searchKeywordPlaces(
-      @RequestParam(required = false) List<PurposeField> purposeKeywords,
-      @RequestParam(required = false) List<MoodField> moodKeywords) {
-    log.info("키워드로 장소 검색 요청: 목적={}, 기분={}", purposeKeywords, moodKeywords);
-    ComplexSearchDto complexSearchDto = new ComplexSearchDto(
-        null, null, null, null, null, null, null, purposeKeywords, moodKeywords);
-    try {
-      List<PlaceResponseDto> places = placeService.searchPlaces(complexSearchDto);
-      if (places.isEmpty()) {
-        log.warn("키워드 장소 검색 결과가 없습니다: 목적={}, 기분={}", purposeKeywords, moodKeywords);
-        return ResponseEntity.notFound().build();
-      }
-      return ResponseEntity.ok(places);
-    } catch (Exception e) {
-      log.error("키워드 검색 중 오류 발생: {}", e.getMessage());
-      return ResponseEntity.status(500).body(null);
-    }
-  }
-
-  // Title - 지역으로 검색
-  @GetMapping("/api/public/places/region")
-  public ResponseEntity<List<PlaceResponseDto>> searchPlacesByRegion(
-      @RequestParam String regionName) {
-    log.info("지역으로 장소 검색 요청: {}", regionName);
-    try {
-      ComplexSearchDto complexDto = new ComplexSearchDto(
-          null, regionName, null, null, null, null, null, null, null);
-      List<PlaceResponseDto> places = placeService.searchPlaces(complexDto);
-      if (places.isEmpty()) {
-        log.warn("region 장소 검색 결과가 없습니다: {}", regionName);
-        return ResponseEntity.notFound().build();
-      }
-      return ResponseEntity.ok(places);
-    } catch (Exception e) {
-      log.error("지역 검색 중 오류 발생: {}", e.getMessage());
-      return ResponseEntity.status(500).body(null);
-    }
-  }
-
-  // Title - 복합 검색
-  @PostMapping("/api/public/places/search/complex")
-  public ResponseEntity<List<PlaceResponseDto>> searchPlaces(
-      @RequestBody ComplexSearchDto complexSearchDto) {
-    log.info("복합 검색 요청: {}", complexSearchDto);
-    try {
-      List<PlaceResponseDto> places = placeService.searchPlaces(complexSearchDto);
-      if (places.isEmpty()) {
-        log.warn("복합 검색 결과가 없습니다: ", complexSearchDto);
-        return ResponseEntity.notFound().build();
-      }
-      return ResponseEntity.ok(places);
-    } catch (Exception e) {
-      log.error("복합 검색 중 오류 발생: {}", e.getMessage());
-      return ResponseEntity.status(500).body(null);
-    }
-  }
+  // TODO: searchPlaces 복합 검색 관련임. place에 keyword부여 이후에 다시 진행
+  /*
+   * // Title - 키워드로 장소 검색
+   * 
+   * @GetMapping("/api/public/places/keywords")
+   * public ResponseEntity<List<PlaceResponseDto>> searchKeywordPlaces(
+   * 
+   * @RequestParam(required = false) List<PurposeField> purposeKeywords,
+   * 
+   * @RequestParam(required = false) List<MoodField> moodKeywords) {
+   * log.info("키워드로 장소 검색 요청: 목적={}, 기분={}", purposeKeywords, moodKeywords);
+   * ComplexSearchDto complexSearchDto = new ComplexSearchDto(
+   * null, null, null, null, null, null, null, purposeKeywords, moodKeywords);
+   * try {
+   * List<PlaceResponseDto> places = placeService.searchPlaces(complexSearchDto);
+   * if (places.isEmpty()) {
+   * log.warn("키워드 장소 검색 결과가 없습니다: 목적={}, 기분={}", purposeKeywords, moodKeywords);
+   * return ResponseEntity.notFound().build();
+   * }
+   * return ResponseEntity.ok(places);
+   * } catch (Exception e) {
+   * log.error("키워드 검색 중 오류 발생: {}", e.getMessage());
+   * return ResponseEntity.status(500).body(null);
+   * }
+   * }
+   * 
+   * // Title - 지역으로 검색
+   * 
+   * @GetMapping("/api/public/places/region")
+   * public ResponseEntity<List<PlaceResponseDto>> searchPlacesByRegion(
+   * 
+   * @RequestParam String regionName) {
+   * log.info("지역으로 장소 검색 요청: {}", regionName);
+   * try {
+   * ComplexSearchDto complexDto = new ComplexSearchDto(
+   * null, regionName, null, null, null, null, null, null, null);
+   * List<PlaceResponseDto> places = placeService.searchPlaces(complexDto);
+   * if (places.isEmpty()) {
+   * log.warn("region 장소 검색 결과가 없습니다: {}", regionName);
+   * return ResponseEntity.notFound().build();
+   * }
+   * return ResponseEntity.ok(places);
+   * } catch (Exception e) {
+   * log.error("지역 검색 중 오류 발생: {}", e.getMessage());
+   * return ResponseEntity.status(500).body(null);
+   * }
+   * }
+   * 
+   * // Title - 복합 검색
+   * 
+   * @PostMapping("/api/public/places/search/complex")
+   * public ResponseEntity<List<PlaceResponseDto>> searchPlaces(
+   * 
+   * @RequestBody ComplexSearchDto complexSearchDto) {
+   * log.info("복합 검색 요청: {}", complexSearchDto);
+   * try {
+   * List<PlaceResponseDto> places = placeService.searchPlaces(complexSearchDto);
+   * if (places.isEmpty()) {
+   * log.warn("복합 검색 결과가 없습니다: ", complexSearchDto);
+   * return ResponseEntity.notFound().build();
+   * }
+   * return ResponseEntity.ok(places);
+   * } catch (Exception e) {
+   * log.error("복합 검색 중 오류 발생: {}", e.getMessage());
+   * return ResponseEntity.status(500).body(null);
+   * }
+   * }
+   */
 }

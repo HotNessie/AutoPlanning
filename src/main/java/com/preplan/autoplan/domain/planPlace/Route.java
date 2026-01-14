@@ -1,5 +1,7 @@
 package com.preplan.autoplan.domain.planPlace;
 
+import com.preplan.autoplan.domain.keyword.Transport;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,7 +30,7 @@ public class Route {
   @Column(nullable = false)
   private int sequence;
 
-  private String transportMode;
+  private Transport transportMode;
 
   @Column(nullable = false)
   private Long stayTime;
@@ -43,7 +45,7 @@ public class Route {
   private String polyline;
 
   @Builder
-  public Route(Plan plan, Place place, int sequence, String transportMode, Long stayTime,
+  public Route(Plan plan, Place place, int sequence, Transport transportMode, Long stayTime,
       String memo, Integer travelTime, Integer travelDistance, String polyline) {
     this.plan = plan;
     this.place = place;
@@ -55,4 +57,32 @@ public class Route {
     this.travelDistance = travelDistance;
     this.polyline = polyline;
   }
+
+  // Memo 수정 메서드
+  public void setMemo(String memo) {
+    this.memo = memo;
+  }
+
+  // 체류시간 수정 메서드
+  public void setStayTime(Long stayTime) {
+    this.stayTime = stayTime;
+  }
+
+  // polyline 수정 메서드
+  public void setPolyline(String polyline) {
+    this.polyline = polyline;
+  }
+
+  // set travelTime
+  public void setTravelTime(Integer travelTime) {
+    this.travelTime = travelTime;
+  }
+
+  // set travelDistance
+  public void setTravelDistance(Integer travelDistance) {
+    this.travelDistance = travelDistance;
+  }
+
+  // 교통수단은 변경 불가 - 생성 시에만 설정(일단 구글에서 지원하지도 않아서 수정 기능은 안넣음)
+
 }

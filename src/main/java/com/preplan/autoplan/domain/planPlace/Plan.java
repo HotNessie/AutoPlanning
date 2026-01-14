@@ -1,9 +1,7 @@
 package com.preplan.autoplan.domain.planPlace;
 
-import com.preplan.autoplan.domain.keyword.SelectKeyword.MoodField;
 import com.preplan.autoplan.domain.keyword.Keyword;
 import com.preplan.autoplan.domain.keyword.PlanKeyword;
-import com.preplan.autoplan.domain.keyword.SelectKeyword.PurposeField;
 import com.preplan.autoplan.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,7 +27,7 @@ public class Plan {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  // TODO: 계획 제목이 있으면 좋을 것 같음.
+  @Column(nullable = false)
   private String title;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -46,17 +44,8 @@ public class Plan {
   @Column(nullable = false)
   private LocalDateTime endTime;
 
-  @ElementCollection
-  @CollectionTable(name = "plan_purpose_keywords", joinColumns = @JoinColumn(name = "plan_id"))
-  @Enumerated(EnumType.STRING)
-  @Column(name = "purpose_keyword")
-  private List<PurposeField> purposeKeywords = new ArrayList<>();
-
-  @ElementCollection
-  @CollectionTable(name = "plan_mood_keywords", joinColumns = @JoinColumn(name = "plan_id"))
-  @Enumerated(EnumType.STRING)
-  @Column(name = "mood_keyword")
-  private List<MoodField> moodKeywords = new ArrayList<>();
+  @Column(nullable = false)
+  private String description;
 
   @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<PlanKeyword> planKeywords = new ArrayList<>();
@@ -77,15 +66,14 @@ public class Plan {
   private LocalDateTime lastModifiedDate;
 
   @Builder
-  public Plan(Member member, String title, Region region, LocalDateTime startTime, LocalDateTime endTime,
-      List<PurposeField> purposeKeywords, List<MoodField> moodKeywords) {
+  public Plan(Member member, String title, Region region, String description, LocalDateTime startTime,
+      LocalDateTime endTime) {
     this.member = member;
     this.title = title;
     this.region = region;
+    this.description = description;
     this.startTime = startTime;
     this.endTime = endTime;
-    this.purposeKeywords = purposeKeywords != null ? purposeKeywords : new ArrayList<>();
-    this.moodKeywords = moodKeywords != null ? moodKeywords : new ArrayList<>();
   }
 
   // 좋아요 증가
@@ -117,5 +105,25 @@ public class Plan {
   // 계획 키워드 제거
   public void removeKeyword(Keyword keyword) {
     this.planKeywords.removeIf(pk -> pk.getKeyword().equals(keyword));
+  }
+
+  public void editdescription(String description) {
+    this.description = description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setStartTime(LocalDateTime startTime) {
+    this.startTime = startTime;
+  }
+
+  public void setEndTime(LocalDateTime endTime) {
+    this.endTime = endTime;
   }
 }

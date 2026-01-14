@@ -9,12 +9,37 @@ import { adjustContentWidth } from "../ui/state-manager.js";
 import { getMapInstance } from "../store/map-store.js";
 import { displayRoute } from "../map/commonRoute.js";
 import { markerManager, createMarker } from "../map/marker.js";
+import { editMyPlanDetails, addPlace } from "./myPlanDetails.js";
+import { hashtaggingver5 } from "../hashtag/hashtag.js";
 
 // --- 페이징 상태 관리 변수 ---
 let currentPage = 0;
 let isLastPage = false;
 let isLoading = false;
 let scrollListener = null; // 스크롤 리스너 참조 저장
+
+class CurrentMyPlanAndRoutes {
+  currentPlan = null;
+  currentRoutes = [];
+
+  setCurrentPlan(plan) {
+    this.currentPlan = plan;
+  }
+
+  getCurrentPlan() {
+    return this.currentPlan;
+  }
+
+  setCurrentRoutes(routes) {
+    this.currentRoutes = routes;
+  }
+
+  getCurrentRoutes() {
+    return this.currentRoutes;
+  }
+}
+export const currentMyPlanAndRoutes = new CurrentMyPlanAndRoutes();
+
 
 
 //Title - 계획 리스트 불러오기 (무한 스크롤 초기화)
@@ -103,8 +128,7 @@ export function createPlansHtml(plans) {
             <span>${formatDate(plan.startTime)} ~ ${formatDate(plan.endTime)}</span>
           </div>
           <div class="plan-keywords">
-            ${plan.purposeKeywords.map(k => `<span>#${k}</span>`).join('')}
-            ${plan.moodKeywords.map(k => `<span>#${k}</span>`).join('')}
+            ${plan.planKeywords.map(k => `<span>#${k}</span>`).join('')}
           </div>
         </div>
       </div>
@@ -142,7 +166,6 @@ function createPlanButtonEvent() {
 }
 
 //Title - 특정 planId로 계획 불러오기
-//TODO: 클릭한 계획으로 이동시키기
 export async function loadPlan(planId) {
   console.log('Load plan with ID:', planId);
   const planResponse = await fetch(`/api/public/plan/${planId}`, {
@@ -209,6 +232,20 @@ export async function loadPlan(planId) {
   }
   setTimeout(() => {
     adjustContentWidth();
+    editMyPlanDetails();
+    const myPlanEditor = document.getElementById('myPlanDescription');
+    if (myPlanEditor) {
+      myPlanEditor.addEventListener('keyup', (e) => {
+        if (e.key === 'Escape') {
+          e.target.blur();
+        } else if (e.key === 'Enter' || e.key === ' ') {
+          requestAnimationFrame(() => {
+            hashtaggingver5(myPlanEditor);
+          });
+        }
+      });
+    }
+    hashtaggingver5(myPlanEditor);
   }, 0);
 }
 
@@ -254,8 +291,11 @@ export function attachClickListenersToNewItems() {
  * @returns {string} - 생성된 HTML 문자열
  */
 export function initMyPlanDetail(plan, routes) {
-  let detailHtml = `<div class="planDetail-container">`;
-  detailHtml += `<h2 class="planDetail-title">${plan.title}</h2>`;
+  currentMyPlanAndRoutes.setCurrentPlan(plan);
+  currentMyPlanAndRoutes.setCurrentRoutes(routes);
+  let detailHtml = `<div class="planDetail-container" data-plan-id="${plan.planId}">`;
+  detailHtml += `<h2 id="planDetail-title" class="planDetail-title" contenteditable="true">${plan.title}</h2>`;
+
   detailHtml += `<ol class="planDetail-list-box">`;
 
   routes.forEach((route, index) => {
@@ -263,21 +303,21 @@ export function initMyPlanDetail(plan, routes) {
     const memo = route.memo;
 
     const placeCardHtml = `
-      <li class="planDetail-card planDetail-place-card">
+      <li class="planDetail-card planDetail-place-card" >
         <div class="myPlan-card-body">
           <span class="planDetail-day-svg-box">
             <div>
               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 48 48"><g fill="#c7d5ef"><circle cx="24" cy="24" r="12" fill-opacity="0.5" /></g><g fill="#575757"><circle cx="24" cy="24" r="6" /></g></svg>
             </div>
           </span>
-          <div class="planDetail-day-card-content-grid">
+          <div class="planDetail-day-card-content-grid"  data-route-id="${route.sequence}">
             <div class="planDetail-place-details">
-              <span class="planDetail-keyword-badge">관광</span>
+              <span class="planDetail-keyword-badge">장소</span>
               <div class="planDetail-main-content">${place.name}</div>
-              <div class="planDetail-sub-content">체류시간: ${route.stayTime}분</div>
+              <div class="planDetail-sub-content">체류시간: <span id="planDetail-stay-time${route.sequence}" contenteditable="true"> ${route.stayTime}</span>분</div>
             </div>
-            <div class="planDetail-memo-display">
-              ${memo ? memo.replace(/\n/g, '<br>') : '<span class="planDetail-no-memo">작성된 메모가 없습니다.</span>'}
+            <div class="planDetail-memo-display" contenteditable="true">
+              ${memo.trim() === '' ? '<span class="planDetail-no-memo">작성된 메모가 없습니다.</span>' : memo.replace(/\n/g, '<br>')}
             </div>
           </div>
         </div>
@@ -312,6 +352,12 @@ export function initMyPlanDetail(plan, routes) {
     }
   });
 
-  detailHtml += `</ol></div>`;
+  detailHtml += addPlace(); // 장소 추가 버튼 및 모달 HTML 추가
+  detailHtml += `</ol>`;
+
+  detailHtml += `<div id="myPlanDescription" contenteditable="true" class="editable-textarea" style="margin-bottom: 12px;"> ${plan.description.trim() === '' ? '<span class="planDetail-no-description">설명이 없습니다.</span>' : plan.description}</div>`;
+
+
+  detailHtml += `</div>`;
   return detailHtml;
 }

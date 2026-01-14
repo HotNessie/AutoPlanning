@@ -1,5 +1,6 @@
 package com.preplan.autoplan.dto.route;
 
+import com.preplan.autoplan.domain.keyword.Transport;
 import com.preplan.autoplan.domain.planPlace.Route;
 import com.preplan.autoplan.dto.place.PlaceResponseDto;
 
@@ -7,7 +8,7 @@ import com.preplan.autoplan.dto.place.PlaceResponseDto;
 public record RouteResponseDto(
     Integer sequence,
     PlaceResponseDto place,
-    String transportMode,
+    Transport transportMode,
     Long stayTime,
     String memo,
     Integer travelTime,

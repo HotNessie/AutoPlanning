@@ -1,8 +1,10 @@
 package com.preplan.autoplan.googleApi;
 
 import com.preplan.autoplan.domain.keyword.Transport;
+import com.preplan.autoplan.domain.planPlace.Route;
 import com.preplan.autoplan.dto.route.RouteResponseDto;
 import com.preplan.autoplan.exception.RouteComputationException;
+import com.preplan.autoplan.exception.RouteNotFoundException;
 import com.preplan.autoplan.repository.RouteRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -156,13 +158,17 @@ public class RouteService {
 
   // Place 객체 변환
   private GoogleRoutesRequest.Place toPlace(ComputeRoutesRequest.PlaceInfo info) {
-    return new GoogleRoutesRequest.Place(
-        info.placeId(),
-        info.location() != null ? new GoogleRoutesRequest.Place.Location(
-            new GoogleRoutesRequest.Place.Location.LatLng(
-                info.location().latLng().latitude(),
-                info.location().latLng().longitude()))
-            : null);
+    if (info.placeId() != null && !info.placeId().isEmpty()) {
+      return new GoogleRoutesRequest.Place(info.placeId(), null);
+    }
+    if (info.location() != null) {
+      return new GoogleRoutesRequest.Place(null, new GoogleRoutesRequest.Place.Location(
+          new GoogleRoutesRequest.Place.Location.LatLng(
+              info.location().latLng().latitude(),
+              info.location().latLng().longitude())));
+
+    }
+    throw new IllegalArgumentException("PlaceInfo must have either placeId or location");
   }
 
   // 응답 결합
@@ -221,9 +227,60 @@ public class RouteService {
     return googleRouteClient.getRoute(routeFieldMask, apiRequest);
   }
 
+  // Title - planId로 경로 조회
   public List<RouteResponseDto> findRouteByPlanId(Long planId) {
     return routeRepository.findByPlanId(planId).stream()
         .map(RouteResponseDto::fromEntity)
         .collect(Collectors.toList());
+  }
+
+  // Title - Route 메모 수정
+  public Route editMemo(Long planId, Integer routeSequence, String memo) {
+    Route route = routeRepository.findByPlanIdAndSequence(planId, routeSequence)
+        .orElseThrow(() -> new RouteNotFoundException(
+            "Route not found with planId: " + planId + " and sequence: " + routeSequence));
+    route.setMemo(memo);
+    return routeRepository.save(route);
+
+  }
+
+  // Title - 체류시간 수정
+  @Transactional
+  public void updateStayTime(Long planId, Integer routeSequence, Long stayTime) {
+    Route route = routeRepository.findByPlanIdAndSequence(planId, routeSequence)
+        .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException(
+            "Route not found with planId: " + planId + " and sequence: " + routeSequence));
+    route.setStayTime(stayTime);
+    routeRepository.save(route);
+  }
+
+  // Title - polyline 수정
+  @Transactional
+  public void editPolyline(Long planId, Integer routeSequence, String polyline) {
+    Route route = routeRepository.findByPlanIdAndSequence(planId, routeSequence)
+        .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException(
+            "Route not found with planId: " + planId + " and sequence: " + routeSequence));
+    route.setPolyline(polyline);
+    routeRepository.save(route);
+  }
+
+  // Title - travelTime 수정
+  @Transactional
+  public void editTravelTime(Long planId, Integer routeSequence, Integer travelTime) {
+    Route route = routeRepository.findByPlanIdAndSequence(planId, routeSequence)
+        .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException(
+            "Route not found with planId: " + planId + " and sequence: " + routeSequence));
+    route.setTravelTime(travelTime);
+    routeRepository.save(route);
+  }
+
+  // Title - travelDistance 수정
+  @Transactional
+  public void editTravelDistance(Long planId, Integer routeSequence, Integer travelDistance) {
+    Route route = routeRepository.findByPlanIdAndSequence(planId, routeSequence)
+        .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException(
+            "Route not found with planId: " + planId + " and sequence: " + routeSequence));
+    route.setTravelDistance(travelDistance);
+    routeRepository.save(route);
   }
 }

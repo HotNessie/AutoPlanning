@@ -6,6 +6,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .planDetail-title {
@@ -17,11 +18,14 @@
 }
 
 .planDetail-list-box {
+  width: 100%;
   list-style: none;
   padding: 0;
   margin: 0;
   overflow-y: auto;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .planDetail-list-box::-webkit-scrollbar {
@@ -41,7 +45,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 8px 0;
+  padding: 8px 8px 0 0
 }
 
 .planDetail-day-svg-box {
@@ -61,9 +65,9 @@
   fill: #c154ec;
 }
 
-.planDetail-transport-card {
+/* .planDetail-transport-card {
   min-height: 80px;
-}
+} */
 
 .planDetail-transport-card>.myPlan-card-body>.planDetail-day-svg-box {
   height: 100%;
@@ -97,6 +101,7 @@
   white-space: pre-wrap;
   overflow-y: auto;
   max-height: 100px;
+  min-height: 62px;
 }
 
 .planDetail-memo-display::-webkit-scrollbar {
@@ -175,11 +180,19 @@
 
 .myPlan-card-body::before {
   position: absolute;
-  left: 13px;
+  left: 14px;
   width: 2px;
   height: 110%;
   content: '';
   background-color: #666;
+}
+
+#myPlanDetail-add-place-btn {
+  margin: 10px 8px 0 42px;
+  color: #fff;
+  background-color: #c154ec;
+  border: none;
+  border-radius: 4px;
 }
 
 /* --- Timeline Start/End Styling --- */
@@ -187,10 +200,169 @@
   top: 50%;
 }
 
-.planDetail-list-box>.planDetail-card:last-child .myPlan-card-body::before {
+.planDetail-list-box>.planDetail-card:nth-last-child(3) .myPlan-card-body::before {
   bottom: 50%;
 }
 
 .planDetail-list-box>.planDetail-card:only-child .myPlan-card-body::before {
   display: none;
+}
+
+/* Add Place Modal Styles */
+.myPlanDetail-add-place-modal {
+  height: 100vh;
+  /* margin-top: 0; */
+  /* margin-bottom: 0; */
+  background-color: rgba(30, 30, 30, 0.95);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* padding: 25px; */
+  width: 90%;
+  /* max-width: 500px; */
+  /* display: flex; */
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+  position: relative;
+  /* 기준점 설정 */
+}
+
+#myPlanDetail-add-place-selected-place-section {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  background-color: rgba(45, 45, 45, 0.98);
+  padding: 20px;
+  box-sizing: border-box;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px 16px 0 0;
+}
+
+.myPlanDetail-add-place-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f0659b;
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 25px 25px 0 25px;
+}
+
+.myPlanDetail-add-place-input {
+  width: 90%;
+  padding: 12px 15px;
+  margin: 0 25px 0 25px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.myPlanDetail-add-place-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.myPlanDetail-add-place-search-result {
+  flex: 1;
+  overflow-y: auto;
+
+}
+
+.myPlanDetail-add-place-selected-place {
+  /* background-color: rgba(255, 255, 255, 0.08); */
+  border-radius: 8px;
+  /* min-height: 80px; */
+  /* max-height: 150px; */
+  overflow-y: auto;
+  /* border: 1px solid rgba(255, 255, 255, 0.15); */
+}
+
+.myPlanDetail-add-place-search-result::-webkit-scrollbar,
+.myPlanDetail-add-place-selected-place::-webkit-scrollbar {
+  width: 5px;
+}
+
+.myPlanDetail-add-place-search-result::-webkit-scrollbar-thumb,
+.myPlanDetail-add-place-selected-place::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  border-radius: 4px;
+}
+
+.myPlanDetail-add-place-result-list li,
+.myPlanDetail-add-place-selected-item {
+  padding: 10px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.myPlanDetail-add-place-result-list li:last-child,
+.myPlanDetail-add-place-selected-item:last-child {
+  border-bottom: none;
+}
+
+.myPlanDetail-add-place-result-list li:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.myPlanDetail-add-place-selected-place-title {
+  /* font-size: 1.1rem; */
+  /* font-weight: 600; */
+  color: #c154ec;
+  padding: 10px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.myPlanDetail-add-place-action-btns {
+  display: grid;
+  grid-template-columns: 4fr 6fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.myPlanDetail-add-place-cancel-btn,
+.myPlanDetail-add-place-confirm-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  /* font-size: 1rem; */
+  /* font-weight: 600; */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: none;
+}
+
+.myPlanDetail-add-place-cancel-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.myPlanDetail-add-place-cancel-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.myPlanDetail-add-place-confirm-btn {
+  background-image: linear-gradient(135deg, #c154ec 0%, #f0659b 100%);
+  color: #fff;
+}
+
+.myPlanDetail-add-place-confirm-btn:hover {
+  opacity: 0.9;
+}
+
+.myPlanDetail-add-place-remove-btn {
+  background: none;
+  border: none;
+  color: #f0659b;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.myPlanDetail-add-place-remove-btn:hover {
+  color: #ff0000;
 }
