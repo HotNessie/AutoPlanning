@@ -1,10 +1,12 @@
 //지도 기본 위치
-import { setMapInstance } from '../store/map-store.js';
+import { setMapInstance } from '../core/store.js';
 import { getCurrentPosition } from './position.js';
-
-const DEFAULT_POS = { lat: 37.65564466099954, lng: 127.06206796919646 }; //default 위치 상수처리
+import { MAP_SETTINGS } from '../core/config.js';
+import { loadGoogleMaps } from '../core/googleMapsLoader.js';
 
 export async function initMap(containerId = "map") {
+  // 1. 구글 지도 공통 로더를 호출하여 로딩 완료 대기
+  await loadGoogleMaps();
 
   const { Map } = await google.maps.importLibrary("maps");
   const { ColorScheme } = await google.maps.importLibrary("core");
@@ -14,14 +16,14 @@ export async function initMap(containerId = "map") {
   try {
     position = await getCurrentPosition();
   } catch {
-    position = DEFAULT_POS;
+    position = MAP_SETTINGS.DEFAULT_POS;
     alert("위치정보를 가져올 수 없습니다. 기본 위치로 설정합니다.");
   }
 
   const map = new Map(document.getElementById(containerId), {
     center: position,
-    zoom: 17,
-    mapId: '281ecb2de2a0840c',
+    zoom: MAP_SETTINGS.ZOOM_LEVEL,
+    mapId: MAP_SETTINGS.MAP_ID,
     language: 'ko',
     region: 'kr',
     disableDefaultUI: true,

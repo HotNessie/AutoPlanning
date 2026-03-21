@@ -18,4 +18,6 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
 
   // 오름차순 정렬
   List<Route> findByPlanIdOrderBySequenceAsc(Long planId);
+
+  List<Route> findByPlaceId(Long placeId);
 }

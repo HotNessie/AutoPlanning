@@ -24,6 +24,8 @@ public class QPlan extends EntityPathBase<Plan> {
 
     public final NumberPath<Integer> bookmarks = createNumber("bookmarks", Integer.class);
 
+    public final ListPath<com.preplan.autoplan.domain.member.Bookmark, com.preplan.autoplan.domain.member.QBookmark> bookmarksList = this.<com.preplan.autoplan.domain.member.Bookmark, com.preplan.autoplan.domain.member.QBookmark>createList("bookmarksList", com.preplan.autoplan.domain.member.Bookmark.class, com.preplan.autoplan.domain.member.QBookmark.class, PathInits.DIRECT2);
+
     public final DateTimePath<java.time.LocalDateTime> createdDate = createDateTime("createdDate", java.time.LocalDateTime.class);
 
     public final StringPath description = createString("description");

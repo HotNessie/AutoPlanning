@@ -1,0 +1,38 @@
+    .placeMain-hero {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/img/서울.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+
+    .place-card {
+      transition: transform 0.2s;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .place-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .region-tag {
+      background-color: #f0659b;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-right: 10px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .region-tag:hover {
+      opacity: 0.8;
+    }

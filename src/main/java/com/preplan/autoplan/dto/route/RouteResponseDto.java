@@ -6,6 +6,7 @@ import com.preplan.autoplan.dto.place.PlaceResponseDto;
 
 //경로 반환
 public record RouteResponseDto(
+    Long routeId,
     Integer sequence,
     PlaceResponseDto place,
     Transport transportMode,
@@ -13,9 +14,11 @@ public record RouteResponseDto(
     String memo,
     Integer travelTime,
     Integer travelDistance,
-    String polyline) {
+    String polyline,
+    String transitDetailInfo) {
   public static RouteResponseDto fromEntity(Route route) {
     return new RouteResponseDto(
+        route.getId(),
         route.getSequence(),
         PlaceResponseDto.fromEntity(route.getPlace()),
         route.getTransportMode(),
@@ -23,6 +26,7 @@ public record RouteResponseDto(
         route.getMemo(),
         route.getTravelTime(),
         route.getTravelDistance(),
-        route.getPolyline());
+        route.getPolyline(),
+        route.getTransitDetailInfo());
   }
 }

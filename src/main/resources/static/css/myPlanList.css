@@ -92,11 +92,22 @@
   background-color: rgba(240, 101, 155, 0.1);
 }
 
+#plan-item-header {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+}
+
+#plan-item-header svg {
+  cursor: pointer;
+}
+
 .plan-item-content h4 {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
   color: #fff;
+  display: inline;
 }
 
 .plan-details {

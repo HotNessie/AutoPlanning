@@ -49,6 +49,18 @@ public class PlaceService {
         .orElseThrow(() -> new PlaceNotFoundException("해당 장소가 없습니다: " + placeId));
   }
 
+  // 인기 장소 상위 10개 조회
+  @Transactional(readOnly = true)
+  public List<PlaceResponseDto> getPopularPlaces() {
+    return PlaceResponseDto.fromEntities(placeRepository.findTop10ByOrderBySearchCountDesc());
+  }
+
+  // 특정 도시의 인기 장소 상위 5개 조회
+  @Transactional(readOnly = true)
+  public List<PlaceResponseDto> getPopularPlacesByCity(Long cityId) {
+    return PlaceResponseDto.fromEntities(placeRepository.findTop5ByCityRegionIdOrderBySearchCountDesc(cityId));
+  }
+
   // Title - 장소 찾기 By placeName
   @Transactional(readOnly = true)
   public List<PlaceResponseDto> searchPlacesByName(String name) {
@@ -124,25 +136,25 @@ public class PlaceService {
       return cityRegion;
     }
   }
-
-  // // Title - 장소를 DTO로 변환
-  // public PlaceResponseDto convertToDto(Place place) {
-  // return new PlaceResponseDto(
-  // place.getId(),
-  // place.getPlaceId(),
-  // place.getName(),
-  // place.getAddress(),
-  // place.getLatitude(),
-  // place.getLongitude(),
-  // place.getSearchCount(),
-  // place.getTopPurposeKeywords().stream().map(Enum::name).collect(Collectors.toList()),
-  // place.getTopMoodKeywords().stream().map(Enum::name).collect(Collectors.toList()),
-  // place.getAverageStayTime(),
-  // place.getRegion().getId());
-  // }
-
-  // // Title - 찾은 장소들을 DTO로 변환
-  // public List<PlaceResponseDto> convertToDtoList(List<Place> places) {
-  // return places.stream().map(this::convertToDto).collect(Collectors.toList());
-  // }
 }
+
+// // Title - 장소를 DTO로 변환
+// public PlaceResponseDto convertToDto(Place place) {
+// return new PlaceResponseDto(
+// place.getId(),
+// place.getPlaceId(),
+// place.getName(),
+// place.getAddress(),
+// place.getLatitude(),
+// place.getLongitude(),
+// place.getSearchCount(),
+// place.getTopPurposeKeywords().stream().map(Enum::name).collect(Collectors.toList()),
+// place.getTopMoodKeywords().stream().map(Enum::name).collect(Collectors.toList()),
+// place.getAverageStayTime(),
+// place.getRegion().getId());
+// }
+
+// // Title - 찾은 장소들을 DTO로 변환
+// public List<PlaceResponseDto> convertToDtoList(List<Place> places) {
+// return places.stream().map(this::convertToDto).collect(Collectors.toList());
+// }

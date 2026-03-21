@@ -1,5 +1,5 @@
 // 마커 관련 기능을 모두 한곳에서 관리하는 모듈
-import { getMapInstance } from "../store/map-store.js";
+import { getMapInstance } from "../core/store.js";
 
 // 마커 관리 클래스
 class MarkerManager {

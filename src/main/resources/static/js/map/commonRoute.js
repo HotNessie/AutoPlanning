@@ -1,4 +1,4 @@
-import { getMapInstance } from "../store/map-store.js";
+import { getMapInstance } from "../core/store.js";
 
 //RouteManager 클래스
 //RouteManager 클래스
@@ -74,9 +74,6 @@ export function createPolyline(path, options = {}) {
 //Title - legs로부터 Polyline 생성
 export async function createPolylinsFromLegs(legs, options = {}) {
   try {
-    // if (!window.goolge || !window.google.maps) {
-    //   throw new Error("Google Maps API가 로드되지 않았습니다.");
-    // }
 
     const { encoding } = await google.maps.importLibrary("geometry");
     // const polylines = [];
@@ -166,6 +163,8 @@ export async function displayRoute(routeData, options = {}) {
 }
 
 //Title - 경로 요청
+//TODO: form을 직접 넘기지 말고 필요한 데이터만 추출해서 넘기도록 수정 - 이렇게 쓰면 재사용 못하자너
+// json객체 넘기는거 class로 넘기면 좀 더 깔끔할 듯
 export async function fetchRoute(formElement) { // formElement를 직접 사용
   try {
     // 1. 폼에서 장소(place) 정보를 배열로 추출

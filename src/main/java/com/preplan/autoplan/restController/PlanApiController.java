@@ -39,13 +39,17 @@ public class PlanApiController {
   private final PlanService planService;
 
   /*
-   * 경로 찾기 - computeRoute
+   * 경로 찾기 - computeRoute(googleApi) !googleApiController같은거 생성할까?
    * 계획 생성 - savePlanString
    * 내 계획 list 조회 - getMyPlans
    * 단일 계획 상세 조회 - getPlanById
    * 모든 계획 조회 (페이징) - getPlans
    * 계획 검색(제목, 지역, 키워드) - searchPlans
-   * 
+   * 계획 설명 수정 - editPlanDescription
+   * 키워드 수정 - updatePlanKeywords
+   * 제목 수정 - editPlanTitle
+   * endTime 수정 - editPlanEndTime
+   * 장소id로 관련 계획 조회 - getPlansByPlaceId
    */
 
   // 경로 요청 selfContent.js submit에서 사용중. 근데 이게 왜 Plan에 있지???? Route만들기 전인가?ㄴ
@@ -74,10 +78,6 @@ public class PlanApiController {
           response.routes().get(0).distanceMeters(),
           response.routes().get(0).duration(),
           response.routes().get(0).polyline());
-
-      // 데이터 저장. --을 나중에 계획 저장 이후에 해야되겠죠ㅕㅇ?
-      // Aug 7, 2025 at 07:16 이걸 왜 나중에 하기로 했지?(route에 회원 정보가 필요한가? 왜? 왜그랬지?)
-      // routeService.saveRoute(request, response);
 
       // 응답 반환
       return ResponseEntity.ok(planResponseDto);
@@ -194,12 +194,23 @@ public class PlanApiController {
     return ResponseEntity.noContent().build();
   }
 
-  // Title - 기존 계획에 장소 추가
-  @PostMapping("/api/private/plan/{planId}/add-places")
-  public ResponseEntity<Void> addPlacesToPlan(
-      @PathVariable Long planId,
-      @RequestBody ComputeRoutesRequest requestDto) {
-    planService.addPlacesToPlan(planId, requestDto);
-    return ResponseEntity.ok().build();
+  /**
+   * Title - 장소id로 관련 계획 조회
+   */
+  @GetMapping("/api/public/plans/by-place/{placeId}")
+  public ResponseEntity<List<PlanResponseDto>> getPlansByPlaceId(
+      @PathVariable String placeId) {
+    log.info("장소Id로 관련 계획 조회 요청: {}", placeId);
+    try {
+      List<PlanResponseDto> plans = planService.getPlansByPlaceId(placeId);
+      if (plans.isEmpty()) {
+        log.warn("장소Id로 관련 계획이 없습니다: {}", placeId);
+        return ResponseEntity.notFound().build();
+      }
+      return ResponseEntity.ok(plans);
+    } catch (Exception e) {
+      log.error("장소Id로 관련 계획 조회 중 오류 발생: {}", e.getMessage());
+      return ResponseEntity.status(500).body(null);
+    }
   }
 }

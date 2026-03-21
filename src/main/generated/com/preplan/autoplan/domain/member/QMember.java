@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -22,6 +23,8 @@ public class QMember extends EntityPathBase<Member> {
     public final com.preplan.autoplan.domain.QBaseTimeEntity _super = new com.preplan.autoplan.domain.QBaseTimeEntity(this);
 
     public final NumberPath<Integer> birthYear = createNumber("birthYear", Integer.class);
+
+    public final ListPath<Bookmark, QBookmark> bookmarks = this.<Bookmark, QBookmark>createList("bookmarks", Bookmark.class, QBookmark.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
