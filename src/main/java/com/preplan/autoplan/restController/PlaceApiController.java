@@ -23,6 +23,16 @@ public class PlaceApiController {
 
   private final PlaceService placeService;
 
+  /**
+   * getPlace - 장소Id로 검색
+   * searchPlacesByName - 장소명으로 검색
+   * createOrUpdatePlace - 장소 생성 또는 업데이트
+   * getPopularPlaces - 인기 장소 조회
+   * ! 미구현 searchKeywordPlaces - 키워드로 장소 검색
+   * ! 미구현 searchPlacesByRegion - 지역으로 장소 검색
+   * ! 미구현 searchPlaces - 복합 검색
+   */
+
   // Title - 장소Id로 검색
   @GetMapping("/api/public/places/id/{placeId}")
   // public ResponseEntity<PlaceResponseDto> getPlace(@RequestParam String
@@ -67,6 +77,19 @@ public class PlaceApiController {
       return ResponseEntity.ok(createdPlace);
     } catch (Exception e) {
       log.error("장소 생성/업데이트 중 오류 발생: {}", e.getMessage());
+      return ResponseEntity.status(500).body(null);
+    }
+  }
+
+  // Title - 인기 장소 조회
+  @GetMapping("/api/public/places/popular")
+  public ResponseEntity<List<PlaceResponseDto>> getPopularPlaces() {
+    log.info("인기 장소 조회 요청");
+    try {
+      List<PlaceResponseDto> popularPlaces = placeService.getPopularPlaces();
+      return ResponseEntity.ok(popularPlaces);
+    } catch (Exception e) {
+      log.error("인기 장소 조회 중 오류 발생: {}", e.getMessage());
       return ResponseEntity.status(500).body(null);
     }
   }

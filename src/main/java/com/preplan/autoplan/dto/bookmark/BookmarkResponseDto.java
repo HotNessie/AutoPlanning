@@ -1,13 +1,17 @@
+
 package com.preplan.autoplan.dto.bookmark;
 
-import java.time.LocalDateTime;
+import com.preplan.autoplan.domain.member.Bookmark;
 
-//북마크 정보 반환, 사용자의 북마크 목록 조회
 public record BookmarkResponseDto(
-    Long id,
-    Long memberId,
+    Long bookmarkId,
     Long planId,
-    LocalDateTime createdAt
-) {
+    String planTitle) {
 
+  public static BookmarkResponseDto from(Bookmark bookmark) {
+    return new BookmarkResponseDto(
+        bookmark.getId(),
+        bookmark.getPlan().getId(),
+        bookmark.getPlan().getTitle());
+  }
 }

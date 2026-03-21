@@ -44,9 +44,11 @@ public class Route {
   @Lob
   private String polyline;
 
+  private String transitDetailInfo;
+
   @Builder
   public Route(Plan plan, Place place, int sequence, Transport transportMode, Long stayTime,
-      String memo, Integer travelTime, Integer travelDistance, String polyline) {
+      String memo, Integer travelTime, Integer travelDistance, String polyline, String transitDetailInfo) {
     this.plan = plan;
     this.place = place;
     this.sequence = sequence;
@@ -56,6 +58,7 @@ public class Route {
     this.travelTime = travelTime;
     this.travelDistance = travelDistance;
     this.polyline = polyline;
+    this.transitDetailInfo = transitDetailInfo;
   }
 
   // Memo 수정 메서드
@@ -81,6 +84,15 @@ public class Route {
   // set travelDistance
   public void setTravelDistance(Integer travelDistance) {
     this.travelDistance = travelDistance;
+  }
+
+  // set TransitDetailInfo
+  public void setTransitDetailInfo(String transitDetailInfo) {
+    this.transitDetailInfo = transitDetailInfo;
+  }
+
+  public void setSequence(int i) {
+    this.sequence = i;
   }
 
   // 교통수단은 변경 불가 - 생성 시에만 설정(일단 구글에서 지원하지도 않아서 수정 기능은 안넣음)

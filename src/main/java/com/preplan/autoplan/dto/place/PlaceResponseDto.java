@@ -26,7 +26,7 @@ public record PlaceResponseDto(
         place.getLongitude(),
         place.getSearchCount(),
         place.getAverageStayTime(),
-        place.getRegion().getId());
+        place.getRegion() != null ? place.getRegion().getId() : null);
   }
 
   public static List<PlaceResponseDto> fromEntities(List<Place> places) {

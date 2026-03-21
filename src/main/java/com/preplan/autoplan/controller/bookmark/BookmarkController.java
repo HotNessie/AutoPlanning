@@ -1,4 +1,4 @@
-package com.preplan.autoplan.apiController.bookmark;
+package com.preplan.autoplan.controller.bookmark;
 
 import com.preplan.autoplan.domain.member.Bookmark;
 import com.preplan.autoplan.domain.planPlace.Plan;

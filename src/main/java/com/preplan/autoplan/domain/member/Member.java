@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -49,6 +51,9 @@ public class Member extends BaseTimeEntity {
   // 양방향 관계 << // ? 왜 양방향이라고 적어놨냐
   // @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
   // private List<Plan> plans = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Bookmark> bookmarks = new ArrayList<>();
 
   @Builder
   public Member(String password, String name, String email, int birthYear, String phoneNumber, Sex sex, Role role) {

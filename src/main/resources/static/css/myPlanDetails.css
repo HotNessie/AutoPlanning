@@ -82,6 +82,15 @@
   padding: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   align-items: center;
+  position: relative;
+}
+
+#deleteRouteButton>svg {
+  position: absolute;
+  top: 10%;
+  right: 3%;
+  fill: #777;
+  cursor: pointer;
 }
 
 .planDetail-place-details {
@@ -188,11 +197,12 @@
 }
 
 #myPlanDetail-add-place-btn {
-  margin: 10px 8px 0 42px;
+  margin: 10px 0px 0 46px;
   color: #fff;
   background-color: #c154ec;
   border: none;
   border-radius: 4px;
+  width: 390px;
 }
 
 /* --- Timeline Start/End Styling --- */
@@ -365,4 +375,29 @@
 
 .myPlanDetail-add-place-remove-btn:hover {
   color: #ff0000;
+}
+
+/* --- Drag and Drop Visual Feedback --- */
+.planDetail-place-card.dragging,
+.planDetail-transport-card.dragging-associated {
+  opacity: 0.3;
+  /* 원본(고스트) 요소는 투명하게 */
+}
+
+.planDetail-place-card.dragging {
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+}
+
+/* 드래그 중인 카드의 장식 요소(SVG 원, 타임라인 선)들을 숨겨서 장소 정보 카드만 강조 */
+.planDetail-place-card.dragging .planDetail-day-svg-box,
+.planDetail-place-card.dragging .myPlan-card-body::before,
+.planDetail-transport-card.dragging-associated .planDetail-day-svg-box,
+.planDetail-transport-card.dragging-associated .myPlan-card-body::before {
+  visibility: hidden;
+}
+
+/* 드래그 앤 드롭 이동 시의 매끄러운 느낌을 위한 트랜지션 */
+.planDetail-card {
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }

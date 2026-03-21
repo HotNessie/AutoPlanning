@@ -2,7 +2,6 @@ package com.preplan.autoplan.domain.planPlace;
 
 import com.preplan.autoplan.dto.place.PlaceResponseDto;
 import jakarta.persistence.*;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

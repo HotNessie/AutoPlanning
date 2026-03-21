@@ -13,5 +13,6 @@ public record RouteCreateRequestDto(
     String memo,
     @Min(0) Integer travelTime,
     Integer travelDistance,
-    String polyline) {
+    String polyline,
+    String transitDetailInfo) {
 }

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>장소 탐색 - Autoplan</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/placeMain.css">
+  <link rel="stylesheet" href="/css/placeDetail.css">
+
+  <script>
+    fetch("/api/google-maps-key")
+      .then(response => response.text())
+      .then(apiKey => {
+        (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+          key: apiKey,
+          v: "weekly",
+          libraries: "places"
+        });
+      })
+      .catch(error => console.error("API 키 로드 실패:", error));
+  </script>
+</head>
+
+<body class="bg-light">
+  <div class="container py-5">
+    <!-- Hero Section & Search -->
+    <div class="placeMain-hero">
+      <h1 class="display-4 fw-bold">어디로 떠나고 싶으신가요?</h1>
+      <p class="lead">인기 장소와 추천 경로를 탐색해보세요.</p>
+      <div class="w-75 mt-3">
+        <div class="input-group input-group-lg">
+          <input type="text" id="placeMain-search-input" class="form-control" placeholder="장소, 지역, 키워드 검색...">
+        </div>
+      </div>
+    </div>
+
+    <section class="mb-5">
+      <h2 class="mb-4">🔥 실시간 인기 장소</h2>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+      </div>
+    </section>
+
+    <!-- 지역별 탐색 -->
+    <section class="mb-5">
+      <h2 class="mb-4">📍 지역별 탐색</h2>
+      <div class="d-flex flex-wrap gap-2">
+        <!-- <button class="region-tag">#서울</button>
+        <button class="region-tag">#제주</button>
+        <button class="region-tag">#부산</button>
+        <button class="region-tag">#강릉</button>
+        <button class="region-tag">#경주</button>
+        <button class="region-tag">#여수</button> -->
+        <!-- js로 동적 생성 -->
+      </div>
+    </section>
+  </div>
+
+  <!-- 스크립트는 상세 페이지와 공유하거나 별도 작성 -->
+  <script type="module">
+    import { initAutocomplete } from '/js/page/placeDetail/placeDetail-search.js';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('placeMain-search-input');
+      if (searchInput) {
+        const autocomplete = new google.maps.places.Autocomplete(searchInput, {
+          fields: ['place_id', 'name']
+        });
+        autocomplete.addListener('place_changed', () => {
+          const place = autocomplete.getPlace();
+          if (place.place_id) {
+            window.location.href = `/placeDetail?placeId=${place.place_id}`;
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

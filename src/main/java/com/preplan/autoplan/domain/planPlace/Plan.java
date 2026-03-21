@@ -2,6 +2,7 @@ package com.preplan.autoplan.domain.planPlace;
 
 import com.preplan.autoplan.domain.keyword.Keyword;
 import com.preplan.autoplan.domain.keyword.PlanKeyword;
+import com.preplan.autoplan.domain.member.Bookmark;
 import com.preplan.autoplan.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -53,6 +54,9 @@ public class Plan {
   @Column(nullable = false)
   private int likes = 0;
 
+  @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Bookmark> bookmarksList = new ArrayList<>();
+
   @Column(nullable = false)
   private int bookmarks = 0;
 
@@ -60,6 +64,7 @@ public class Plan {
   private boolean isShared = true; // 만들어는 두지만 공개 상태는 디폴드로 두겠음
 
   @CreatedDate
+  @Column(updatable = false)
   private LocalDateTime createdDate;
 
   @LastModifiedDate
@@ -82,8 +87,15 @@ public class Plan {
   }
 
   // 북마크 증가
-  public void increaseBookmarks() {
+  public void increaseBookmarkCount() {
     this.bookmarks++;
+  }
+
+  // 북마크 감소
+  public void decreaseBookmarkCount() {
+    if (this.bookmarks > 0) {
+      this.bookmarks--;
+    }
   }
 
   // 비공유 할거임
