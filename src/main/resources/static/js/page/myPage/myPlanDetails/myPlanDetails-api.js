@@ -1,3 +1,5 @@
+import { getHeaders } from '../../../core/apiService.js';
+
 /**
  * Title - API 요청을 처리하는 범용 래퍼 함수.
  * @param {string} url - 요청 URL
@@ -30,7 +32,7 @@ async function fetchWrapper(url, options, errorMessage = '요청 처리 중 오�
 export const updateRouteMemo = (planId, routeSequence, memo) =>
   fetchWrapper(`/api/private/route/${planId}&${routeSequence}/memo`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ memo })
   }, '메모 저장에 실패했습니다.');
 
@@ -40,7 +42,7 @@ export const updateRouteMemo = (planId, routeSequence, memo) =>
 export const updatePlanDescription = (planId, description) =>
   fetchWrapper(`/api/private/plan/${planId}/description`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ description })
   }, '설명 저장에 실패했습니다.');
 
@@ -50,7 +52,7 @@ export const updatePlanDescription = (planId, description) =>
 export const updatePlanKeywords = (planId, keywords) =>
   fetchWrapper(`/api/private/plan/${planId}/keywords`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ keywords })
   }, '키워드 저장에 실패했습니다.');
 
@@ -60,7 +62,7 @@ export const updatePlanKeywords = (planId, keywords) =>
 export const updateRouteStayTime = (planId, routeSequence, stayTime) =>
   fetchWrapper(`/api/private/route/${planId}&${routeSequence}/stayTime`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ stayTime })
   }, '체류시간 저장에 실패했습니다.');
 
@@ -70,7 +72,7 @@ export const updateRouteStayTime = (planId, routeSequence, stayTime) =>
 export const updatePlanTitle = (planId, title) =>
   fetchWrapper(`/api/private/plan/${planId}/title`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ title })
   }, '제목 저장에 실패했습니다.');
 
@@ -80,7 +82,7 @@ export const updatePlanTitle = (planId, title) =>
 export const savePlace = (placeData) =>
   fetchWrapper('/api/public/places', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(placeData)
   }, '장소 생성/업데이트에 실패했습니다.');
 
@@ -90,7 +92,7 @@ export const savePlace = (placeData) =>
 export const addPlacesToPlan = (planId, routeInfo) =>
   fetchWrapper(`/api/private/plan/${planId}/add-places`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(routeInfo)
   }, '경로 추가에 실패했습니다.');
 
@@ -108,6 +110,6 @@ export const deleteRouteAndRecalculate = (planId, routeSequence) =>
 export const updateRouteOrder = (planId, routes) =>
   fetchWrapper(`/api/private/plan/${planId}/routes/reorder`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(routes)
   }, '경로 순서 저장에 실패했습니다.');

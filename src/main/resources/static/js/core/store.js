@@ -4,6 +4,7 @@
 const state = {
   mapInstance: null,
   currentPlan: [],
+  accessToken: null,
 };
 
 export const setMapInstance = map => {
@@ -20,6 +21,14 @@ export const setCurrentPlan = plan => {
 
 export const getCurrentPlan = () => {
   return state.currentPlan;
+};
+
+export const setAccessToken = token => {
+  state.accessToken = token;
+};
+
+export const getAccessToken = () => {
+  return state.accessToken;
 };
 
 export const getState = () => {

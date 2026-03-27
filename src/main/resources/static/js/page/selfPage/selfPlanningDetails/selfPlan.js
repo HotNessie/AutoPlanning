@@ -3,6 +3,8 @@ self 메뉴 제출 이후 계획 완성 페이지 관련 코드임
  */
 
 import { hashtaggingver5, getWordAtCaret, displaySuggestions } from '../../../core/hashtag.js';
+import { setAccessToken } from '../../../core/store.js';
+import { getHeaders } from '../../../core/apiService.js';
 
 let currentPlanData = null;
 let currentRouteData = null;
@@ -439,7 +441,9 @@ function bindPlanEvents() {
 
           if (searchTerm.length > 0) {
             try {
-              const response = await fetch(`/api/public/keywords/search?prefix=${encodeURIComponent(searchTerm)}`);
+              const response = await fetch(`/api/public/keywords/search?prefix=${encodeURIComponent(searchTerm)}`, {
+                headers: getHeaders()
+              });
               if (!response.ok) {
                 throw new Error('Server response was not ok');
               }
@@ -715,7 +719,9 @@ Title - 로그인 확인 후, 계획 저장함수 호출
 */
 async function handleSavePlan() {
   // 1. 서버에 현재 로그인 상태 확인
-  const authStatusResponse = await fetch('/status');
+  const authStatusResponse = await fetch('/status', {
+    headers: getHeaders()
+  });
   const authStatus = await authStatusResponse.json();
 
   // 2. 로그인 상태에 따라 분기
@@ -835,9 +841,9 @@ function proceedToSavePlan() {
 
   fetch('/api/private/plans', {
     method: 'POST',
-    headers: {
+    headers: getHeaders({
       'Content-Type': 'application/json',
-    },
+    }),
     body: JSON.stringify(planData)
   })
     .then(response => {
@@ -900,22 +906,29 @@ function showLoginModal() {
 
     fetch('/login', {
       method: 'POST',
-      headers: {
+      headers: getHeaders({
         'Content-Type': 'application/json',
-      },
+      }),
       body: JSON.stringify({ email, password })
     })
       .then(response => {
         if (response.ok) {
-          closeModal(modalBase);
-          proceedToSavePlan(); // 로그인 성공 시, 원래 하려던 계획 저장 실행
+          return response.json();
         } else {
-          errorMessageDiv.textContent = '아이디 또는 비밀번호가 잘못되었습니다.';
+          throw new Error('Login failed');
         }
+      })
+      .then(data => {
+        if (data.token) {
+          setAccessToken(data.token);
+          console.log('Login successful, token stored.');
+        }
+        closeModal(modalBase);
+        proceedToSavePlan(); // 로그인 성공 시, 원래 하려던 계획 저장 실행
       })
       .catch(error => {
         console.error('Login error:', error);
-        errorMessageDiv.textContent = '로그인 중 오류가 발생했습니다.';
+        errorMessageDiv.textContent = '아이디 또는 비밀번호가 잘못되었습니다.';
       })
       .finally(() => {
         loginBtn.disabled = false;
@@ -953,7 +966,9 @@ TODO: 돌아가지 말고 처리할까
 function handleEditPlan() {
   const loadContent = async (url) => {
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: getHeaders()
+      });
       if (!response.ok) throw new Error('응답 안함')
         ;
       const data = await response.text();

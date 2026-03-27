@@ -1,7 +1,7 @@
 import { createPlaceDetailTemplate } from './placeDetail-templates.js';
 import { loadGoogleMaps } from '../../core/googleMapsLoader.js';
 import { initAutocomplete } from '../../handleGoogleApi/autocomplete.js';
-import { searchPlacesByText } from '../../core/apiService.js';
+import { searchPlacesByText, getHeaders } from '../../core/apiService.js';
 import { setMapInstance } from '../../core/store.js';
 
 // 템플릿에서 호출할 수 있도록 전역으로 등록 (항상 새 탭에서 열기)
@@ -103,7 +103,9 @@ class PlaceDetailManager {
     if (!plansContainer) return;
 
     try {
-      const response = await fetch(`/api/public/plans/by-place/${placeId}`);
+      const response = await fetch(`/api/public/plans/by-place/${placeId}`, {
+        headers: getHeaders()
+      });
       if (!response.ok) throw new Error('Failed to fetch plans');
 
       const plans = await response.json();

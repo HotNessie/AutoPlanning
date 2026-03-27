@@ -1,3 +1,5 @@
+import { getHeaders } from '../../../core/apiService.js';
+
 /**
  * Title - 사용자 로그인 상태를 확인합니다.
  * @returns {Promise<boolean>}
@@ -5,7 +7,7 @@
 export async function checkLoginStatus() {
     const response = await fetch('/status', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: getHeaders({ 'Content-Type': 'application/json' })
     });
     return response.ok;
 }
@@ -17,7 +19,9 @@ export async function checkLoginStatus() {
  * @returns {Promise<any>}
  */
 export async function fetchMyPlans(page = 0, size = 10) {
-    const response = await fetch(`/api/private/my-plans?page=${page}&size=${size}&sort=createdDate,desc`);
+    const response = await fetch(`/api/private/my-plans?page=${page}&size=${size}&sort=createdDate,desc`, {
+        headers: getHeaders()
+    });
     if (!response.ok) throw new Error('Failed to fetch plans');
     return await response.json();
 }
@@ -28,7 +32,9 @@ export async function fetchMyPlans(page = 0, size = 10) {
  * @returns {Promise<any>}
  */
 export async function fetchPlanDetails(planId) {
-    const response = await fetch(`/api/public/plan/${planId}`);
+    const response = await fetch(`/api/public/plan/${planId}`, {
+        headers: getHeaders()
+    });
     if (!response.ok) throw new Error('Failed to fetch plan details');
     return await response.json();
 }
@@ -39,7 +45,9 @@ export async function fetchPlanDetails(planId) {
  * @returns {Promise<any>}
  */
 export async function fetchPlanRoutes(planId) {
-    const response = await fetch(`/api/public/routes/${planId}`);
+    const response = await fetch(`/api/public/routes/${planId}`, {
+        headers: getHeaders()
+    });
     if (!response.ok) throw new Error('Failed to fetch plan routes');
     return await response.json();
 }

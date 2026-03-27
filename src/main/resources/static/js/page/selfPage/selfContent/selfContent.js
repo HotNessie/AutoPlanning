@@ -4,6 +4,7 @@ import {
 import { initPlanContent } from '../selfPlanningDetails/selfPlan.js';
 import { setupValidationClearEvents, addSubmitListener } from './Event/formEvent.js';
 import { API } from '../../../core/config.js';
+import { getHeaders } from '../../../core/apiService.js';
 
 
 //Title - getPlanFragment
@@ -12,9 +13,9 @@ async function getPlanFragment() {
   try {
     const response = await fetch(API.SUBMIT_PLAN, {
       method: 'GET',
-      headers: {
+      headers: getHeaders({
         'Content-Type': 'Text/HTML',
-      },
+      }),
     });
     if (!response.ok) {
       throw new Error(`Failed to fetch plan fragment: ${response.status} ${response.statusText}`);

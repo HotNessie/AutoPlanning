@@ -18,6 +18,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     /**
      * TODO: crud같은 기능은 UserDetailsMa2ager에서 처리,
@@ -29,7 +30,7 @@ public class MemberService {
         Member member = Member.builder()
                 .name(memberFormDto.getName())
                 .email(memberFormDto.getEmail())
-                .password(new BCryptPasswordEncoder().encode(memberFormDto.getPassword())) // 서비스 계층에서 비밀번호 암호화
+                .password(passwordEncoder.encode(memberFormDto.getPassword())) // 스프링 빈으로 등록된 인코더 사용
                 .birthYear(memberFormDto.getBirthYear())
                 .phoneNumber(memberFormDto.getPhoneNumber())
                 .sex(memberFormDto.getSex())

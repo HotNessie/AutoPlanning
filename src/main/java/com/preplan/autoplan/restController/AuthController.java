@@ -1,21 +1,25 @@
 package com.preplan.autoplan.restController;
 
-import com.preplan.autoplan.jwt.JwtTokenProvider;
-import com.preplan.autoplan.service.MemberService;
+import com.preplan.autoplan.domain.member.Member;
+import com.preplan.autoplan.domain.token.RefreshToken;
+import com.preplan.autoplan.repository.token.RefreshTokenRepository;
+import com.preplan.autoplan.security.jwt.JwtTokenProvider;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,44 +27,93 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-// @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-  private final MemberService memberService;
-  private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider jwtTokenProvider;
-
-  // ! LoginFilter에서 처리
-  // /*
-  // * Title - 로그인 인증
-  // *
+  private final RefreshTokenRepository refreshTokenRepository;
 
   @PostMapping("/logout")
-  public void logout(HttpServletResponse response) throws IOException {
-    Cookie cookie = new Cookie("jwt_token", null);
+  public void logout(HttpServletResponse response) {
+    Cookie cookie = new Cookie("refresh_token", null);
     cookie.setMaxAge(0);
     cookie.setPath("/");
     response.addCookie(cookie);
-
-    response.sendRedirect("/login");
+    // 클라이언트 측 변수(Access Token)는 JS에서 초기화 필요
   }
 
-  /*
-   * Title - 로그인 인증 상태 확인 (JWT 토큰 기반)
-   * 
-   * @param authHeader Authorization 헤더 (Bearer 토큰)
-   * 
-   * @return 로그인 상태 정보
-   */
+  @PostMapping("/reissue")
+  public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+
+      // 1. 쿠키에서 Refresh Token 추출
+      String refresh = null;
+      Cookie[] cookies = request.getCookies();
+      if (cookies != null) {
+          for (Cookie cookie : cookies) {
+              if (cookie.getName().equals("refresh_token")) {
+                  refresh = cookie.getValue();
+              }
+          }
+      }
+
+      if (refresh == null) {
+          log.warn("[Reissue] Refresh token cookie is missing");
+          return new ResponseEntity<>("Refresh token null", HttpStatus.BAD_REQUEST);
+      }
+
+      // 2. 검증 (만료 여부 및 카테고리 확인)
+      if (!jwtTokenProvider.validateToken(refresh)) {
+          log.warn("[Reissue] Refresh token validation failed");
+          return new ResponseEntity<>("Invalid refresh token", HttpStatus.BAD_REQUEST);
+      }
+
+      String category = jwtTokenProvider.getCategory(refresh);
+      if (!category.equals("refresh")) {
+          log.warn("[Reissue] Token category is not refresh: {}", category);
+          return new ResponseEntity<>("Invalid token category", HttpStatus.BAD_REQUEST);
+      }
+
+      // 3. DB에 저장된 토큰인지 확인
+      Optional<RefreshToken> savedToken = refreshTokenRepository.findByToken(refresh);
+      if (savedToken.isEmpty()) {
+          log.warn("[Reissue] Refresh token not found in database");
+          return new ResponseEntity<>("Refresh token not found in DB", HttpStatus.BAD_REQUEST);
+      }
+
+      Member member = savedToken.get().getMember();
+      String email = member.getEmail();
+
+      // 4. 새로운 토큰 생성 (RTR: Access & Refresh Rotation)
+      String newAccess = jwtTokenProvider.generateAccessToken(email, member.getRole().name());
+      String newRefresh = jwtTokenProvider.generateRefreshToken(email);
+
+      // 5. DB 갱신
+      savedToken.get().updateToken(newRefresh, LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshTokenExpirationTime()));
+      refreshTokenRepository.save(savedToken.get());
+
+      // 6. 응답 설정
+      response.addCookie(createCookie("refresh_token", newRefresh));
+      response.setHeader("Authorization", "Bearer " + newAccess);
+
+      Map<String, String> tokens = new HashMap<>();
+      tokens.put("token", newAccess);
+
+      log.info("[Reissue] Token successfully reissued for user: {}", email);
+      return new ResponseEntity<>(tokens, HttpStatus.OK);
+  }
+
+
+  private Cookie createCookie(String key, String value) {
+    Cookie cookie = new Cookie(key, value);
+    cookie.setMaxAge((int) jwtTokenProvider.getRefreshTokenExpirationTime());
+    cookie.setPath("/");
+    cookie.setHttpOnly(true);
+    return cookie;
+  }
+
   @GetMapping("/status")
-  public ResponseEntity<Map<String, Object>> checkAuthStatus(
-      Authentication authentication) {
-
+  public ResponseEntity<Map<String, Object>> checkAuthStatus(Authentication authentication) {
     Map<String, Object> authStatus = new HashMap<>();
-
-    log.info("Checking authentication status for user: {}",
-        authentication != null ? authentication.getName() : "anonymous");
 
     if (authentication != null && authentication.isAuthenticated()
         && !(authentication.getPrincipal() instanceof String
@@ -74,8 +127,7 @@ public class AuthController {
       return ResponseEntity.ok(authStatus);
     } else {
       authStatus.put("loggedIn", false);
-      return ResponseEntity.badRequest().body(authStatus);
-      // return ResponseEntity.ok(authStatus); // 비로그인 상태도 200 OK로 응답
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authStatus);
     }
   }
 }

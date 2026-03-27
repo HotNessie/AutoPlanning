@@ -1,5 +1,51 @@
-import { getMapInstance } from './store.js';
+import { getMapInstance, getAccessToken, setAccessToken } from './store.js';
 import { SEARCH_SETTINGS, API } from './config.js';
+
+/**
+ * reissueToken - Refresh Token을 사용하여 새로운 Access Token을 발급받습니다.
+ * @returns {Promise<string|null>} 새로운 토큰 또는 실패 시 null
+ */
+export async function reissueToken() {
+  try {
+    const response = await fetch('/reissue', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.token) {
+        setAccessToken(data.token);
+        console.log('[Auth] Token reissued successfully');
+        return data.token;
+      }
+    } else {
+      console.warn('[Auth] Failed to reissue token. User might need to login.');
+      setAccessToken(null);
+    }
+  } catch (error) {
+    console.error('[Auth] Error during token reissue:', error);
+  }
+  return null;
+}
+
+/**
+ * 헬퍼 함수: 요청 헤더를 생성합니다. (JWT 인증 토큰 포함)
+ * @param {Object} customHeaders - 추가할 커스텀 헤더
+ * @returns {Object} 헤더 객체
+ */
+export const getHeaders = (customHeaders = {}) => {
+  const token = getAccessToken();
+  const headers = {
+    ...customHeaders,
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
 
 /**
  * searchPlacesByText - Google Maps Places API를 사용하여 텍스트로 장소 검색
@@ -58,7 +104,9 @@ export async function searchPlacesByText(textQuery) {
  */
 export async function fetchHtmlContent(url) {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: getHeaders(),
+    });
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
     }

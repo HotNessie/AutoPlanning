@@ -120,7 +120,7 @@
         </li>
 
         <!-- Title - Login / Logout -->
-        <li sec:authorize-expr="isAnonymous()" class="content_list">
+        <li id="nav-login" class="content_list" style="display: none;">
           <button class="contentButton" onclick="location.href='/login'">
             <div class="icon">
               <span class="icon_inner" aria-hidden="true">
@@ -134,13 +134,11 @@
             <span class="navbar_text hover_li">로그인</span>
           </button>
         </li>
-        <li sec:authorize="isAuthenticated()" class="content_list">
-          <form th:action="@{/logout}" method="post" style="display:inline;">
-            <!-- <button class="contentButton" onclick="location.href='/logout'"> -->
+        <li id="nav-logout" class="content_list" style="display: none;">
+          <form id="logout-form" action="/logout" method="post" style="display:inline;">
             <button class="contentButton" type="submit">
               <div class="icon">
                 <span class="icon_inner" aria-hidden="true">
-                  <!-- SVG for Logout Icon (example: exit icon) -->
                   <svg id="auth_menu_svg" class="hover_li" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                     version="1.1">
                     <path

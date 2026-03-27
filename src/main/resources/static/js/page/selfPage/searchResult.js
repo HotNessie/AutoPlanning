@@ -1,4 +1,5 @@
 import { getMapInstance } from '../../core/store.js';
+import { getHeaders } from '../../core/apiService.js';
 import { markerManager, createServerMarker, adjustMapBounds } from '../../map/marker.js';
 import { toggleSearchResultsVisibility } from '../../ui/state-manager.js';
 
@@ -186,7 +187,7 @@ export async function handleSearchResultClick(event) {
   try {
     const response = await fetch('/api/public/places', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({
         placeId: placeId,
         name: displayName,

@@ -4,7 +4,7 @@ import { initAutocomplete } from './handleGoogleApi/autocomplete.js';
 import { findBySearch } from './handleGoogleApi/findBySearch.js';
 import { getDynamicElements } from './page/selfPage/selfContent/Event/formEvent.js';
 import { collapseButtonEvent, initControls } from './ui/state-manager.js';
-import { fetchHtmlContent } from './core/apiService.js';
+import { fetchHtmlContent, reissueToken } from './core/apiService.js';
 import { API } from './core/config.js';
 import { initializeSelfContentPage } from './page/selfPage/selfContent/initializer/selfContent-initializer.js';
 import { initializeMyPlanPage } from './page/myPage/myPlan/myPlan-initializer.js';
@@ -16,6 +16,8 @@ export const cleanupFunctions = [];
 
 async function bootstrap() {
   console.log('bootstrap');
+  const token = await reissueToken(); // 페이지 로드 시 토큰 재발급 시도 (로그인 유지)
+  updateHeaderUI(token);
   await initMap();
   collapseButtonEvent();
   // initAutocomplete(); // 요청 너무 많아서 임시 주석
@@ -119,3 +121,19 @@ async function bootstrap() {
 }
 
 document.addEventListener('DOMContentLoaded', bootstrap);
+
+/**
+ * 로그인 상태에 따라 헤더 UI(로그인/로그아웃 버튼)를 업데이트합니다.
+ */
+function updateHeaderUI(token) {
+  const navLogin = document.getElementById('nav-login');
+  const navLogout = document.getElementById('nav-logout');
+
+  if (token) {
+    if (navLogin) navLogin.style.display = 'none';
+    if (navLogout) navLogout.style.display = 'block';
+  } else {
+    if (navLogin) navLogin.style.display = 'block';
+    if (navLogout) navLogout.style.display = 'none';
+  }
+}

@@ -1,4 +1,5 @@
 // 북마크 관리
+import { getHeaders } from '../core/apiService.js';
 
 class bookMarkButtonController {
 
@@ -19,14 +20,15 @@ class bookMarkButtonController {
       <path d="M19.467,23.316,12,17.828,4.533,23.316,7.4,14.453-.063,9H9.151L12,.122,14.849,9h9.213L16.6,14.453Z" />
     </svg>
   `
+
   //TITLE - 뷱마크 삭제
   getnoneClickedBookmarkSvg(planId) {
     this.bookmarkPlanList.splice(this.bookmarkPlanList.indexOf(planId), 1);
     fetch(`/api/private/bookmarks/${planId}`, {
       method: 'DELETE',
-      headers: {
+      headers: getHeaders({
         'Content-Type': 'application/json',
-      },
+      }),
     })
       .then(data => {
         console.log('북마크 삭제 성공:', data);
@@ -40,9 +42,9 @@ class bookMarkButtonController {
     this.bookmarkPlanList.push(parseInt(planId));
     fetch(`/api/private/bookmarks/${planId}`, {
       method: 'POST',
-      headers: {
+      headers: getHeaders({
         'Content-Type': 'application/json',
-      },
+      }),
     })
       .then(data => {
         console.log('북마크 생성 성공:', data);
@@ -56,13 +58,17 @@ class bookMarkButtonController {
 
     const response = await fetch('/api/private/bookmarks/my', {
       method: 'GET',
-      headers: {
+      headers: getHeaders({
         'Content-Type': 'application/json',
-      },
+      }),
     })
-    const data = await response.json();
-    this.bookmarkPlanList = data.map(bookmark => bookmark.planId);
-    console.log('bookmarkPlanList:', this.bookmarkPlanList);
+    if (response.ok) {
+      const data = await response.json();
+      this.bookmarkPlanList = data.map(bookmark => bookmark.planId);
+      console.log('bookmarkPlanList:', this.bookmarkPlanList);
+    } else {
+      console.warn('북마크 리스트를 가져오는데 실패했습니다. (비로그인 상태일 수 있음)');
+    }
   }
 }
 export const bookMarkButtonControllerInstance = new bookMarkButtonController();
