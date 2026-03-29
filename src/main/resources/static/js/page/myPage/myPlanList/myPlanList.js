@@ -1,6 +1,7 @@
 /*
 *My 메뉴 기능 
 */
+import { getHeaders } from "../../../core/apiService.js";
 import { bindDynamicElements } from "../../../ui/dom-elements.js";
 import { initRouteFormHandler } from "../../selfPage/selfContent/selfContent.js";
 import { getDynamicElements } from "../../selfPage/selfContent/Event/formEvent.js";
@@ -66,7 +67,7 @@ export async function loadMyPlanList() {
   // 로그인 상태 확인
   const loginStatus = await fetch('/status', {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json' }
+    headers: getHeaders({ 'Content-Type': 'application/json' })
   });
   if (!loginStatus.ok) {
     alert('로그인이 필요합니다.');
@@ -89,7 +90,9 @@ async function fetchAndAppendPlans(page) {
   isLoading = true;
 
   try {
-    const response = await fetch(`/api/private/my-plans?page=${page}&size=10&sort=createdDate,desc`);
+    const response = await fetch(`/api/private/my-plans?page=${page}&size=10&sort=createdDate,desc`, {
+      headers: getHeaders()
+    });
     if (!response.ok) throw new Error('Failed to fetch plans');
 
     const data = await response.json();

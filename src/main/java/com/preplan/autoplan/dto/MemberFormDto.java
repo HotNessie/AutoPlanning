@@ -4,32 +4,36 @@ import com.preplan.autoplan.domain.member.Role;
 import com.preplan.autoplan.domain.member.Sex;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
 
-@Getter
-@Setter
-public class MemberFormDto { // 이새끼는 왜 record 안했었지???
-
+@Builder
+public record MemberFormDto(
     @NotBlank(message = "이름은 필수 입력 값입니다.")
-    private String name;
+    String name,
 
-    @NotEmpty(message = "이메일은 필수 입력 값입니다.")
+    @NotBlank(message = "이메일은 필수 입력 값입니다.")
     @Email(message = "이메일 형식으로 입력해주세요.")
-    private String email;
+    String email,
 
-    @NotEmpty(message = "비밀번호는 필수 입력 값입니다.")
+    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     @Size(min = 8, max = 16, message = "비밀번호는 8자 이상, 16자 이하로 입력해주세요.")
-    private String password;
+    String password,
 
-    @NotEmpty(message = "전화번호는 필수 입력 값입니다.")
-    private String phoneNumber;
+    @NotBlank(message = "전화번호는 필수 입력 값입니다.")
+    String phoneNumber,
 
-    private int birthYear;
+    @NotNull(message = "출생 연도는 필수 입력 값입니다.")
+    Integer birthYear, // record에서는 null 체크를 위해 Integer 권장
 
-    private Sex sex;
+    @NotNull(message = "성별을 선택해주세요.")
+    Sex sex,
 
-    private Role role; // 기본값은 USER로 설정될 예정
+    Role role // 기본값은 서비스 로직에서 처리
+) {
+    // 기본 생성자 (Thymeleaf 폼 바인딩을 위해 필요한 경우)
+    public MemberFormDto() {
+        this(null, null, null, null, null, null, null);
+    }
 }

@@ -1,11 +1,11 @@
 package com.preplan.autoplan.exception;
 
-public class RouteComputationException extends RuntimeException {
-    public RouteComputationException(String message) {
-        super(message);
+public class RouteComputationException extends BusinessException {
+    public RouteComputationException() {
+        super(ErrorCode.ROUTE_COMPUTATION_FAILED);
     }
 
-    public RouteComputationException(String message, Throwable cause) {
-        super(message, cause);
+    public RouteComputationException(String message) {
+        super(ErrorCode.ROUTE_COMPUTATION_FAILED, message);
     }
 }

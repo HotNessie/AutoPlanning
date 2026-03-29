@@ -100,7 +100,7 @@ public class PlanApiController {
 
   // Title - 계획 저장 ?이름이 왜 String인거임??
   @PostMapping("/api/private/plans")
-  public ResponseEntity<Plan> savePlanString(@RequestBody PlanCreateRequestDto dto, Authentication authentication) {
+  public ResponseEntity<Plan> savePlanString(@Valid @RequestBody PlanCreateRequestDto dto, Authentication authentication) {
 
     log.info("계획 저장 요청: {}, {}", dto, authentication.getName());
     Long planId = planService.createPlan(dto, authentication.getName());

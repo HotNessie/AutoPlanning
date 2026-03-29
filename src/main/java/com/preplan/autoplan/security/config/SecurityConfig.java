@@ -67,7 +67,7 @@ public class SecurityConfig {
     // 3. 인가 설정
     http.authorizeHttpRequests(auth -> auth
         .requestMatchers(
-            "/", "favicon.ico", "/home", "/login", "/logout", "/status", "/reissue", "/members/new",
+            "/", "/favicon.ico", "/home", "/login", "/logout", "/status", "/reissue", "/members/new",
             "/placeMain", "/placeDetail/**", "/searchPlans", "/error", "/h2-console/**",
             "/css/**", "/js/**", "/icon/**", "/img/**", "/fragments/**",
             "/api/google-maps-key", "/api/public/**",

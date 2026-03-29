@@ -1,7 +1,7 @@
 package com.preplan.autoplan.exception;
 
-public class PlaceNotFoundException extends RuntimeException {
-  public PlaceNotFoundException(String message) {
-    super(message);
-  }
+public class PlaceNotFoundException extends BusinessException {
+    public PlaceNotFoundException() {
+        super(ErrorCode.PLACE_NOT_FOUND);
+    }
 }

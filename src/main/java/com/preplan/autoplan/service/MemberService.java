@@ -28,12 +28,12 @@ public class MemberService {
     @Transactional
     public Long join(MemberFormDto memberFormDto) {
         Member member = Member.builder()
-                .name(memberFormDto.getName())
-                .email(memberFormDto.getEmail())
-                .password(passwordEncoder.encode(memberFormDto.getPassword())) // 스프링 빈으로 등록된 인코더 사용
-                .birthYear(memberFormDto.getBirthYear())
-                .phoneNumber(memberFormDto.getPhoneNumber())
-                .sex(memberFormDto.getSex())
+                .name(memberFormDto.name())
+                .email(memberFormDto.email())
+                .password(passwordEncoder.encode(memberFormDto.password())) // 스프링 빈으로 등록된 인코더 사용
+                .birthYear(memberFormDto.birthYear())
+                .phoneNumber(memberFormDto.phoneNumber())
+                .sex(memberFormDto.sex())
                 .role(Role.USER)
                 .build();
 
