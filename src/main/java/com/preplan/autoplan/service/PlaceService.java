@@ -28,8 +28,12 @@ public class PlaceService {
 
   /*
    * findByPlaceId placeId로 찾기
+   * findByPlaceIdWithRegion placeId로 찾기 + region 정보
+   * getPopularPlaces 인기 장소 상위 10개 조회
+   * getPopularPlacesByCity 특정 도시의 인기 장소 상위 5개 조회
    * searchPlacesByName 이름으로 찾기
    * searchPlaces (복합)
+   * save 저장
    * createOrUpdatePlace 생성 or 업데이트
    * processAddressAndCreateRegions address에서 region 추출
    */

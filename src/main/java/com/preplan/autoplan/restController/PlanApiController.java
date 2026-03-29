@@ -8,6 +8,7 @@ import com.preplan.autoplan.domain.planPlace.Plan;
 import com.preplan.autoplan.dto.plan.PlanCreateRequestDto;
 import com.preplan.autoplan.dto.plan.PlanKeywordsUpdateRequestDto;
 import com.preplan.autoplan.dto.plan.PlanResponseDto;
+import com.preplan.autoplan.exception.RouteNotFoundException;
 import com.preplan.autoplan.googleApi.ComputeRoutesRequest;
 import com.preplan.autoplan.googleApi.ComputeRoutesResponse;
 import com.preplan.autoplan.googleApi.RouteService;
@@ -61,32 +62,24 @@ public class PlanApiController {
         request.placeNames().get(0).placeId(),
         request.placeNames().get(request.placeNames().size() - 1).placeId(),
         request.placeNames().size());
-    try {
-      ComputeRoutesResponse response = routeService.computeRoutes(request);
-      if (response.routes().isEmpty()) {
-        log.warn("경로가 발견되지 않음");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(Map.of("error", "경로를 찾을 수 없습니다."));
-      }
-
-      RoutePlanResponseDto planResponseDto = new RoutePlanResponseDto(
-          response,
-          request.placeNames(),
-          request.departureTime());
-
-      log.info("경로 계산 성공: 총 거리 {}m, 소요 시간 {}, 경로= {}",
-          response.routes().get(0).distanceMeters(),
-          response.routes().get(0).duration(),
-          response.routes().get(0).polyline());
-
-      // 응답 반환
-      return ResponseEntity.ok(planResponseDto);
-
-    } catch (Exception e) {
-      log.error("경로 계산 실패: {}", e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error", "서버 오류: " + e.getMessage()));
+    ComputeRoutesResponse response = routeService.computeRoutes(request);
+    if (response.routes().isEmpty()) {
+      log.warn("경로가 발견되지 않음");
+      throw new RouteNotFoundException("경로를 찾을 수 없습니다.");
     }
+
+    RoutePlanResponseDto planResponseDto = new RoutePlanResponseDto(
+        response,
+        request.placeNames(),
+        request.departureTime());
+
+    log.info("경로 계산 성공: 총 거리 {}m, 소요 시간 {}, 경로= {}",
+        response.routes().get(0).distanceMeters(),
+        response.routes().get(0).duration(),
+        response.routes().get(0).polyline());
+
+    // 응답 반환
+    return ResponseEntity.ok(planResponseDto);
   }
 
   // Title - 경로 응답 DTO
@@ -201,16 +194,7 @@ public class PlanApiController {
   public ResponseEntity<List<PlanResponseDto>> getPlansByPlaceId(
       @PathVariable String placeId) {
     log.info("장소Id로 관련 계획 조회 요청: {}", placeId);
-    try {
-      List<PlanResponseDto> plans = planService.getPlansByPlaceId(placeId);
-      if (plans.isEmpty()) {
-        log.warn("장소Id로 관련 계획이 없습니다: {}", placeId);
-        return ResponseEntity.notFound().build();
-      }
-      return ResponseEntity.ok(plans);
-    } catch (Exception e) {
-      log.error("장소Id로 관련 계획 조회 중 오류 발생: {}", e.getMessage());
-      return ResponseEntity.status(500).body(null);
-    }
+    List<PlanResponseDto> plans = planService.getPlansByPlaceId(placeId);
+    return ResponseEntity.ok(plans);
   }
-}
+  }

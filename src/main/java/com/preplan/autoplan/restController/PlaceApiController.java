@@ -3,7 +3,6 @@ package com.preplan.autoplan.restController;
 import com.preplan.autoplan.domain.planPlace.Place;
 import com.preplan.autoplan.dto.place.PlaceCreateRequestDto;
 import com.preplan.autoplan.dto.place.PlaceResponseDto;
-import com.preplan.autoplan.exception.PlaceNotFoundException;
 import com.preplan.autoplan.service.PlaceService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,143 +22,35 @@ public class PlaceApiController {
 
   private final PlaceService placeService;
 
-  /**
-   * getPlace - 장소Id로 검색
-   * searchPlacesByName - 장소명으로 검색
-   * createOrUpdatePlace - 장소 생성 또는 업데이트
-   * getPopularPlaces - 인기 장소 조회
-   * ! 미구현 searchKeywordPlaces - 키워드로 장소 검색
-   * ! 미구현 searchPlacesByRegion - 지역으로 장소 검색
-   * ! 미구현 searchPlaces - 복합 검색
-   */
-
   // Title - 장소Id로 검색
   @GetMapping("/api/public/places/id/{placeId}")
-  // public ResponseEntity<PlaceResponseDto> getPlace(@RequestParam String
-  // placeId) {
   public ResponseEntity<Place> getPlace(@PathVariable String placeId) {
-    log.info("Place API 호출됨");
-    try {
-      Place place = placeService.findByPlaceId(placeId);
-      return ResponseEntity.ok(place);// TODO: Entity직접 반환임 수정필요
-    } catch (PlaceNotFoundException e) {
-      log.error("장소 검색 실패: {}", e.getMessage());
-      return ResponseEntity.notFound().build();
-    } catch (Exception e) {
-      log.error("장소Id 검색 중 오류 발생: {}", e.getMessage());
-      return ResponseEntity.status(500).body(null);
-    }
+    log.info("Place API 호출됨 - 장소Id: {}", placeId);
+    Place place = placeService.findByPlaceId(placeId);
+    return ResponseEntity.ok(place);
   }
 
   // Title - 장소명으로 검색
   @GetMapping("/api/public/places/search")
   public ResponseEntity<List<PlaceResponseDto>> searchPlacesByName(@RequestParam String name) {
     log.info("장소 검색 요청: {}", name);
-    try {
-      List<PlaceResponseDto> places = placeService.searchPlacesByName(name);
-      if (places.isEmpty()) {
-        log.warn("검색 결과가 없습니다: {}", name);
-        return ResponseEntity.notFound().build();
-      }
-      return ResponseEntity.ok(places);
-    } catch (Exception e) {
-      log.error("장소명 검색 중 오류 발생: {}", e.getMessage());
-      return ResponseEntity.status(500).body(null);
-    }
+    List<PlaceResponseDto> places = placeService.searchPlacesByName(name);
+    return ResponseEntity.ok(places);
   }
 
   // Title - 장소 생성 또는 업데이트
   @PostMapping("/api/public/places")
   public ResponseEntity<PlaceResponseDto> createOrUpdatePlace(@RequestBody PlaceCreateRequestDto place) {
     log.info("장소 생성/업데이트 요청: {}", place);
-    try {
-      PlaceResponseDto createdPlace = placeService.createOrUpdatePlace(place);
-      return ResponseEntity.ok(createdPlace);
-    } catch (Exception e) {
-      log.error("장소 생성/업데이트 중 오류 발생: {}", e.getMessage());
-      return ResponseEntity.status(500).body(null);
-    }
+    PlaceResponseDto createdPlace = placeService.createOrUpdatePlace(place);
+    return ResponseEntity.ok(createdPlace);
   }
 
   // Title - 인기 장소 조회
   @GetMapping("/api/public/places/popular")
   public ResponseEntity<List<PlaceResponseDto>> getPopularPlaces() {
     log.info("인기 장소 조회 요청");
-    try {
-      List<PlaceResponseDto> popularPlaces = placeService.getPopularPlaces();
-      return ResponseEntity.ok(popularPlaces);
-    } catch (Exception e) {
-      log.error("인기 장소 조회 중 오류 발생: {}", e.getMessage());
-      return ResponseEntity.status(500).body(null);
-    }
+    List<PlaceResponseDto> popularPlaces = placeService.getPopularPlaces();
+    return ResponseEntity.ok(popularPlaces);
   }
-
-  // TODO: searchPlaces 복합 검색 관련임. place에 keyword부여 이후에 다시 진행
-  /*
-   * // Title - 키워드로 장소 검색
-   * 
-   * @GetMapping("/api/public/places/keywords")
-   * public ResponseEntity<List<PlaceResponseDto>> searchKeywordPlaces(
-   * 
-   * @RequestParam(required = false) List<PurposeField> purposeKeywords,
-   * 
-   * @RequestParam(required = false) List<MoodField> moodKeywords) {
-   * log.info("키워드로 장소 검색 요청: 목적={}, 기분={}", purposeKeywords, moodKeywords);
-   * ComplexSearchDto complexSearchDto = new ComplexSearchDto(
-   * null, null, null, null, null, null, null, purposeKeywords, moodKeywords);
-   * try {
-   * List<PlaceResponseDto> places = placeService.searchPlaces(complexSearchDto);
-   * if (places.isEmpty()) {
-   * log.warn("키워드 장소 검색 결과가 없습니다: 목적={}, 기분={}", purposeKeywords, moodKeywords);
-   * return ResponseEntity.notFound().build();
-   * }
-   * return ResponseEntity.ok(places);
-   * } catch (Exception e) {
-   * log.error("키워드 검색 중 오류 발생: {}", e.getMessage());
-   * return ResponseEntity.status(500).body(null);
-   * }
-   * }
-   * 
-   * // Title - 지역으로 검색
-   * 
-   * @GetMapping("/api/public/places/region")
-   * public ResponseEntity<List<PlaceResponseDto>> searchPlacesByRegion(
-   * 
-   * @RequestParam String regionName) {
-   * log.info("지역으로 장소 검색 요청: {}", regionName);
-   * try {
-   * ComplexSearchDto complexDto = new ComplexSearchDto(
-   * null, regionName, null, null, null, null, null, null, null);
-   * List<PlaceResponseDto> places = placeService.searchPlaces(complexDto);
-   * if (places.isEmpty()) {
-   * log.warn("region 장소 검색 결과가 없습니다: {}", regionName);
-   * return ResponseEntity.notFound().build();
-   * }
-   * return ResponseEntity.ok(places);
-   * } catch (Exception e) {
-   * log.error("지역 검색 중 오류 발생: {}", e.getMessage());
-   * return ResponseEntity.status(500).body(null);
-   * }
-   * }
-   * 
-   * // Title - 복합 검색
-   * 
-   * @PostMapping("/api/public/places/search/complex")
-   * public ResponseEntity<List<PlaceResponseDto>> searchPlaces(
-   * 
-   * @RequestBody ComplexSearchDto complexSearchDto) {
-   * log.info("복합 검색 요청: {}", complexSearchDto);
-   * try {
-   * List<PlaceResponseDto> places = placeService.searchPlaces(complexSearchDto);
-   * if (places.isEmpty()) {
-   * log.warn("복합 검색 결과가 없습니다: ", complexSearchDto);
-   * return ResponseEntity.notFound().build();
-   * }
-   * return ResponseEntity.ok(places);
-   * } catch (Exception e) {
-   * log.error("복합 검색 중 오류 발생: {}", e.getMessage());
-   * return ResponseEntity.status(500).body(null);
-   * }
-   * }
-   */
 }
